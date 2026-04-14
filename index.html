@@ -1,0 +1,2727 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>weedverso</title>
+<style>
+:root{--bg:#060a08;--card:#0f1613;--card2:#121d18;--txt:#e8f4ed;--mut:#99aca0;--p:#39ff8f;--ps:rgba(57,255,143,.15);--d:#ff5f70;--ds:rgba(255,95,112,.14);--ln:rgba(151,170,159,.24);--font-ui:'Bahnschrift','Trebuchet MS','Segoe UI',sans-serif;--font-display:'Agency FB','Bahnschrift','Trebuchet MS','Segoe UI',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth} body{font-family:var(--font-ui);background:radial-gradient(circle at 100% 0,rgba(57,255,143,.12),transparent 35%),radial-gradient(circle at 0 100%,rgba(30,75,55,.22),transparent 40%),var(--bg);color:var(--txt);min-height:100vh;padding:14px 14px 132px;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02)1px,transparent 1px);background-size:22px 22px;pointer-events:none}
+.app{width:100%;max-width:1080px;margin:auto;display:grid;gap:12px}.page{display:grid;gap:12px;min-width:0}.page.hidden{display:none}.card{width:100%;min-width:0;background:linear-gradient(165deg,var(--card),var(--card2));border:1px solid var(--ln);border-radius:18px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.33)}
+body[data-privacy="on"] canvas{filter:blur(8px)}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{display:flex;align-items:center;gap:10px}.logo{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:radial-gradient(circle at 20% 20%,var(--p),#0f3222 70%);font-weight:800;color:#082212}.brand h1{font-family:var(--font-display);font-size:1.35rem;letter-spacing:.4px}.topActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.saveMeta{display:grid;gap:2px;justify-items:end;min-width:180px;text-align:right}.saveMeta strong{font-size:.82rem;color:var(--txt);font-weight:700}.saveMeta span{font-size:.72rem;color:var(--mut)}.saveActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn,.ghost,.danger,.quick,.navBtn,.iconBtn{position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .22s ease,border-color .22s ease,background .22s ease,color .22s ease}
+.btn,.ghost,.danger{appearance:none;-webkit-appearance:none;border:1px solid var(--ln);border-radius:12px;padding:10px 12px;font:700 .84rem var(--font-ui);letter-spacing:.15px;cursor:pointer;color:var(--txt)}
+.btn:before,.ghost:before,.danger:before,.quick:before,.navBtn:before,.iconBtn:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.13),transparent 28%,transparent 68%,rgba(57,255,143,.08));pointer-events:none}
+.btn{background:linear-gradient(135deg,#4cff9e,#22d37d);color:#04150d;border-color:rgba(115,255,186,.6);box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 14px 24px rgba(18,120,71,.22)}
+.ghost{background:linear-gradient(180deg,rgba(24,34,30,.92),rgba(17,25,22,.94));border-color:rgba(120,150,136,.26);box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 10px 18px rgba(0,0,0,.18)}
+.danger{background:linear-gradient(180deg,rgba(73,24,31,.9),rgba(52,16,22,.94));color:#ff7c8c;border-color:rgba(255,95,112,.35);box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 10px 18px rgba(0,0,0,.18)}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(0) scale(.985)}
+.iconBtn{appearance:none;-webkit-appearance:none;width:40px;height:40px;border:1px solid rgba(88,135,113,.35);border-radius:12px;background:linear-gradient(180deg,rgba(24,36,31,.95),rgba(13,21,18,.96));display:grid;place-items:center;color:#d8ebe0;font:700 1rem var(--font-ui);cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 10px 18px rgba(0,0,0,.18)}.iconBtn.active{color:var(--p);border-color:rgba(57,255,143,.55);box-shadow:0 0 0 1px rgba(57,255,143,.14) inset,0 0 18px rgba(57,255,143,.16)}
+label,.mini{font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+input,select{appearance:none;-webkit-appearance:none;width:100%;padding:10px;border:1px solid var(--ln);border-radius:10px;background:rgba(255,255,255,.03);color:var(--txt);font:500 .92rem var(--font-ui);outline:none}
+input[type="number"]{-moz-appearance:textfield}
+input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input:focus,select:focus{border-color:var(--p);box-shadow:0 0 0 3px var(--ps)}
+input[readonly]{opacity:.9;cursor:default}
+.line{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}.chip{border:1px solid var(--ln);padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.03);font-size:.82rem}.wrap{display:grid;gap:6px;margin-top:10px}.track{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}.fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#138d4b,var(--p));transition:width .35s}.fill.xp{background:linear-gradient(90deg,#0e3f60,#26c8ff)}
+.hero{position:relative;overflow:hidden;border-color:rgba(57,255,143,.35);background:linear-gradient(155deg,rgba(10,20,16,.95),rgba(10,18,14,.82));box-shadow:0 12px 36px rgba(0,0,0,.4),inset 0 0 0 1px rgba(57,255,143,.08)}
+.hero:before{content:"";position:absolute;inset:-1px;background:linear-gradient(120deg,transparent 15%,rgba(57,255,143,.09) 45%,transparent 70%);transform:translateX(-55%);animation:sweep 6.4s linear infinite;pointer-events:none}
+.hero>*{position:relative;z-index:1}.heroHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.heroTitle{font-family:var(--font-display);font-size:1.5rem;line-height:1.05;margin-top:6px;letter-spacing:.4px}.heroDesc{margin-top:6px;font-size:.9rem;color:var(--mut)}
+.heroKpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}.heroBox{border:1px solid var(--ln);border-radius:12px;padding:8px;background:rgba(255,255,255,.02)}.heroBox strong{display:block;font-family:var(--font-display);font-size:1.04rem;margin-top:3px}
+.quickRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.quick{border:1px solid rgba(90,143,117,.28);border-radius:12px;background:linear-gradient(180deg,rgba(24,34,30,.96),rgba(16,24,21,.96));padding:11px 12px;text-align:center;font:700 .82rem var(--font-ui);color:var(--txt);cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 12px 20px rgba(0,0,0,.16)}
+.quick:hover{border-color:rgba(57,255,143,.45);box-shadow:0 0 0 1px rgba(57,255,143,.12) inset,0 0 18px rgba(57,255,143,.12)}
+.focusPill{padding:5px 11px;border-radius:999px;font-size:.75rem;font-weight:700;letter-spacing:.4px;border:1px solid var(--ln)}
+.focusPill.ok{color:var(--p);border-color:rgba(57,255,143,.5);background:rgba(57,255,143,.12)}
+.focusPill.mid{color:#ffcf5f;border-color:rgba(255,207,95,.45);background:rgba(255,207,95,.12)}
+.focusPill.hot{color:var(--d);border-color:rgba(255,95,112,.5);background:rgba(255,95,112,.14)}
+.grid{display:grid;gap:12px}.title{font-family:var(--font-display);font-size:1.15rem;margin-bottom:10px}.subtitle{font-family:var(--font-display);font-size:1.02rem}.form{display:grid;gap:8px;margin-bottom:10px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.stack{display:grid;gap:10px;margin-top:10px}.list{display:grid;gap:8px;margin-bottom:10px}.habit{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.02);display:grid;gap:8px;transition:.2s}.habit.done{border-color:rgba(57,255,143,.6);box-shadow:0 0 0 2px rgba(57,255,143,.1);animation:pulse .4s ease}.debtorList{display:grid;gap:7px}.debtor{border:1px solid var(--ln);border-radius:11px;padding:8px;background:rgba(255,255,255,.02);display:grid;gap:5px}.debtor.paid{opacity:.75}
+.debtorHead{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:start}.debtorName{font-weight:700;line-height:1.1;font-size:.94rem}.debtorAmount{font-family:var(--font-display);font-size:1.08rem;line-height:1}.debtorMeta{display:grid;gap:2px;font-size:.76rem;color:var(--mut)}.debtorActions button{padding:7px 9px;font-size:.72rem}.debtorEdit{display:grid;gap:6px;padding-top:2px}.debtorTools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.debtCard{border-color:rgba(57,255,143,.26);background:linear-gradient(180deg,rgba(11,24,18,.96),rgba(9,16,13,.98));box-shadow:inset 0 0 0 1px rgba(57,255,143,.06),0 12px 24px rgba(0,0,0,.2)}.debtCard .debtorHead{align-items:center}.debtCard .debtorAmount{font-size:1.28rem;color:#e4fff0}.debtStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.debtStat{border:1px solid rgba(57,255,143,.16);border-radius:10px;padding:8px;background:linear-gradient(180deg,rgba(18,33,27,.9),rgba(11,20,16,.94));display:grid;gap:2px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)}.debtStat strong{font-family:var(--font-display);font-size:1rem}.debtCard .debtorMeta{gap:4px}.debtProgress{height:8px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}.debtProgressFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#1ecb72,#39ff8f)}.debtPanel{border:1px solid rgba(57,255,143,.24);border-radius:12px;padding:10px;background:linear-gradient(180deg,rgba(15,28,22,.96),rgba(10,18,15,.98));box-shadow:inset 0 0 0 1px rgba(57,255,143,.05)}.debtPanelTitle{display:block;font-size:.74rem;color:#b9ebca;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}.debtPanelHint{font-size:.74rem;color:#9ac2aa}
+.r1{display:grid;grid-template-columns:1fr auto;gap:8px}.r2{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}.tag{padding:4px 10px;border-radius:999px;font-size:.75rem;border:1px solid var(--ln)}.tag.warn{color:#ffcf5f;border-color:rgba(255,207,95,.4);background:rgba(255,207,95,.12)}.tag.ok{color:var(--p);border-color:rgba(57,255,143,.5);background:rgba(57,255,143,.12)}.tag.future{color:#7cc7ff;border-color:rgba(124,199,255,.4);background:rgba(124,199,255,.12)}
+.ck{width:38px;height:38px;border-radius:10px;border:1px solid var(--ln);background:rgba(255,255,255,.04);color:var(--mut);font-size:1rem}.ck.done{color:var(--p);background:rgba(57,255,143,.16);border-color:rgba(57,255,143,.6)}
+.msg{font-size:.9rem;padding:10px;border:1px solid var(--ln);border-radius:10px;background:rgba(57,255,143,.06)}.mut{color:var(--mut);font-size:.84rem}
+.fgrid{display:grid;gap:10px}.fcard{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.02);display:grid;gap:8px}.bal{font-family:var(--font-display);font-size:1.45rem}.fill.cc{background:linear-gradient(90deg,#ffb341,#ff6f4e)}.flashIn{animation:fg .45s}.flashOut{animation:fr .45s}
+.chartWrap{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.02);display:grid;gap:8px}
+.chartCanvas{width:100%;height:180px;background:rgba(255,255,255,.01);border-radius:10px;border:1px dashed var(--ln)}
+.focusBox{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.02);display:grid;gap:8px}
+.focusClock{font-family:var(--font-display);font-size:2rem;line-height:1}
+.focusStatus{font-size:.82rem;color:var(--mut)}
+.goal{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.02);display:grid;gap:8px}
+.fill.goal{background:linear-gradient(90deg,#2f89ff,#2df5b4)}
+.goalTotal{font-family:var(--font-display);font-size:1.2rem}
+.goalMoney{font-family:var(--font-display);font-size:1.16rem}
+.goalMetaRow{display:flex;justify-content:space-between;align-items:end;gap:8px}
+.goalPct{font-family:var(--font-display);font-size:1rem;color:var(--p)}
+.cckpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kpi{border:1px solid var(--ln);border-radius:10px;padding:8px;background:rgba(255,255,255,.02)}.kpi strong{display:block;font-family:var(--font-display);font-size:1.05rem;margin-top:2px}
+.reserveBox{max-width:390px}
+.hist{margin-top:8px;padding-top:8px;border-top:1px dashed var(--ln);display:grid;gap:6px;max-height:170px;overflow:auto}.hist.inner{margin-top:0;padding-top:0;border-top:none;max-height:140px}.h{font-size:.8rem;color:var(--mut);display:flex;justify-content:space-between;gap:8px}.statementHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.statementEditBtn{min-width:154px;padding:9px 12px;font-size:.76rem}.statementEditBtn.active{color:var(--p);border-color:rgba(57,255,143,.5);box-shadow:0 0 0 1px rgba(57,255,143,.14) inset,0 0 18px rgba(57,255,143,.12)}.statementModeBanner{padding:10px 12px;border:1px solid rgba(57,255,143,.26);border-radius:12px;background:rgba(57,255,143,.08);font-size:.78rem;color:#c7f6d7}.statementRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:9px 10px;border:1px solid rgba(151,170,159,.18);border-radius:12px;background:rgba(255,255,255,.02)}.statementRow.editing{border-color:rgba(57,255,143,.45);box-shadow:0 0 0 1px rgba(57,255,143,.12) inset,0 0 20px rgba(57,255,143,.08)}.statementBody{min-width:0;display:grid;gap:4px}.statementPrimary{font-size:.83rem;color:var(--txt);line-height:1.35}.statementSecondary{font-size:.74rem;color:var(--mut);line-height:1.3}.statementAside{display:grid;justify-items:end;gap:8px}.statementMeta{font-size:.73rem;color:var(--mut);white-space:nowrap}.statementActions{display:flex;gap:6px;align-items:center}.statementDelete,.statementEditAction{width:34px;height:34px;border-radius:10px;padding:0;font-size:.9rem}.statementEditorWrap{grid-column:1/-1}.statementEditor{display:grid;gap:10px;padding-top:4px}.statementEditorGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.statementField{display:grid;gap:4px}.statementField span{font-size:.7rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}.statementEditorActions{display:flex;justify-content:flex-end;gap:8px}.statementEditorHint{font-size:.74rem;color:var(--mut)}.pos{color:var(--p)}.neg{color:var(--d)}
+.sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}.box{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.03)}.box strong{display:block;font-family:var(--font-display);font-size:1.2rem;margin-top:3px}.empty{font-size:.85rem;color:var(--mut);padding:8px;border:1px dashed var(--ln);border-radius:10px;text-align:center}
+.actionLayout{display:grid;grid-template-columns:minmax(0,1fr) 142px;gap:10px;align-items:end}.actionFields{display:grid;gap:8px;min-width:0}.actionStack{display:grid;gap:7px;align-self:stretch}.actionStack .btn,.actionStack .ghost,.actionStack .danger{padding:9px 10px;font-size:.76rem;min-height:38px;border-radius:11px}.actionStack .ghost{background:linear-gradient(180deg,rgba(22,33,29,.96),rgba(13,19,17,.96))}
+.creditAnalytics{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:14px;align-items:center;padding-top:6px}.chartShell{position:relative;border:1px solid rgba(84,128,109,.26);border-radius:18px;padding:12px;background:radial-gradient(circle at 50% 30%,rgba(57,255,143,.08),rgba(7,13,10,.88) 60%),linear-gradient(180deg,rgba(18,26,23,.96),rgba(10,16,14,.98));box-shadow:inset 0 0 0 1px rgba(255,255,255,.02),0 10px 22px rgba(0,0,0,.22)}.ringCanvas{width:100%;max-width:280px;aspect-ratio:1/1;display:block;margin:auto}.chartCenterNote{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center;padding:28px}.chartCenterNote strong{display:block;font-family:var(--font-display);font-size:1.35rem}.chartCenterNote span{font-size:.78rem;color:var(--mut)}.legendList{display:grid;gap:8px;align-content:start}.legendItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid rgba(84,128,109,.2);border-radius:12px;background:rgba(255,255,255,.02)}.legendSwatch{width:12px;height:12px;border-radius:999px;box-shadow:0 0 12px currentColor}.legendText{min-width:0}.legendText strong{display:block;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.legendText span{font-size:.76rem;color:var(--mut)}.legendValue{font-family:var(--font-display);font-size:1rem;text-align:right}
+.accountAnalytics{margin-top:12px}.chartShell.accountShell{border-color:rgba(38,200,255,.34);background:
+radial-gradient(circle at 50% 26%,rgba(88,232,255,.16),transparent 24%),
+radial-gradient(circle at 50% 55%,rgba(46,115,255,.12),rgba(7,11,18,.94) 56%),
+linear-gradient(180deg,rgba(18,24,39,.99),rgba(8,12,20,.99));box-shadow:inset 0 0 0 1px rgba(38,200,255,.1),0 14px 28px rgba(0,0,0,.28),0 0 28px rgba(38,200,255,.12)}
+.chartCenterNote.accountCenter strong{color:#88e8ff;text-shadow:0 0 16px rgba(136,232,255,.18)}
+.chartCenterNote.accountCenter span{letter-spacing:.12em;text-transform:uppercase}
+.legendItem.accountLegend{border-color:rgba(57,154,255,.22);background:linear-gradient(180deg,rgba(14,22,34,.82),rgba(10,15,24,.92));box-shadow:inset 0 0 0 1px rgba(88,232,255,.04)}
+.legendItem.accountLegend .legendText strong{letter-spacing:.05em}
+.legendItem.accountLegend .legendText span{color:#8fb7ce}
+.debtorCardBody{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:9px;align-items:start}.goalActionsWrap{display:grid;grid-template-columns:minmax(0,1fr) 142px;gap:10px;align-items:start}.actionMeta{display:grid;gap:8px}
+.dock{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);width:98vw;max-width:900px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:10px;border:1px solid var(--ln);border-radius:18px;background:rgba(9,14,12,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 14px 34px rgba(0,0,0,.35);z-index:20}
+.navBtn{display:grid;place-items:center;gap:4px;padding:11px 10px;border:1px solid rgba(95,123,110,.18);border-radius:15px;background:linear-gradient(180deg,rgba(18,27,23,.72),rgba(11,17,15,.72));color:var(--mut);font:700 .8rem var(--font-ui);cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.02) inset}
+.navBtn.active{background:linear-gradient(180deg,rgba(16,47,31,.96),rgba(9,31,20,.96));color:var(--txt);border-color:rgba(57,255,143,.45);box-shadow:0 0 0 1px rgba(57,255,143,.16) inset,0 0 22px rgba(57,255,143,.12)}
+.navIcon{font-size:1.08rem;line-height:1}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.01)}100%{transform:scale(1)}} @keyframes fg{50%{text-shadow:0 0 14px rgba(57,255,143,.85)}} @keyframes fr{50%{text-shadow:0 0 14px rgba(255,95,112,.85)}} @keyframes sweep{to{transform:translateX(160%)}}
+  @media(max-width:720px){.creditAnalytics{grid-template-columns:1fr}.chartShell{max-width:320px;margin:auto}.legendItem{grid-template-columns:auto minmax(0,1fr)}.legendValue{grid-column:2;justify-self:start}.top{align-items:start}.topActions{width:100%;justify-content:space-between}.saveMeta{justify-items:start;text-align:left;min-width:0}}
+@media(min-width:920px){body{padding:22px 22px 144px}.quickRow{grid-template-columns:repeat(5,minmax(0,1fr))}.debtorList{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+</style>
+</head>
+<body data-theme="dark">
+<main class="app">
+  <section class="card top">
+    <div class="brand"><span class="logo">W</span><h1 id="appName">weedverso</h1></div>
+    <div class="topActions">
+      <div class="saveMeta">
+        <strong id="saveStatus">Link pronto para publicar</strong>
+        <span id="saveChannels">Telegram e Discord aguardando configuração</span>
+      </div>
+      <div class="saveActions">
+        <button id="privacyToggleBtn" class="iconBtn" type="button" title="Ocultar resultados">👁</button>
+        <button id="openShareLinkBtn" class="ghost" type="button">Abrir link atual</button>
+        <button id="saveAllBtn" class="btn" type="button">Salvar tudo</button>
+        <button id="logoutBtn" class="ghost" type="button">Sair</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="homePage" class="page">
+  <section class="card hero">
+    <div class="heroHead">
+      <span class="mini">Diretriz weedverso</span>
+      <span id="focusPill" class="focusPill ok">EM RITMO</span>
+    </div>
+    <h2 id="heroTitle" class="heroTitle">Ativar modo foco e fechar missão de hoje</h2>
+    <p id="heroDesc" class="heroDesc">Seu sistema está calibrado para consistência. Transforme execução em padrão.</p>
+    <div class="heroKpi">
+      <div class="heroBox"><span class="mini">Missões restantes</span><strong id="heroRemaining">0</strong></div>
+      <div class="heroBox"><span class="mini">Risco financeiro</span><strong id="heroRisk">Baixo</strong></div>
+      <div class="heroBox"><span class="mini">A receber</span><strong id="heroDebt">R$ 0,00</strong></div>
+    </div>
+    <div id="quickActions" class="quickRow">
+      <button class="quick" type="button" data-quick="habit">+ Hábito</button>
+      <button class="quick" type="button" data-quick="income">+ Entrada</button>
+      <button class="quick" type="button" data-quick="card">+ Gasto cartão</button>
+      <button class="quick" type="button" data-quick="debtor">+ Devedor</button>
+      <button class="quick" type="button" data-quick="goal">+ Objetivo</button>
+    </div>
+  </section>
+
+  <section class="grid">
+    <section class="card">
+      <h2 class="title">Contas e saldos</h2>
+      <p class="mut">Aqui ficam só seus saldos principais. Cartão e objetivos agora têm área exclusiva.</p>
+      <div id="finGrid" class="fgrid"></div>
+      <div class="creditAnalytics accountAnalytics">
+        <div class="chartShell accountShell">
+          <canvas id="accountFlowChart" class="ringCanvas" width="320" height="320"></canvas>
+          <div class="chartCenterNote accountCenter">
+            <div>
+              <strong id="accountFlowTotal">R$ 0,00</strong>
+              <span>mapa tático das saídas</span>
+            </div>
+          </div>
+        </div>
+        <div id="accountFlowLegend" class="legendList"></div>
+      </div>
+    </section>
+  </section>
+
+  <section class="card">
+    <h2 class="title">Resumo do dia</h2>
+    <div class="sum">
+      <div class="box"><span class="mini">Rotina concluída</span><strong id="sPercent">0%</strong></div>
+      <div class="box"><span class="mini">Hábitos cumpridos</span><strong id="sHabits">0 / 0</strong></div>
+      <div class="box"><span class="mini">Total gasto hoje</span><strong id="sSpent">R$ 0,00</strong></div>
+      <div class="box"><span class="mini">Fatura cartão</span><strong id="sCard">R$ 0,00</strong></div>
+      <div class="box"><span class="mini">A receber</span><strong id="sDebt">R$ 0,00</strong></div>
+      <div class="box"><span class="mini">Em objetivos</span><strong id="sGoals">R$ 0,00</strong></div>
+      <div class="box"><span class="mini">Status</span><strong id="sStatus">Dia em construção</strong></div>
+    </div>
+    <p id="sMsg" class="mut">A constância pesa mais do que a intensidade. Continue.</p>
+  </section>
+  </section>
+
+  <section id="routinePage" class="page hidden">
+    <section class="card">
+      <div class="line">
+        <div>
+          <h2 class="title">Rotina diária</h2>
+          <p id="routineDateInfo" class="mut"></p>
+        </div>
+        <span class="chip">☑ Rotina</span>
+      </div>
+      <form id="habitForm" class="form">
+        <input id="hName" type="text" placeholder="Novo hábito (ex: Estudar)" required />
+        <div class="two">
+          <input id="hGoal" type="text" placeholder="Meta (ex: 45 min)" />
+          <input id="hDate" type="date" />
+        </div>
+        <button class="btn" type="submit">Adicionar hábito</button>
+      </form>
+      <article class="focusBox">
+        <h3 class="subtitle">Modo Sprint Interativo</h3>
+        <div class="actionLayout">
+          <div class="actionFields">
+            <div class="two">
+              <select id="focusHabitSelect"></select>
+              <input id="focusMinutesInput" type="number" min="1" max="180" value="25" />
+            </div>
+            <div class="line">
+              <strong id="focusClock" class="focusClock">25:00</strong>
+              <span id="focusStatus" class="focusStatus">Escolha um hábito e inicie uma sessão.</span>
+            </div>
+          </div>
+          <div class="actionStack">
+            <button id="focusStartBtn" class="btn" type="button">Iniciar</button>
+            <button id="focusPauseBtn" class="ghost" type="button">Pausar</button>
+            <button id="focusResetBtn" class="danger" type="button">Resetar</button>
+          </div>
+        </div>
+      </article>
+      <div id="habitList" class="list"></div>
+      <div id="motivation" class="msg">Você está construindo sua melhor versão.</div>
+    </section>
+  </section>
+
+  <section id="creditPage" class="page hidden">
+    <section class="card">
+      <div class="line">
+        <div>
+          <h2 class="title">Cartão e cobranças</h2>
+          <p class="mut">Área exclusiva para fatura, reserva do cartão e pessoas que te devem valores ligados ao crédito.</p>
+        </div>
+        <span class="chip">💳 Crédito</span>
+      </div>
+      <div class="stack">
+        <article class="fcard">
+          <div class="line">
+            <div>
+              <h3 class="subtitle">Cartão de crédito</h3>
+              <p id="ccMetaSummary" class="mut"></p>
+            </div>
+            <button id="ccEditBtn" type="button" class="iconBtn" title="Editar nome do cartão">✎</button>
+          </div>
+          <div id="ccMeta" class="two">
+            <input id="ccName" type="text" maxlength="30" placeholder="Nome do cartão" />
+          </div>
+          <p id="ccMetaHint" class="mut"></p>
+          <div class="actionLayout">
+            <div class="actionFields">
+              <input id="ccValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor" />
+              <input id="ccDesc" type="text" maxlength="42" placeholder="Descrição do gasto ou pagamento" />
+            </div>
+            <div class="actionStack">
+              <button id="ccExpense" type="button" class="danger">Lançar gasto</button>
+              <button id="ccPay" type="button" class="btn">Registrar pagamento</button>
+              <button id="ccClear" type="button" class="ghost">Zerar fatura</button>
+            </div>
+          </div>
+          <div class="cckpi">
+            <div class="kpi"><span class="mini">Fatura atual</span><strong id="ccUsed">R$ 0,00</strong></div>
+          </div>
+          <div class="track"><div id="ccBar" class="fill cc"></div></div>
+          <article class="kpi reserveBox">
+            <span class="mini">Saldo reservado cartão</span>
+            <strong id="ccReserved">R$ 0,00</strong>
+            <div class="actionLayout">
+              <div class="actionFields">
+                <input id="ccReserveValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor reservado" />
+              </div>
+              <div class="actionStack">
+                <button id="ccReserveIn" type="button" class="btn">+ Entrada</button>
+                <button id="ccReserveOut" type="button" class="danger">- Saída</button>
+              </div>
+            </div>
+          </article>
+          <div class="creditAnalytics">
+            <div class="chartShell">
+              <canvas id="ccDescChart" class="ringCanvas" width="320" height="320"></canvas>
+              <div class="chartCenterNote">
+                <div>
+                  <strong id="ccDescTotal">R$ 0,00</strong>
+                  <span>gastos classificados</span>
+                </div>
+              </div>
+            </div>
+            <div id="ccDescLegend" class="legendList"></div>
+          </div>
+        </article>
+
+        <article class="fcard">
+          <h3 class="subtitle">Pessoas devedoras</h3>
+          <p class="mut">Centralize aqui as cobranças que normalmente cobrem gastos feitos no cartão. Datas futuras ficam visíveis aqui, mas só entram na home no mês do pagamento.</p>
+          <form id="debForm" class="form">
+            <div class="two">
+              <input id="debName" type="text" maxlength="30" placeholder="Nome da pessoa" required />
+              <input id="debAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor devido" required />
+            </div>
+            <div class="two">
+              <input id="debNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
+              <input id="debPayDate" type="date" />
+            </div>
+            <button class="btn" type="submit">Adicionar devedor</button>
+          </form>
+          <div id="debList" class="list debtorList"></div>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <section id="debtsPage" class="page hidden">
+    <section class="card">
+      <div class="line">
+        <div>
+          <h2 class="title">Minhas dívidas</h2>
+          <p class="mut">Área dedicada para parcelas e compromissos que você acompanha manualmente, sem misturar com cartão nem com pessoas devedoras.</p>
+        </div>
+        <span class="chip">🧾 Dívidas</span>
+      </div>
+      <div class="stack">
+        <article class="fcard">
+          <div class="two">
+            <div class="box">
+              <span class="mini">Consolidado das dívidas</span>
+              <strong id="myDebtTotalBox">R$ 0,00</strong>
+              <p class="mut">Somatória de todas as parcelas restantes cadastradas nesta aba.</p>
+            </div>
+            <div class="box">
+              <span class="mini">Saldo devedor</span>
+              <strong id="myDebtMonthBox">R$ 0,00</strong>
+              <p class="mut">Soma das parcelas abertas cadastradas nesta aba.</p>
+            </div>
+          </div>
+        </article>
+        <article class="fcard">
+          <h3 class="subtitle">Controle de pagamentos</h3>
+          <p class="mut">O valor inserido aqui representa a parcela unitária. Toda manutenção desta aba é manual.</p>
+          <form id="myDebtForm" class="form">
+            <div class="two">
+              <input id="myDebtName" type="text" maxlength="30" placeholder="Para quem ou qual dívida" required />
+              <input id="myDebtAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor da parcela" required />
+            </div>
+            <div class="two">
+              <select id="myDebtInstallments">
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+                <option value="6">6x</option>
+                <option value="7">7x</option>
+                <option value="8">8x</option>
+                <option value="9">9x</option>
+                <option value="10">10x</option>
+                <option value="11">11x</option>
+                <option value="12">12x</option>
+              </select>
+              <input id="myDebtNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
+            </div>
+            <div class="two">
+              <input id="myDebtPayDate" type="date" />
+              <div></div>
+            </div>
+            <button class="btn" type="submit">Adicionar dívida</button>
+          </form>
+          <div id="myDebtList" class="list debtorList"></div>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <section id="goalsPage" class="page hidden">
+    <section class="card">
+      <div class="line">
+        <div>
+          <h2 class="title">Objetivos</h2>
+          <p class="mut">Área exclusiva para metas financeiras com progresso, faltante e evolução percentual.</p>
+        </div>
+        <span class="chip">🎯 Metas</span>
+      </div>
+      <div class="stack">
+        <article class="fcard">
+          <h3 class="subtitle">Planejamento dos objetivos</h3>
+          <p class="mut">Campo com 3 interações: depósito, retirada e rendimento (cálculo semanal).</p>
+          <form id="goalForm" class="form">
+            <div class="two">
+              <input id="goalName" type="text" maxlength="36" placeholder="Nome do objetivo" required />
+              <input id="goalTarget" type="number" step="0.01" inputmode="decimal" placeholder="Meta (R$)" required />
+            </div>
+            <button class="btn" type="submit">Adicionar objetivo</button>
+          </form>
+          <div class="two">
+            <div class="line"><span class="mini">Objetivos ativos</span><strong id="goalActiveCount" class="goalTotal">0</strong></div>
+            <div class="line"><span class="mini">Rendimento semana</span><strong id="goalWeekYield" class="goalTotal">R$ 0,00</strong></div>
+          </div>
+          <div id="goalList" class="list"></div>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <section id="statementPage" class="page hidden">
+    <section class="card">
+      <div class="line">
+        <div>
+          <h2 class="title">Extrato</h2>
+          <p class="mut">Central com históricos, movimentações e gráficos dos seus últimos registros.</p>
+        </div>
+        <span class="chip">▤ Extrato</span>
+      </div>
+      <div class="stack">
+        <article class="fcard">
+          <div class="statementHead">
+            <h3 class="subtitle">Conta principal</h3>
+            <button type="button" class="ghost statementEditBtn" data-statement-toggle="wallet">Editar transações</button>
+          </div>
+          <div id="history" class="hist inner"></div>
+        </article>
+        <article class="fcard">
+          <div class="statementHead">
+            <h3 class="subtitle">Cartões alimentação</h3>
+            <button type="button" class="ghost statementEditBtn" data-statement-toggle="food">Editar transações</button>
+          </div>
+          <div id="foodStmt" class="hist inner"></div>
+        </article>
+        <article class="fcard">
+          <div class="statementHead">
+            <h3 class="subtitle">Cartão de crédito</h3>
+            <button type="button" class="ghost statementEditBtn" data-statement-toggle="credit">Editar transações</button>
+          </div>
+          <div id="ccHistory" class="hist inner"></div>
+        </article>
+        <article class="fcard">
+          <div class="statementHead">
+            <h3 class="subtitle">Extrato consolidado (últimos 5 dias)</h3>
+            <button type="button" class="ghost statementEditBtn" data-statement-toggle="five">Editar transações</button>
+          </div>
+          <div id="last5Stmt" class="hist inner"></div>
+        </article>
+        <article class="fcard">
+          <div class="statementHead">
+            <h3 class="subtitle">Movimentações dos objetivos</h3>
+            <button type="button" class="ghost statementEditBtn" data-statement-toggle="goal">Editar transações</button>
+          </div>
+          <div id="goalStmt" class="hist inner"></div>
+        </article>
+        <article class="fcard">
+          <h3 class="subtitle">Histórico da rotina (últimos 5 dias)</h3>
+          <div id="routineLog" class="hist inner"></div>
+        </article>
+        <article class="chartWrap">
+          <h3 class="subtitle">Gráfico de execução (7 dias)</h3>
+          <canvas id="routineChart" class="chartCanvas" width="900" height="300"></canvas>
+        </article>
+        <article class="chartWrap">
+          <h3 class="subtitle">Gráfico financeiro (7 dias)</h3>
+          <canvas id="financeChart" class="chartCanvas" width="900" height="300"></canvas>
+        </article>
+      </div>
+    </section>
+  </section>
+</main>
+<nav class="dock" aria-label="Navegação principal">
+  <button type="button" class="navBtn active" data-page="home" onclick="showPage('home')"><span class="navIcon">⌂</span><span>Início</span></button>
+  <button type="button" class="navBtn" data-page="routine" onclick="showPage('routine')"><span class="navIcon">☑</span><span>Rotina</span></button>
+  <button type="button" class="navBtn" data-page="credit" onclick="showPage('credit')"><span class="navIcon">💳</span><span>Cartão</span></button>
+  <button type="button" class="navBtn" data-page="debts" onclick="showPage('debts')"><span class="navIcon">🧾</span><span>Dívidas</span></button>
+  <button type="button" class="navBtn" data-page="goals" onclick="showPage('goals')"><span class="navIcon">🎯</span><span>Objetivos</span></button>
+  <button type="button" class="navBtn" data-page="statement" onclick="showPage('statement')"><span class="navIcon">▤</span><span>Extrato</span></button>
+</nav>
+
+<script>
+const KEY='rotina_prime_v2', PRIVACY_KEY=`${KEY}:privacy`, XP_H=40;
+const IS_REMOTE_APP=Boolean(window.location && /^https?:$/i.test(window.location.protocol));
+const API_BASE=(function(){
+  if(window.WEEDVERSO_API_BASE) return window.WEEDVERSO_API_BASE;
+  if(IS_REMOTE_APP) return '';
+  return 'http://127.0.0.1:8765';
+})();
+const STORAGE=(function(){
+  try{
+    return IS_REMOTE_APP ? window.sessionStorage : window.localStorage;
+  }catch(err){
+    return window.localStorage;
+  }
+})();
+const DEF={
+  appName:'weedverso',userName:'',xp:0,streak:0,routineDone:false,lastDate:'',
+  habits:[],
+  balances:{conta:{label:'Saldo em Conta',amount:0},vale1:{label:'VA Mercado',amount:0},vale2:{label:'VA Refeição',amount:0}},
+  tx:[],
+  credit:{name:'Cartão weedverso',used:0,reserved:0,tx:[]},
+  debtors:[],
+  myDebts:[],
+  routineLog:[],
+  skills:{estudar:0,treinar:0,trabalhar:0},
+  goals:[],
+  dailyStats:{},
+  focusSession:{habitId:'',secondsLeft:1500,running:false}
+};
+let st=load(); rotateDay();
+let focusTick=null;
+const ui={page:'home',privacy:readPrivacyMode(),balances:{conta:false,vale1:false,vale2:false},credit:false,debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
+const serverSync={initialized:false,available:false,timer:null,poller:null,pushing:false,lastSnapshot:''};
+const publishSync={busy:false,version:0,updatedAt:'',reason:'',links:{preferred:'',local:'',public:''},notifications:{telegram:'idle',discord:'idle'},lastError:''};
+
+const $=s=>document.querySelector(s);
+const el={
+  app:$('#appName'),privacyToggleBtn:$('#privacyToggleBtn'),saveAllBtn:$('#saveAllBtn'),openShareLinkBtn:$('#openShareLinkBtn'),saveStatus:$('#saveStatus'),saveChannels:$('#saveChannels'),logoutBtn:$('#logoutBtn'),homePage:$('#homePage'),routinePage:$('#routinePage'),creditPage:$('#creditPage'),debtsPage:$('#debtsPage'),goalsPage:$('#goalsPage'),statementPage:$('#statementPage'),navBtns:document.querySelectorAll('[data-page]'),
+  focusPill:$('#focusPill'),heroTitle:$('#heroTitle'),heroDesc:$('#heroDesc'),heroRemaining:$('#heroRemaining'),heroRisk:$('#heroRisk'),heroDebt:$('#heroDebt'),quickActions:$('#quickActions'),
+  hForm:$('#habitForm'),hName:$('#hName'),hGoal:$('#hGoal'),hDate:$('#hDate'),focusHabitSelect:$('#focusHabitSelect'),focusMinutesInput:$('#focusMinutesInput'),focusStartBtn:$('#focusStartBtn'),focusPauseBtn:$('#focusPauseBtn'),focusResetBtn:$('#focusResetBtn'),focusClock:$('#focusClock'),focusStatus:$('#focusStatus'),hList:$('#habitList'),mot:$('#motivation'),routineDateInfo:$('#routineDateInfo'),routineLog:$('#routineLog'),routineChart:$('#routineChart'),
+  fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
+  ccEditBtn:$('#ccEditBtn'),ccMeta:$('#ccMeta'),ccMetaSummary:$('#ccMetaSummary'),ccMetaHint:$('#ccMetaHint'),ccName:$('#ccName'),ccValue:$('#ccValue'),ccDesc:$('#ccDesc'),
+  ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),financeChart:$('#financeChart'),
+  debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
+  myDebtForm:$('#myDebtForm'),myDebtName:$('#myDebtName'),myDebtAmount:$('#myDebtAmount'),myDebtInstallments:$('#myDebtInstallments'),myDebtNote:$('#myDebtNote'),myDebtPayDate:$('#myDebtPayDate'),myDebtList:$('#myDebtList'),myDebtTotalBox:$('#myDebtTotalBox'),myDebtMonthBox:$('#myDebtMonthBox'),
+  goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),
+  sPercent:$('#sPercent'),sHabits:$('#sHabits'),sSpent:$('#sSpent'),sCard:$('#sCard'),sDebt:$('#sDebt'),sGoals:$('#sGoals'),sStatus:$('#sStatus'),sMsg:$('#sMsg')
+};
+
+function loginLocation(){
+  return IS_REMOTE_APP ? '/login' : `${API_BASE}/login`;
+}
+async function ensureSessionAccess(){
+  try{
+    const res=await fetch(`${API_BASE}/api/session`,{credentials:'same-origin'});
+    if(!res.ok) return true;
+    const data=await res.json();
+    if(data && data.authEnabled && !data.authenticated){
+      clearStoredState();
+      window.location.replace(loginLocation());
+      return false;
+    }
+  }catch(err){}
+  return true;
+}
+
+boot();
+async function boot(){
+  if(!(await ensureSessionAccess())) return;
+  bind();
+  renderPrivacyToggle();
+  if(!el.hDate.value) el.hDate.value=today();
+  syncPageFromHash();
+  renderAll();
+  await hydrateFromServer();
+  await hydrateShareInfo();
+  serverSync.initialized=true;
+  startServerPolling();
+}
+function bind(){
+  for(var i=0;i<el.navBtns.length;i++){
+    (function(btn){
+      btn.addEventListener('click',function(){showPage(btn.getAttribute('data-page'));});
+    })(el.navBtns[i]);
+  }
+  if(el.logoutBtn){
+    el.logoutBtn.addEventListener('click',logout);
+  }
+  if(el.privacyToggleBtn){
+    el.privacyToggleBtn.addEventListener('click',togglePrivacyMode);
+  }
+  if(el.saveAllBtn){
+    el.saveAllBtn.addEventListener('click',async function(){
+      try{
+        await publishCurrentState('manual',true);
+      }catch(err){}
+    });
+  }
+  if(el.openShareLinkBtn){
+    el.openShareLinkBtn.addEventListener('click',function(){
+      if(!publishSync.links.preferred) return;
+      try{ window.open(publishSync.links.preferred,'_blank','noopener'); }
+      catch(err){ window.location.href=publishSync.links.preferred; }
+    });
+  }
+  el.quickActions.addEventListener('click',e=>{
+    const btn=e.target.closest('[data-quick]'); if(!btn) return;
+    const act=btn.dataset.quick;
+    if(act==='habit'){
+      showPage('routine');
+      scrollNodeIntoView(el.hForm);
+      el.hName.focus();
+    }
+    if(act==='income'){
+      showPage('home');
+      const inp=document.querySelector('[data-acc="conta"] [data-v]');
+      if(inp){scrollNodeIntoView(inp); inp.focus();}
+    }
+    if(act==='card'){
+      showPage('credit');
+      scrollNodeIntoView(el.ccValue);
+      el.ccValue.focus();
+    }
+    if(act==='debtor'){
+      showPage('credit');
+      scrollNodeIntoView(el.debForm);
+      el.debName.focus();
+    }
+    if(act==='goal'){
+      showPage('goals');
+      scrollNodeIntoView(el.goalForm);
+      el.goalName.focus();
+    }
+  });
+
+  el.focusStartBtn.addEventListener('click',startFocusSession);
+  el.focusPauseBtn.addEventListener('click',pauseFocusSession);
+  el.focusResetBtn.addEventListener('click',resetFocusSession);
+  el.focusMinutesInput.addEventListener('change',()=>{
+    if(st.focusSession.running) return;
+    const min=Math.min(180,Math.max(1,parseInt(el.focusMinutesInput.value||'25',10)));
+    st.focusSession.secondsLeft=min*60;
+    save(); renderFocusSession();
+  });
+  el.focusHabitSelect.addEventListener('change',()=>{
+    st.focusSession.habitId=el.focusHabitSelect.value||'';
+    save(); renderFocusSession();
+  });
+
+  el.hForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const n=txt(el.hName.value,60), g=txt(el.hGoal.value,40), d=el.hDate.value||today();
+    if(!n) return;
+    st.habits.push({id:id(),name:n,goal:g,date:d,done:false});
+    pushRoutineLog('add',{name:`${n}${d?` · ${dateBr(d)}`:''}`});
+    el.hName.value=''; el.hGoal.value=''; el.hDate.value=today(); save(true); renderHabits(); refreshGame();
+  });
+
+  el.hList.addEventListener('click',e=>{
+    const c=e.target.closest('[data-id]'); if(!c) return;
+    const h=st.habits.find(x=>x.id===c.dataset.id); if(!h) return;
+    if(e.target.matches('[data-act="toggle"]')){
+      h.done=!h.done; st.xp=Math.max(0,st.xp+(h.done?XP_H:-XP_H));
+      if(h.done){
+        h.lastDoneAt=new Date().toISOString();
+        h.skillTag=detectSkill(h.name)||'';
+        adjustSkillXp(h.skillTag,25);
+        pushRoutineLog('done',h);
+      } else {
+        adjustSkillXp(h.skillTag||detectSkill(h.name),-25);
+        h.skillTag='';
+        pushRoutineLog('undo',h);
+      }
+      save(true); renderHabits(); refreshGame();
+    }
+    if(e.target.matches('[data-act="del"]')){
+      if(h.done) st.xp=Math.max(0,st.xp-XP_H);
+      if(h.done) adjustSkillXp(h.skillTag||detectSkill(h.name),-25);
+      pushRoutineLog('remove',h);
+      st.habits=st.habits.filter(x=>x.id!==h.id);
+      save(true); renderHabits(); refreshGame();
+    }
+  });
+
+  el.hList.addEventListener('input',e=>{
+    const c=e.target.closest('[data-id]'); if(!c) return;
+    const h=st.habits.find(x=>x.id===c.dataset.id); if(!h) return;
+    if(e.target.matches('[data-f="name"]')) h.name=txt(e.target.value,60);
+    if(e.target.matches('[data-f="goal"]')) h.goal=txt(e.target.value,40);
+    if(e.target.matches('[data-f="date"]')) h.date=e.target.value||today();
+    save();
+  });
+
+  el.fGrid.addEventListener('click',e=>{
+    const card=e.target.closest('[data-acc]'); if(!card) return;
+    if(e.target.matches('[data-act="edit-meta"]')){
+      const acc=card.dataset.acc;
+      ui.balances[acc]=!ui.balances[acc];
+      renderFinance();
+      return;
+    }
+    const acc=card.dataset.acc;
+    const inp=card.querySelector('[data-v]');
+    const noteInp=card.querySelector('[data-note]');
+    if(!inp) return;
+    const raw=parseFloat((inp.value||'').replace(',','.')); const val=Number.isFinite(raw)?Math.abs(raw):0;
+    const note=noteInp?txt(noteInp.value,42):'';
+    if(e.target.matches('[data-act="in"]')){ if(val<=0)return; move(acc,'in',val,note); inp.value=''; if(noteInp) noteInp.value=''; }
+    if(e.target.matches('[data-act="out"]')){ if(val<=0)return; move(acc,'out',val,note); inp.value=''; if(noteInp) noteInp.value=''; }
+    if(e.target.matches('[data-act="set"]')){
+      if(!Number.isFinite(raw)) return;
+      const prev=st.balances[acc].amount; st.balances[acc].amount=raw;
+      const meta=categoryMeta(note,'Ajuste manual');
+      st.tx.unshift({id:id(),account:acc,type:'set',value:raw,prev,note,category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
+      save(true); renderFinance(); renderSummary(); flash(document.querySelector(`[data-acc="${acc}"] [data-bal]`),raw>=prev?'in':'out'); inp.value=''; if(noteInp) noteInp.value='';
+    }
+  });
+
+  el.fGrid.addEventListener('input',e=>{
+    const card=e.target.closest('[data-acc]'); if(!card) return;
+    const acc=card.dataset.acc; if(!st.balances[acc]) return;
+    if(e.target.matches('[data-f="label"]')){ st.balances[acc].label=txt(e.target.value,26)||defLabel(acc); save(); renderHistory(); renderFoodStatement(); renderSummary(); }
+  });
+
+  el.ccEditBtn.addEventListener('click',()=>{
+    ui.credit=!ui.credit;
+    renderCredit();
+  });
+  el.ccName.addEventListener('input',e=>{
+    st.credit.name=txt(e.target.value,30)||'Cartão weedverso';
+    save(true); renderCredit(); renderSummary();
+  });
+  el.ccExpense.addEventListener('click',()=>creditMove('expense'));
+  el.ccPay.addEventListener('click',()=>creditMove('payment'));
+  el.ccReserveIn.addEventListener('click',()=>creditReserveMove('in'));
+  el.ccReserveOut.addEventListener('click',()=>creditReserveMove('out'));
+  el.ccClear.addEventListener('click',()=>{
+    st.credit.used=0; st.credit.tx=[]; save(true); renderCredit(); renderSummary();
+  });
+
+  el.debForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=txt(el.debName.value,30);
+    const amount=parseFloat((el.debAmount.value||'').replace(',','.'));
+    const note=txt(el.debNote.value,50);
+    const payDate=el.debPayDate.value||'';
+    if(!name||!Number.isFinite(amount)||amount<=0) return;
+    st.debtors.unshift({id:id(),name,amount,note,payDate,paid:false,paidAt:'',at:new Date().toISOString()});
+    st.debtors=st.debtors.slice(0,100);
+    el.debName.value=''; el.debAmount.value=''; el.debNote.value=''; el.debPayDate.value='';
+    save(true); renderDebtors(); renderSummary();
+  });
+
+  el.debList.addEventListener('click',e=>{
+    const row=e.target.closest('[data-deb]'); if(!row) return;
+    const d=st.debtors.find(x=>x.id===row.dataset.deb); if(!d) return;
+    if(e.target.matches('[data-act="deb-edit"]')){
+      ui.debtors[d.id]=!ui.debtors[d.id];
+      renderDebtors();
+      return;
+    }
+    if(e.target.matches('[data-act="deb-del"]')){
+      st.debtors=st.debtors.filter(x=>x.id!==d.id); delete ui.debtors[d.id]; save(true); renderDebtors(); renderSummary();
+    }
+    if(e.target.matches('[data-act="deb-toggle"]')){
+      d.paid=!d.paid;
+      if(d.paid){
+        const nowIso=new Date().toISOString();
+        d.paidAt=nowIso;
+        if(!d.payDate) d.payDate=dateKey(nowIso);
+      } else {
+        d.paidAt='';
+      }
+      save(true); renderDebtors(); renderSummary();
+    }
+    if(e.target.matches('[data-act="deb-receive"]')){
+      if(d.paid) return;
+      const nowIso=new Date().toISOString();
+      d.paid=true; d.paidAt=nowIso; if(!d.payDate) d.payDate=dateKey(nowIso);
+      st.balances.conta.amount += d.amount;
+      const note=`Recebido de ${d.name}`;
+      const meta=categoryMeta(note,'Recebimento');
+      st.tx.unshift({id:id(),account:'conta',type:'in',value:d.amount,note,category:meta.label,categoryKey:meta.key,debtorId:d.id,at:nowIso});
+      save(true); renderDebtors(); renderFinance(); renderSummary(); flash(document.querySelector('[data-acc="conta"] [data-bal]'),'in');
+    }
+  });
+
+  el.debList.addEventListener('input',e=>{
+    const row=e.target.closest('[data-deb]'); if(!row) return;
+    const d=st.debtors.find(x=>x.id===row.dataset.deb); if(!d) return;
+    if(e.target.matches('[data-f="deb-name"]')) d.name=txt(e.target.value,30);
+    if(e.target.matches('[data-f="deb-note"]')) d.note=txt(e.target.value,50);
+    if(e.target.matches('[data-f="deb-amount"]')){
+      const v=parseFloat((e.target.value||'').replace(',','.'));
+      if(Number.isFinite(v)&&v>=0) d.amount=v;
+    }
+    if(e.target.matches('[data-f="deb-paydate"]')) d.payDate=e.target.value||'';
+    save(); renderSummary();
+  });
+
+  el.myDebtForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=txt(el.myDebtName.value,30);
+    const installmentValue=parseFloat((el.myDebtAmount.value||'').replace(',','.'));
+    const installments=Math.min(12,Math.max(1,parseInt(el.myDebtInstallments.value||'1',10)||1));
+    const note=txt(el.myDebtNote.value,50);
+    const payDate=el.myDebtPayDate.value||'';
+    if(!name||!Number.isFinite(installmentValue)||installmentValue<=0) return;
+    st.myDebts.unshift({id:id(),name,amount:installmentValue,installmentValue,installments,installmentsPaid:0,note,payDate,paid:false,paidAt:'',at:new Date().toISOString()});
+    st.myDebts=st.myDebts.slice(0,100);
+    el.myDebtName.value=''; el.myDebtAmount.value=''; el.myDebtInstallments.value='1'; el.myDebtNote.value=''; el.myDebtPayDate.value='';
+    save(true); renderMyDebts();
+  });
+
+  el.myDebtList.addEventListener('click',e=>{
+    const row=e.target.closest('[data-mydeb]'); if(!row) return;
+    const d=st.myDebts.find(x=>x.id===row.dataset.mydeb); if(!d) return;
+    if(e.target.matches('[data-act="mydeb-edit"]')){
+      ui.myDebts[d.id]=!ui.myDebts[d.id];
+      renderMyDebts();
+      return;
+    }
+    if(e.target.matches('[data-act="mydeb-del"]')){
+      st.myDebts=st.myDebts.filter(x=>x.id!==d.id); delete ui.myDebts[d.id]; save(true); renderMyDebts();
+      return;
+    }
+    if(e.target.matches('[data-act="mydeb-toggle"]')){
+      d.paid=!d.paid;
+      if(d.paid){
+        const nowIso=new Date().toISOString();
+        d.paidAt=nowIso;
+        d.installmentsPaid=debtInstallments(d);
+        if(!d.payDate) d.payDate=dateKey(nowIso);
+      } else {
+        d.paidAt='';
+        d.installmentsPaid=0;
+      }
+      save(true); renderMyDebts();
+      return;
+    }
+    if(e.target.matches('[data-act="mydeb-pay"]')){
+      if(d.paid) return;
+      const nextInstallment=debtPaidInstallments(d)+1;
+      const installmentValue=debtInstallmentValue(d);
+      if(installmentValue<=0) return;
+      const nowIso=new Date().toISOString();
+      d.installmentsPaid=nextInstallment;
+      d.paid=d.installmentsPaid>=debtInstallments(d);
+      d.paidAt=d.paid?nowIso:'';
+      if(!d.payDate) d.payDate=dateKey(nowIso);
+      save(true); renderMyDebts();
+    }
+  });
+
+  el.myDebtList.addEventListener('input',e=>{
+    const row=e.target.closest('[data-mydeb]'); if(!row) return;
+    const d=st.myDebts.find(x=>x.id===row.dataset.mydeb); if(!d) return;
+    if(e.target.matches('[data-f="mydeb-name"]')) d.name=txt(e.target.value,30);
+    if(e.target.matches('[data-f="mydeb-note"]')) d.note=txt(e.target.value,50);
+    if(e.target.matches('[data-f="mydeb-amount"]')){
+      const v=parseFloat((e.target.value||'').replace(',','.'));
+      if(Number.isFinite(v)&&v>=0){ d.amount=v; d.installmentValue=v; }
+    }
+    if(e.target.matches('[data-f="mydeb-installments"]')){
+      d.installments=Math.min(12,Math.max(1,parseInt(e.target.value||'1',10)||1));
+      d.installmentsPaid=Math.min(d.installments,debtPaidInstallments(d));
+      d.paid=d.installmentsPaid>=d.installments;
+      if(!d.paid) d.paidAt='';
+    }
+    if(e.target.matches('[data-f="mydeb-paydate"]')) d.payDate=e.target.value||'';
+    save();
+    renderMyDebts();
+  });
+
+  el.goalForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=txt(el.goalName.value,36);
+    const target=parseFloat((el.goalTarget.value||'').replace(',','.'));
+    if(!name||!Number.isFinite(target)||target<=0) return;
+    st.goals.unshift({id:id(),name,target,saved:0,tx:[]});
+    st.goals=st.goals.slice(0,60);
+    el.goalName.value=''; el.goalTarget.value='';
+    save(true); renderGoals(); renderGoalStatement(); renderSummary();
+  });
+
+  el.goalList.addEventListener('click',e=>{
+    const card=e.target.closest('[data-goal-id]'); if(!card) return;
+    const goal=st.goals.find(g=>g.id===card.dataset.goalId); if(!goal) return;
+    const input=card.querySelector('[data-goal-value]');
+    const inputValue=input ? input.value : '';
+    const raw=parseFloat((inputValue||'').replace(',','.'));
+    const value=Number.isFinite(raw)?Math.abs(raw):0;
+
+    if(e.target.matches('[data-act="goal-edit"]')){
+      ui.goals[goal.id]=!ui.goals[goal.id];
+      renderGoals();
+      return;
+    }
+
+    if(e.target.matches('[data-act="goal-remove"]')){
+      st.goals=st.goals.filter(g=>g.id!==goal.id);
+      delete ui.goals[goal.id];
+      save(true); renderGoals(); renderGoalStatement(); renderSummary();
+      return;
+    }
+
+    if(value<=0) return;
+    if(e.target.matches('[data-act="goal-deposit"]')) goalMove(goal,'deposit',value);
+    if(e.target.matches('[data-act="goal-withdraw"]')) goalMove(goal,'withdraw',value);
+    if(e.target.matches('[data-act="goal-yield"]')) goalMove(goal,'yield',value);
+
+    if(input) input.value='';
+  });
+
+  el.goalList.addEventListener('input',e=>{
+    const card=e.target.closest('[data-goal-id]'); if(!card) return;
+    const goal=st.goals.find(g=>g.id===card.dataset.goalId); if(!goal) return;
+    if(e.target.matches('[data-f="goal-name"]')) goal.name=txt(e.target.value,36);
+    if(e.target.matches('[data-f="goal-target"]')){
+      const t=parseFloat((e.target.value||'').replace(',','.'));
+      if(Number.isFinite(t)&&t>0) goal.target=t;
+    }
+    save(); renderGoalStatement(); renderSummary();
+  });
+
+  el.statementPage.addEventListener('click',e=>{
+    const toggle=e.target.closest('[data-statement-toggle]');
+    if(toggle){
+      const section=toggle.getAttribute('data-statement-toggle');
+      if(!Object.prototype.hasOwnProperty.call(ui.statement,section)) return;
+      ui.statement[section]=!ui.statement[section];
+      if(!ui.statement[section] && ui.statementEditor && ui.statementEditor.section===section){
+        ui.statementEditor=null;
+      }
+      renderAll();
+      return;
+    }
+
+    const editBtn=e.target.closest('[data-tx-edit]');
+    if(editBtn){
+      ui.statementEditor={
+        section:editBtn.getAttribute('data-statement-section')||'',
+        source:editBtn.getAttribute('data-source')||'',
+        txId:editBtn.getAttribute('data-tx-edit')||'',
+        goalId:editBtn.getAttribute('data-goal-id')||''
+      };
+      renderAll();
+      return;
+    }
+
+    const cancelBtn=e.target.closest('[data-tx-cancel]');
+    if(cancelBtn){
+      ui.statementEditor=null;
+      renderAll();
+      return;
+    }
+
+    const saveBtn=e.target.closest('[data-tx-save]');
+    if(saveBtn){
+      saveStatementEdit(
+        saveBtn.getAttribute('data-statement-section')||'',
+        saveBtn.getAttribute('data-source')||'',
+        saveBtn.getAttribute('data-tx-save')||'',
+        saveBtn.getAttribute('data-goal-id')||'',
+        saveBtn
+      );
+      return;
+    }
+
+    const removeBtn=e.target.closest('[data-tx-del]');
+    if(!removeBtn) return;
+    removeStatementTransaction(
+      removeBtn.getAttribute('data-source'),
+      removeBtn.getAttribute('data-tx-del'),
+      removeBtn.getAttribute('data-goal-id') || ''
+    );
+  });
+}
+
+function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();}
+function showPage(page){
+  ui.page=['home','routine','credit','debts','goals','statement'].includes(page)?page:'home';
+  renderPage();
+  syncHash(ui.page);
+  scrollTopSafe();
+}
+function renderPage(){
+  setVisible(el.homePage, ui.page==='home');
+  setVisible(el.routinePage, ui.page==='routine');
+  setVisible(el.creditPage, ui.page==='credit');
+  setVisible(el.debtsPage, ui.page==='debts');
+  setVisible(el.goalsPage, ui.page==='goals');
+  setVisible(el.statementPage, ui.page==='statement');
+  for(var i=0;i<el.navBtns.length;i++){
+    setActive(el.navBtns[i], el.navBtns[i].getAttribute('data-page')===ui.page);
+  }
+}
+function renderProfile(){
+  el.app.textContent=st.appName;
+}
+
+function renderFocusHabitOptions(){
+  const opts=st.habits.map(h=>`<option value="${h.id}">${safe(h.name)}</option>`).join('');
+  el.focusHabitSelect.innerHTML=opts||'<option value="">Sem hábitos cadastrados</option>';
+  if(st.focusSession.habitId && st.habits.some(h=>h.id===st.focusSession.habitId)){
+    el.focusHabitSelect.value=st.focusSession.habitId;
+  } else {
+    st.focusSession.habitId=st.habits[0] ? st.habits[0].id : '';
+    el.focusHabitSelect.value=st.focusSession.habitId;
+  }
+}
+
+function renderFocusSession(){
+  st.focusSession=Object.assign({},DEF.focusSession,st.focusSession||{});
+  const sec=Math.max(0,parseInt(st.focusSession.secondsLeft||0,10));
+  const mm=String(Math.floor(sec/60)).padStart(2,'0');
+  const ss=String(sec%60).padStart(2,'0');
+  el.focusClock.textContent=`${mm}:${ss}`;
+  const habit=st.habits.find(h=>h.id===st.focusSession.habitId);
+  const name=habit?habit.name:'hábito';
+  el.focusStatus.textContent=st.focusSession.running?`Sessão ativa: ${name}`:`Pronto para focar em: ${name}`;
+}
+
+function startFocusSession(){
+  if(!st.habits.length){el.focusStatus.textContent='Cadastre um hábito antes de iniciar sessão.'; return;}
+  const min=Math.min(180,Math.max(1,parseInt(el.focusMinutesInput.value||'25',10)));
+  if(!st.focusSession.secondsLeft||st.focusSession.secondsLeft<=0||!st.focusSession.running){
+    st.focusSession.secondsLeft=min*60;
+  }
+  st.focusSession.habitId=el.focusHabitSelect.value||st.habits[0].id;
+  st.focusSession.running=true;
+  if(focusTick) clearInterval(focusTick);
+  focusTick=setInterval(tickFocusSession,1000);
+  save(); renderFocusSession();
+}
+
+function pauseFocusSession(){
+  st.focusSession.running=false;
+  if(focusTick){clearInterval(focusTick); focusTick=null;}
+  save(); renderFocusSession();
+}
+
+function resetFocusSession(){
+  if(focusTick){clearInterval(focusTick); focusTick=null;}
+  const min=Math.min(180,Math.max(1,parseInt(el.focusMinutesInput.value||'25',10)));
+  st.focusSession.running=false;
+  st.focusSession.secondsLeft=min*60;
+  save(); renderFocusSession();
+}
+
+function tickFocusSession(){
+  if(!st.focusSession.running) return;
+  st.focusSession.secondsLeft=Math.max(0,(st.focusSession.secondsLeft||0)-1);
+  if(st.focusSession.secondsLeft<=0){
+    completeFocusSession();
+    return;
+  }
+  renderFocusSession();
+}
+
+function completeFocusSession(){
+  pauseFocusSession();
+  const habit=st.habits.find(h=>h.id===st.focusSession.habitId);
+  if(habit){
+    st.xp=Math.max(0,st.xp+10);
+    const skill=habit.skillTag||detectSkill(habit.name);
+    adjustSkillXp(skill,10);
+    pushRoutineLog('done',{name:`Sprint: ${habit.name}`});
+  }
+  const min=Math.min(180,Math.max(1,parseInt(el.focusMinutesInput.value||'25',10)));
+  st.focusSession.secondsLeft=min*60;
+  save(); refreshGame();
+  el.focusStatus.textContent='Sprint concluído. XP e skill adicionados.';
+}
+
+function renderCharts(){
+  drawRoutineChart();
+  drawFinanceChart();
+}
+
+function drawRoutineChart(){
+  if(!el.routineChart) return;
+  const ctx=el.routineChart.getContext('2d');
+  const days=last7DayKeys();
+  const values=days.map(k=>{
+    const stat = st.dailyStats && st.dailyStats[k] ? st.dailyStats[k] : {};
+    return Math.max(0,Math.min(100,Number(stat.percent)||0));
+  });
+  drawBarChart(ctx,days.map(k=>k.slice(8,10)+'/'+k.slice(5,7)),values,100,'#39ff8f');
+}
+
+function drawFinanceChart(){
+  if(!el.financeChart) return;
+  const ctx=el.financeChart.getContext('2d');
+  const days=last7DayKeys();
+  const net=days.map(k=>dailyNetConta(k));
+  const card=days.map(k=>dailyCardSpend(k));
+  drawDualLineChart(ctx,days.map(k=>k.slice(8,10)+'/'+k.slice(5,7)),net,card);
+}
+
+function drawBarChart(ctx,labels,values,maxValue,color){
+  const w=ctx.canvas.width,h=ctx.canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='rgba(255,255,255,.75)';
+  ctx.font='12px Sora';
+  const left=44,right=18,top=20,bottom=34,gw=w-left-right,gh=h-top-bottom;
+  ctx.strokeStyle='rgba(255,255,255,.14)';
+  for(let i=0;i<=4;i++){ const y=top+(gh*i/4); ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(left+gw,y); ctx.stroke(); }
+  const bw=gw/Math.max(1,labels.length);
+  labels.forEach((lb,i)=>{
+    const v=values[i]||0;
+    const bh=(v/maxValue)*gh;
+    const x=left+i*bw+bw*0.18;
+    const y=top+gh-bh;
+    ctx.fillStyle=color;
+    ctx.fillRect(x,y,bw*0.64,bh);
+    ctx.fillStyle='rgba(255,255,255,.78)';
+    ctx.fillText(lb,x-2,top+gh+16);
+  });
+}
+
+function drawDualLineChart(ctx,labels,aVals,bVals){
+  const w=ctx.canvas.width,h=ctx.canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const left=44,right=18,top=20,bottom=34,gw=w-left-right,gh=h-top-bottom;
+  const all=aVals.concat(bVals,[0]);
+  const min=Math.min(...all), max=Math.max(...all,1), span=(max-min)||1;
+  ctx.strokeStyle='rgba(255,255,255,.14)';
+  for(let i=0;i<=4;i++){ const y=top+(gh*i/4); ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(left+gw,y); ctx.stroke(); }
+
+  const drawSeries=(vals,color)=>{
+    ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath();
+    vals.forEach((v,i)=>{
+      const x=left+(gw*(i/(vals.length-1||1)));
+      const y=top+gh-((v-min)/span)*gh;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  };
+  drawSeries(aVals,'#39ff8f');
+  drawSeries(bVals,'#ffb341');
+  ctx.fillStyle='rgba(255,255,255,.78)';
+  ctx.font='12px Sora';
+  labels.forEach((lb,i)=>{
+    const x=left+(gw*(i/(labels.length-1||1)));
+    ctx.fillText(lb,x-14,top+gh+16);
+  });
+}
+
+function renderCreditDescChart(){
+  const data=creditExpenseBreakdown();
+  if(el.ccDescTotal) el.ccDescTotal.textContent=money(data.reduce((sum,item)=>sum+item.value,0));
+  if(!el.ccDescLegend) return;
+  if(!data.length){
+    el.ccDescLegend.innerHTML='<p class="empty">Sem gastos com descrição suficiente para classificar.</p>';
+    clearCanvas(el.ccDescChart);
+    return;
+  }
+  drawDoughnutChart(el.ccDescChart,data);
+  el.ccDescLegend.innerHTML=data.map(item=>`
+    <article class="legendItem">
+      <span class="legendSwatch" style="color:${item.color};background:${item.color}"></span>
+      <div class="legendText">
+        <strong>${safe(item.label)}</strong>
+        <span>${item.pct}% do total</span>
+      </div>
+      <span class="legendValue">${money(item.value)}</span>
+    </article>
+  `).join('');
+}
+
+function creditExpenseBreakdown(){
+  return buildCategoryBreakdown(
+    (st.credit.tx||[]).filter(t=>t.type==='expense').map(t=>({value:Number(t.value)||0,label:t.category||t.desc,key:t.categoryKey})),
+    ['#39ff8f','#2df5b4','#26c8ff','#2f89ff','#ffd447','#ff9a3c','#ff6f4e','#ff5f70','#d96cff','#8f7cff','#5cf2ff','#9dff5c'],
+    'Sem categoria'
+  );
+}
+
+function renderAccountFlowChart(){
+  const data=accountOutflowBreakdown();
+  if(el.accountFlowTotal) el.accountFlowTotal.textContent=money(data.reduce((sum,item)=>sum+item.value,0));
+  if(!el.accountFlowLegend) return;
+  if(!data.length){
+    el.accountFlowLegend.innerHTML='<p class="empty">Sem saídas categorizadas na conta ainda.</p>';
+    clearCanvas(el.accountFlowChart);
+    return;
+  }
+  drawAccountHudChart(el.accountFlowChart,data);
+  el.accountFlowLegend.innerHTML=data.map(item=>`
+    <article class="legendItem accountLegend">
+      <span class="legendSwatch" style="color:${item.color};background:${item.color}"></span>
+      <div class="legendText">
+        <strong>${safe(item.label)}</strong>
+        <span>Setor ${String(item.rank).padStart(2,'0')} · ${item.pct}% das saídas</span>
+      </div>
+      <span class="legendValue">${money(item.value)}</span>
+    </article>
+  `).join('');
+}
+
+function accountOutflowBreakdown(){
+  const rows=[];
+  (st.tx||[]).forEach(t=>{
+    if(t.account!=='conta') return;
+    if(t.type==='out'){
+      rows.push({value:Number(t.value)||0,label:t.category||t.note,key:t.categoryKey});
+      return;
+    }
+    if(t.type==='set'){
+      const diff=(Number(t.value)||0)-(Number(t.prev)||0);
+      if(diff<0) rows.push({value:Math.abs(diff),label:t.category||t.note,key:t.categoryKey});
+    }
+  });
+  return buildCategoryBreakdown(
+    rows,
+    ['#26c8ff','#4de7ff','#39ff8f','#2f89ff','#7bc0ff','#ffd447','#ff9a3c','#ff6f4e','#d96cff','#8f7cff','#5cf2ff','#9dff5c'],
+    'Sem categoria'
+  );
+}
+
+function buildCategoryBreakdown(items,colors,fallback){
+  const grouped={};
+  (items||[]).forEach(item=>{
+    const value=Math.abs(Number(item && item.value)||0);
+    if(value<=0) return;
+    const meta=categoryMeta(item && (item.key||item.label),fallback);
+    const key=item && item.key ? normalizeCategoryKey(item.key) : meta.key;
+    if(!grouped[key]) grouped[key]={label:item && item.label ? categoryMeta(item.label,fallback).label : meta.label,value:0};
+    grouped[key].value += value;
+  });
+  const total=Object.values(grouped).reduce((sum,item)=>sum+item.value,0);
+  return Object.values(grouped)
+    .sort((a,b)=>b.value-a.value)
+    .map((item,index)=>Object.assign(item,{color:colors[index%colors.length],pct:total?Math.round((item.value/total)*100):0,rank:index+1}));
+}
+
+function drawDoughnutChart(canvas,data){
+  if(!canvas||!canvas.getContext) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=Math.min(w,h)*0.38,inner=r*0.56;
+  ctx.clearRect(0,0,w,h);
+  const total=data.reduce((sum,item)=>sum+item.value,0);
+  let start=-Math.PI/2;
+  data.forEach(item=>{
+    const angle=total?(item.value/total)*Math.PI*2:0;
+    const end=start+angle;
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,start,end);
+    ctx.arc(cx,cy,inner,end,start,true);
+    ctx.closePath();
+    ctx.fillStyle=item.color;
+    ctx.shadowBlur=16;
+    ctx.shadowColor=item.color;
+    ctx.fill();
+    start=end;
+  });
+  ctx.shadowBlur=0;
+  ctx.beginPath();
+  ctx.arc(cx,cy,inner-8,0,Math.PI*2);
+  ctx.fillStyle='rgba(6,10,8,.96)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx,cy,r+8,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.06)';
+  ctx.lineWidth=1;
+  ctx.stroke();
+}
+
+function drawAccountHudChart(canvas,data){
+  if(!canvas||!canvas.getContext) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2;
+  const outer=Math.min(w,h)*0.385;
+  const inner=outer*0.56;
+  const core=inner*0.76;
+  const total=data.reduce((sum,item)=>sum+item.value,0);
+  let start=-Math.PI/2;
+
+  ctx.clearRect(0,0,w,h);
+
+  const bg=ctx.createRadialGradient(cx,cy,12,cx,cy,outer+26);
+  bg.addColorStop(0,'rgba(58,214,255,.14)');
+  bg.addColorStop(.42,'rgba(20,38,64,.16)');
+  bg.addColorStop(1,'rgba(7,11,18,0)');
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle='rgba(95,176,214,.12)';
+  ctx.lineWidth=1;
+  [outer+16,outer*0.8,outer*0.58].forEach(radius=>{
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius,0,Math.PI*2);
+    ctx.stroke();
+  });
+
+  ctx.beginPath();
+  ctx.moveTo(cx-(outer+20),cy);
+  ctx.lineTo(cx+(outer+20),cy);
+  ctx.moveTo(cx,cy-(outer+20));
+  ctx.lineTo(cx,cy+(outer+20));
+  ctx.strokeStyle='rgba(95,176,214,.08)';
+  ctx.stroke();
+
+  for(let i=0;i<48;i++){
+    const angle=(-Math.PI/2)+(Math.PI*2*i/48);
+    const outerTick=outer+14;
+    const innerTick=i%6===0?outer+2:outer+7;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(angle)*innerTick,cy+Math.sin(angle)*innerTick);
+    ctx.lineTo(cx+Math.cos(angle)*outerTick,cy+Math.sin(angle)*outerTick);
+    ctx.strokeStyle=i%6===0?'rgba(120,228,255,.28)':'rgba(120,228,255,.1)';
+    ctx.stroke();
+  }
+
+  data.forEach(item=>{
+    const angle=total?(item.value/total)*Math.PI*2:0;
+    const end=start+angle;
+    const gap=0.018;
+    const segmentStart=start+gap;
+    const segmentEnd=end-gap;
+    if(segmentEnd>segmentStart){
+      ctx.beginPath();
+      ctx.arc(cx,cy,outer,segmentStart,segmentEnd);
+      ctx.arc(cx,cy,inner,segmentEnd,segmentStart,true);
+      ctx.closePath();
+      ctx.fillStyle=item.color;
+      ctx.shadowBlur=18;
+      ctx.shadowColor=item.color;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx,cy,outer+4,segmentStart,segmentEnd);
+      ctx.strokeStyle='rgba(255,255,255,.18)';
+      ctx.lineWidth=1.2;
+      ctx.stroke();
+    }
+    start=end;
+  });
+
+  ctx.shadowBlur=0;
+  const coreGlow=ctx.createRadialGradient(cx,cy,6,cx,cy,core+14);
+  coreGlow.addColorStop(0,'rgba(125,243,255,.26)');
+  coreGlow.addColorStop(.6,'rgba(25,42,65,.92)');
+  coreGlow.addColorStop(1,'rgba(6,10,18,.98)');
+  ctx.beginPath();
+  ctx.arc(cx,cy,core,0,Math.PI*2);
+  ctx.fillStyle=coreGlow;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,core+10,0,Math.PI*2);
+  ctx.strokeStyle='rgba(136,232,255,.24)';
+  ctx.lineWidth=1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,core-18,0,Math.PI*2);
+  ctx.strokeStyle='rgba(136,232,255,.14)';
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(cx-core*0.58,cy);
+  ctx.lineTo(cx+core*0.58,cy);
+  ctx.moveTo(cx,cy-core*0.58);
+  ctx.lineTo(cx,cy+core*0.58);
+  ctx.strokeStyle='rgba(136,232,255,.12)';
+  ctx.stroke();
+}
+
+function clearCanvas(canvas){
+  if(!canvas||!canvas.getContext) return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function last7DayKeys(){
+  const out=[]; const d=new Date(); d.setHours(0,0,0,0);
+  for(let i=6;i>=0;i--){ const n=new Date(d); n.setDate(d.getDate()-i); out.push(dateKey(n)); }
+  return out;
+}
+
+function dailyNetConta(dayKey){
+  return (st.tx||[])
+    .filter(t=>t.account==='conta'&&dateKey(t.at)===dayKey)
+    .reduce((sum,t)=>{
+      if(t.type==='set') return sum+((Number(t.value)||0)-(Number(t.prev)||0));
+      return sum+(t.type==='in'?(Number(t.value)||0):-(Number(t.value)||0));
+    },0);
+}
+
+function dailyCardSpend(dayKey){
+  return (st.credit.tx||[])
+    .filter(t=>t.type==='expense'&&dateKey(t.at)===dayKey)
+    .reduce((sum,t)=>sum+(Number(t.value)||0),0);
+}
+
+function pruneDailyStats(maxDays){
+  const cutoff=lastDaysStart(maxDays);
+  const keep={};
+  Object.entries(st.dailyStats||{}).forEach(([k,v])=>{ if(parse(k)>=cutoff) keep[k]=v; });
+  st.dailyStats=keep;
+}
+
+// Funções de rotina/hábitos
+function renderHabits(){
+  if(!st.habits.length){el.hList.innerHTML='<p class="empty">Nenhum hábito ainda. Adicione o primeiro para começar.</p>'; renderFocusHabitOptions(); renderFocusSession(); renderRoutineTimeline(); return;}
+  el.hList.innerHTML=st.habits.map(h=>`
+    <article class="habit ${h.done?'done':''}" data-id="${h.id}">
+      <div class="r1">
+        <input data-f="name" type="text" value="${esc(h.name)}" placeholder="Nome do hábito" />
+        <button class="ck ${h.done?'done':''}" type="button" data-act="toggle">${h.done?'✓':'○'}</button>
+      </div>
+      <div class="two">
+        <input data-f="goal" type="text" value="${esc(h.goal||'')}" placeholder="Meta (min, quantidade...)" />
+        <input data-f="date" type="date" value="${h.date||today()}" />
+      </div>
+      <div class="line">
+        <span class="mut">${h.done?'Concluído':'Pendente'}${h.lastDoneAt?` · Última: ${shortDate(h.lastDoneAt)}`:''}${h.date?` · Data: ${dateBr(h.date)}`:''}</span>
+        <button class="danger" type="button" data-act="del">Remover</button>
+      </div>
+    </article>`).join('');
+  renderFocusHabitOptions();
+  renderFocusSession();
+  renderRoutineTimeline();
+}
+
+function renderRoutineTimeline(){
+  el.routineDateInfo.textContent=`Hoje: ${fullDate(new Date())} · cada hábito pode ser registrado com a própria data.`;
+  const start=lastDaysStart(5);
+  const logs=(st.routineLog||[]).filter(r=>new Date(r.at)>=start).sort((a,b)=>new Date(b.at)-new Date(a.at)).slice(0,16);
+  if(!logs.length){el.routineLog.innerHTML='<p class="empty">Sem eventos de rotina nos últimos 5 dias.</p>';return;}
+  el.routineLog.innerHTML=logs.map(r=>{
+    const action=r.action==='done'?'Concluiu':r.action==='undo'?'Desmarcou':r.action==='add'?'Criou':'Removeu';
+    return `<p class="h"><span>${action}: ${safe(r.habit||'Hábito')}</span><span>${shortDate(r.at)}</span></p>`;
+  }).join('');
+}
+
+function pushRoutineLog(action,habit){
+  st.routineLog=Array.isArray(st.routineLog)?st.routineLog:[];
+  st.routineLog.unshift({id:id(),action,habit:txt(habit && habit.name ? habit.name : 'Hábito',60),at:new Date().toISOString()});
+  st.routineLog=st.routineLog.slice(0,240);
+}
+
+function refreshGame(){
+  const total=st.habits.length, done=st.habits.filter(h=>h.done).length, p=total?Math.round(done/total*100):0;
+  st.dailyStats=st.dailyStats||{};
+  st.dailyStats[today()]={done,total,percent:p};
+  pruneDailyStats(90);
+  streakByDay(total,done); motivation(p,done,total); renderSummary();
+}
+
+// Funções de atualização de XP, nível e streak
+function streakByDay(total,done){
+  if(total>0&&done===total&&!st.routineDone){st.routineDone=true;st.streak+=1;}
+  if(done<total&&st.routineDone){st.routineDone=false;st.streak=Math.max(0,st.streak-1);}
+  save();
+}
+function motivation(p,done,total){
+  const msg=total===0?'Seu sistema começa com o primeiro hábito. Crie sua base.':p===100?'Você cumpriu tudo. Isso é disciplina weedverso.':p>=75?'Falta pouco. Termine forte e mantenha o streak.':p>=45?'Bom ritmo. A consistência está aparecendo.':done>0?'Você já iniciou. Continue e acelere sua evolução.':'Você está construindo sua melhor versão.';
+  el.mot.textContent=msg;
+}
+// Funções de finanças/saldos
+function renderFinance(){
+  el.fGrid.innerHTML=Object.entries(st.balances).map(([k,a])=>{
+    const editing=Boolean(ui.balances[k]);
+    return `<article class="fcard" data-acc="${k}">
+      <div class="line">
+        <div>
+          <span class="mini">${k==='conta'?'Conta principal':'Saldo disponível'}</span>
+          <strong>${safe(a.label)}</strong>
+        </div>
+        <button type="button" class="iconBtn ${editing?'active':''}" data-act="edit-meta" title="Editar ${esc(a.label)}">✎</button>
+      </div>
+      ${editing?`<input data-f="label" type="text" maxlength="26" value="${esc(a.label)}" placeholder="Nome da carteira" />`:''}
+      <div data-bal class="bal">${money(a.amount)}</div>
+      <div class="actionLayout">
+        <div class="actionFields">
+          <div class="two">
+            <input data-v type="number" step="0.01" inputmode="decimal" placeholder="Valor" />
+            <input data-note type="text" maxlength="42" placeholder="Categoria ou descrição" />
+          </div>
+        </div>
+        <div class="actionStack">
+          <button type="button" class="btn" data-act="in">+ Entrada</button>
+          <button type="button" class="danger" data-act="out">- Saída</button>
+          ${editing?`<button type="button" class="ghost" data-act="set">Definir saldo</button>`:''}
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+  renderHistory();
+  renderFoodStatement();
+  renderAccountFlowChart();
+}
+
+function move(acc,type,value,note){
+  if(!st.balances[acc]) return;
+  st.balances[acc].amount += type==='in'?value:-value;
+  const meta=categoryMeta(note,'Sem categoria');
+  st.tx.unshift({id:id(),account:acc,type,value,note:txt(note,42),category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
+  save(true); renderFinance(); renderSummary(); flash(document.querySelector(`[data-acc="${acc}"] [data-bal]`),type);
+}
+
+function renderHistory(){
+  const editing=Boolean(ui.statement.wallet);
+  const banner=editing?renderStatementModeBanner('Modo edição ativo na conta principal. Use o lápis para alterar a transação e o X para remover.'):'';
+  const items=sortTransactionsDesc((st.tx||[]).filter(t=>t.account==='conta')).slice(0,12);
+  if(!items.length){el.hist.innerHTML=`${banner}<p class="empty">Sem movimentações na conta principal ainda.</p>`;return;}
+  el.hist.innerHTML=banner+items.map(t=>{
+    const name=(st.balances[t.account] && st.balances[t.account].label) ? st.balances[t.account].label : defLabel(t.account), d=shortDate(t.at);
+    const isEditing=isStatementEditorActive('wallet','wallet',t.id,'');
+    if(t.type==='set'){
+      const note=t.note?` · ${safe(t.note)}`:'';
+      return renderStatementRow({
+        section:'wallet',
+        primaryHtml:`Ajuste em ${safe(name)}`,
+        secondaryHtml:`${money(t.prev)} → ${money(t.value)}${note}`,
+        meta:d,
+        editable:editing,
+        isEditing:isEditing,
+        editorHtml:isEditing?renderStatementEditor({section:'wallet',source:'wallet',txId:t.id,goalId:''}):'',
+        txId:t.id,
+        source:'wallet'
+      });
+    }
+    const s=t.type==='in'?'+':'-',c=t.type==='in'?'pos':'neg';
+    const note=t.note?` · ${safe(t.note)}`:'';
+    return renderStatementRow({
+      section:'wallet',
+      primaryHtml:`<span class="${c}">${s} ${money(t.value)}</span> em ${safe(name)}${note}`,
+      secondaryHtml:safe(t.category||'Sem categoria'),
+      meta:d,
+      editable:editing,
+      isEditing:isEditing,
+      editorHtml:isEditing?renderStatementEditor({section:'wallet',source:'wallet',txId:t.id,goalId:''}):'',
+      txId:t.id,
+      source:'wallet'
+    });
+  }).join('');
+}
+
+function renderFoodStatement(){
+  const editing=Boolean(ui.statement.food);
+  const banner=editing?renderStatementModeBanner('Modo edição ativo nos cartões alimentação. Você pode ajustar VA Mercado e VA Refeição por aqui.'):'';
+  const items=sortTransactionsDesc((st.tx||[]).filter(t=>t.account==='vale1'||t.account==='vale2')).slice(0,18);
+  if(!el.foodStmt) return;
+  if(!items.length){el.foodStmt.innerHTML=`${banner}<p class="empty">Sem movimentações nos cartões alimentação ainda.</p>`;return;}
+  el.foodStmt.innerHTML=banner+items.map(t=>{
+    const name=(st.balances[t.account] && st.balances[t.account].label) ? st.balances[t.account].label : defLabel(t.account), d=shortDate(t.at);
+    const isEditing=isStatementEditorActive('food','wallet',t.id,'');
+    if(t.type==='set'){
+      const note=t.note?` · ${safe(t.note)}`:'';
+      return renderStatementRow({
+        section:'food',
+        primaryHtml:`Ajuste em ${safe(name)}`,
+        secondaryHtml:`${money(t.prev)} → ${money(t.value)}${note}`,
+        meta:d,
+        editable:editing,
+        isEditing:isEditing,
+        editorHtml:isEditing?renderStatementEditor({section:'food',source:'wallet',txId:t.id,goalId:''}):'',
+        txId:t.id,
+        source:'wallet'
+      });
+    }
+    const s=t.type==='in'?'+':'-',c=t.type==='in'?'pos':'neg';
+    const note=t.note?` · ${safe(t.note)}`:'';
+    return renderStatementRow({
+      section:'food',
+      primaryHtml:`<span class="${c}">${s} ${money(t.value)}</span> em ${safe(name)}${note}`,
+      secondaryHtml:safe(t.category||'Sem categoria'),
+      meta:d,
+      editable:editing,
+      isEditing:isEditing,
+      editorHtml:isEditing?renderStatementEditor({section:'food',source:'wallet',txId:t.id,goalId:''}):'',
+      txId:t.id,
+      source:'wallet'
+    });
+  }).join('');
+}
+
+function renderFiveDayStatement(){
+  const editing=Boolean(ui.statement.five);
+  const items=last5DaysTransactions();
+  const banner=editing?renderStatementModeBanner('Modo edição ativo no consolidado. Você pode ajustar conta principal, cartões alimentação e cartão de crédito.'):'';
+  if(!items.length){el.last5Stmt.innerHTML=`${banner}<p class="empty">Sem entradas/saídas da conta principal, alimentação e cartão nos últimos 5 dias.</p>`;return;}
+  el.last5Stmt.innerHTML=banner+items.map(i=>{
+    const note=i.note?` · ${safe(i.note)}`:'';
+    const isEditing=isStatementEditorActive('five',i.source,i.txId,i.goalId||'');
+    return renderStatementRow({
+      section:'five',
+      primaryHtml:`<span class="${i.cls}">${i.sign} ${money(i.value)}</span> ${safe(i.label)}${note}`,
+      secondaryHtml:safe(i.category||''),
+      meta:shortDate(i.at),
+      editable:editing,
+      isEditing:isEditing,
+      editorHtml:isEditing?renderStatementEditor({section:'five',source:i.source,txId:i.txId,goalId:i.goalId||''}):'',
+      txId:i.txId,
+      source:i.source,
+      goalId:i.goalId
+    });
+  }).join('');
+}
+
+function last5DaysTransactions(){
+  const start=lastDaysStart(5);
+  const account=(st.tx||[])
+    .filter(t=>['conta','vale1','vale2'].includes(t.account)&&new Date(t.at)>=start)
+    .map(t=>{
+      const labelName=(st.balances[t.account] && st.balances[t.account].label) ? st.balances[t.account].label : defLabel(t.account);
+      if(t.type==='set'){
+        const diff=(Number(t.value)||0)-(Number(t.prev)||0);
+        return {at:t.at,value:Math.abs(diff),sign:diff>=0?'+':'-',cls:diff>=0?'pos':'neg',label:`Ajuste ${labelName}`,note:t.note||'',category:t.category||'Ajuste manual',source:'wallet',txId:t.id};
+      }
+      const isIn=t.type==='in';
+      return {at:t.at,value:Math.abs(Number(t.value)||0),sign:isIn?'+':'-',cls:isIn?'pos':'neg',label:`${isIn?'Entrada':'Saída'} ${labelName}`,note:t.note||'',category:t.category||'Sem categoria',source:'wallet',txId:t.id};
+    });
+
+  const card=(st.credit.tx||[])
+    .filter(t=>new Date(t.at)>=start)
+    .map(t=>{
+      const isExpense=t.type==='expense';
+      const isPayment=t.type==='payment';
+      const isReserveIn=t.type==='reserve-in';
+      return {
+        at:t.at,
+        value:Math.abs(Number(t.value)||0),
+        sign:(isExpense||t.type==='reserve-out')?'-':'+',
+        cls:(isExpense||t.type==='reserve-out')?'neg':'pos',
+        label:isExpense?'Gasto cartão crédito':(isPayment?'Pagamento cartão crédito':(isReserveIn?'Entrada reserva cartão':'Saída reserva cartão')),
+        note:t.desc||'',
+        category:t.category||'Sem categoria',
+        source:'credit',
+        txId:t.id
+      };
+    });
+
+  return account.concat(card).sort((a,b)=>new Date(b.at)-new Date(a.at)).slice(0,40);
+}
+
+function renderCredit(){
+  const editing=Boolean(ui.statement.credit);
+  el.ccName.value=st.credit.name||'Cartão weedverso';
+  const used=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), pct=used>0?Math.min(100,Math.round((reserved/used)*100)):(reserved>0?100:0);
+  el.ccMeta.hidden=!ui.credit;
+  setActive(el.ccEditBtn, ui.credit);
+  el.ccMetaSummary.textContent=`${st.credit.name||'Cartão weedverso'}`;
+  el.ccMetaHint.textContent=ui.credit?'Edição do cartão ativa.':creditReserveStatus(used,reserved);
+  el.ccUsed.textContent=money(used);
+  el.ccReserved.textContent=money(reserved);
+  el.ccUsed.style.color=used>reserved&&used>0?'#ffcf5f':'var(--txt)';
+  el.ccBar.style.width=`${pct}%`;
+  renderCreditDescChart();
+
+  const banner=editing?renderStatementModeBanner('Modo edição ativo no cartão. Ajuste o lançamento com o lápis ou remova com o X.'):'';
+  const items=sortTransactionsDesc(st.credit.tx).slice(0,8);
+  if(!items.length){el.ccHistory.innerHTML=`${banner}<p class="empty">Sem lançamentos no cartão.</p>`;return;}
+  el.ccHistory.innerHTML=banner+items.map(t=>{
+    const map={
+      expense:{sign:'-',cls:'neg',kind:'Gasto'},
+      payment:{sign:'+',cls:'pos',kind:'Pagamento'},
+      'reserve-in':{sign:'+',cls:'pos',kind:'Reserva cartão'},
+      'reserve-out':{sign:'-',cls:'neg',kind:'Saída da reserva'}
+    };
+    const isEditing=isStatementEditorActive('credit','credit',t.id,'');
+    const kindData=map[t.type]||map.payment, desc=t.desc?` · ${safe(t.desc)}`:'';
+    return renderStatementRow({
+      section:'credit',
+      primaryHtml:`<span class="${kindData.cls}">${kindData.sign} ${money(t.value)}</span> ${kindData.kind}${desc}`,
+      secondaryHtml:safe(t.category||'Sem categoria'),
+      meta:shortDate(t.at),
+      editable:editing,
+      isEditing:isEditing,
+      editorHtml:isEditing?renderStatementEditor({section:'credit',source:'credit',txId:t.id,goalId:''}):'',
+      txId:t.id,
+      source:'credit'
+    });
+  }).join('');
+}
+
+function creditMove(type){
+  const raw=parseFloat((el.ccValue.value||'').replace(',','.')), v=Number.isFinite(raw)?Math.abs(raw):0;
+  const desc=txt(el.ccDesc.value,42);
+  if(v<=0) return;
+  if(type==='expense') st.credit.used += v;
+  else st.credit.used=Math.max(0,st.credit.used-v);
+  const meta=categoryMeta(desc,type==='expense'?'Sem categoria':'Pagamento cartao');
+  st.credit.tx.unshift({id:id(),type,value:v,desc,category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
+  save(true); renderCredit(); renderSummary();
+  el.ccValue.value=''; el.ccDesc.value='';
+}
+
+function creditReserveMove(type){
+  const raw=parseFloat((el.ccReserveValue.value||'').replace(',','.')), v=Number.isFinite(raw)?Math.abs(raw):0;
+  if(v<=0) return;
+  st.credit.reserved=Math.max(0,(Number(st.credit.reserved)||0)+(type==='in'?v:-v));
+  const meta=categoryMeta('Reserva cartao','Reserva cartao');
+  st.credit.tx.unshift({id:id(),type:type==='in'?'reserve-in':'reserve-out',value:v,desc:'Reserva cartão',category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
+  save(true); renderCredit(); renderSummary();
+  el.ccReserveValue.value='';
+}
+
+function creditReserveStatus(used,reserved){
+  if(used<=0&&reserved<=0) return 'Sem fatura e sem saldo reservado no momento.';
+  if(used<=0&&reserved>0) return `Reserva pronta: ${money(reserved)} disponível para a próxima fatura.`;
+  const uncovered=Math.max(0,used-reserved);
+  const coverage=Math.min(100,Math.round((reserved/used)*100));
+  return uncovered>0?`Reserva cobre ${coverage}% da fatura. Faltam ${money(uncovered)}.`:`Reserva cobre 100% da fatura atual.`;
+}
+
+function debtInstallments(item){
+  return Math.min(12,Math.max(1,parseInt((item&&item.installments)||1,10)||1));
+}
+function debtPaidInstallments(item){
+  return Math.min(debtInstallments(item),Math.max(0,parseInt((item&&item.installmentsPaid)||0,10)||0));
+}
+function debtInstallmentValue(item){
+  return Math.max(0,Number(item&&((item.installmentValue!=null)?item.installmentValue:item.amount))||0);
+}
+function debtRemainingAmount(item){
+  const remaining=Math.max(0,debtInstallments(item)-debtPaidInstallments(item));
+  return (Math.round(debtInstallmentValue(item)*100)*remaining)/100;
+}
+function debtCompletionPct(item){
+  const installments=debtInstallments(item);
+  return Math.min(100,Math.round((debtPaidInstallments(item)/installments)*100));
+}
+function myDebtPortfolioTotal(){
+  return (st.myDebts||[]).reduce((sum,item)=>sum+debtRemainingAmount(item),0);
+}
+function myDebtMonthlyTotal(){
+  return (st.myDebts||[]).reduce((sum,item)=>{
+    if(item && !item.paid){
+      return sum + debtInstallmentValue(item);
+    }
+    return sum;
+  },0);
+}
+
+function sortDebtEntries(items){
+  return (items||[]).slice().sort((a,b)=>{
+    if(shouldShowDebtorNow(a)!==shouldShowDebtorNow(b)) return shouldShowDebtorNow(a)?-1:1;
+    const monthDiff=compareDebtorMonth(a,b);
+    if(monthDiff!==0) return monthDiff;
+    if(Number(a.paid)!==Number(b.paid)) return Number(a.paid)-Number(b.paid);
+    return new Date(b.at||0)-new Date(a.at||0);
+  });
+}
+function sortMyDebtEntries(items){
+  return (items||[]).slice().sort((a,b)=>{
+    if(Number(a.paid)!==Number(b.paid)) return Number(a.paid)-Number(b.paid);
+    const dateA=String(a.payDate||'9999-12-31');
+    const dateB=String(b.payDate||'9999-12-31');
+    if(dateA!==dateB) return dateA<dateB?-1:1;
+    return new Date(b.at||0)-new Date(a.at||0);
+  });
+}
+
+function renderDebtors(){
+  if(!st.debtors.length){el.debList.innerHTML='<p class="empty">Nenhuma pessoa devedora cadastrada.</p>';return;}
+  const sorted=sortDebtEntries(st.debtors);
+  el.debList.innerHTML=sorted.map(d=>`
+    <article class="debtor ${d.paid?'paid':''}" data-deb="${d.id}">
+      <div class="debtorHead">
+        <div>
+          <div class="debtorName">${safe(d.name)}</div>
+          <div class="debtorAmount">${money(d.amount)}</div>
+        </div>
+        <div class="debtorTools">
+          <span class="tag ${d.paid?'ok':'warn'}">${d.paid?'Quitado':'Em aberto'}</span>
+          ${!shouldShowDebtorNow(d)&&!d.paid?'<span class="tag future">Futuro</span>':''}
+          <button type="button" class="iconBtn ${ui.debtors[d.id]?'active':''}" data-act="deb-edit" title="Editar devedor">✎</button>
+        </div>
+      </div>
+      <div class="debtorCardBody">
+        <div class="actionMeta">
+          <div class="debtorMeta">
+            <span>${d.paidAt?`Pago em ${shortDate(d.paidAt)}`:(d.payDate?`Previsto: ${dateBr(d.payDate)}`:'Data de pagamento não definida')}</span>
+            <span>${!shouldShowDebtorNow(d)&&!d.paid?`Lançamento futuro para a home${d.note?' · ':''}`:''}${d.note?safe(d.note):(!shouldShowDebtorNow(d)&&!d.paid?'':'Sem observação')}</span>
+          </div>
+          ${ui.debtors[d.id]?`<div class="debtorEdit">
+            <div class="two">
+              <input data-f="deb-name" type="text" value="${esc(d.name)}" placeholder="Nome" />
+              <input data-f="deb-amount" type="number" step="0.01" inputmode="decimal" value="${Number(d.amount)||0}" />
+            </div>
+            <div class="two">
+              <input data-f="deb-paydate" type="date" value="${d.payDate||''}" />
+              <input data-f="deb-note" type="text" maxlength="50" value="${esc(d.note||'')}" placeholder="Observação" />
+            </div>
+          </div>`:''}
+        </div>
+        <div class="actionStack debtorActions">
+          <button type="button" class="btn" data-act="deb-receive">Receber + conta</button>
+          <button type="button" class="ghost" data-act="deb-toggle">${d.paid?'Reabrir':'Marcar pago'}</button>
+          <button type="button" class="danger" data-act="deb-del">Remover</button>
+        </div>
+      </div>
+    </article>`).join('');
+}
+
+function renderMyDebts(){
+  if(!Array.isArray(st.myDebts)) st.myDebts=[];
+  if(el.myDebtTotalBox) el.myDebtTotalBox.textContent=money(myDebtPortfolioTotal());
+  if(el.myDebtMonthBox) el.myDebtMonthBox.textContent=money(myDebtMonthlyTotal());
+  if(!st.myDebts.length){el.myDebtList.innerHTML='<p class="empty">Nenhuma dívida cadastrada ainda.</p>';return;}
+  const sorted=sortMyDebtEntries(st.myDebts);
+  el.myDebtList.innerHTML=sorted.map(d=>`
+    <article class="debtor debtCard ${d.paid?'paid':''}" data-mydeb="${d.id}">
+      <div class="debtorHead">
+        <div>
+          <div class="debtorName">${safe(d.name)}</div>
+          <div class="debtorAmount">${money(debtInstallmentValue(d))}</div>
+        </div>
+        <div class="debtorTools">
+          <span class="tag ${d.paid?'ok':'warn'}">${d.paid?'Quitada':'Pendente'}</span>
+          <span class="tag">${debtInstallments(d)}x</span>
+          <button type="button" class="iconBtn ${ui.myDebts[d.id]?'active':''}" data-act="mydeb-edit" title="Editar dívida">✎</button>
+        </div>
+      </div>
+      <div class="debtorCardBody">
+        <div class="actionMeta">
+          <div class="debtStats">
+            <div class="debtStat">
+              <span class="mini">Valor da parcela</span>
+              <strong>${money(debtInstallmentValue(d))}</strong>
+            </div>
+            <div class="debtStat">
+              <span class="mini">Parcelas pagas</span>
+              <strong>${debtPaidInstallments(d)}/${debtInstallments(d)}</strong>
+            </div>
+            <div class="debtStat">
+              <span class="mini">Progresso total</span>
+              <strong>${money(debtRemainingAmount(d))}</strong>
+            </div>
+          </div>
+          <div class="debtProgress"><div class="debtProgressFill" style="width:${debtCompletionPct(d)}%"></div></div>
+          <div class="debtorMeta">
+            <span>${d.paidAt?`Quitada em ${shortDate(d.paidAt)}`:(d.payDate?`Vence em: ${dateBr(d.payDate)}`:'Data de vencimento não definida')}</span>
+            <span>${d.note?safe(d.note):'Sem observação'}</span>
+            <span>${d.paid?'Todas as parcelas pagas.':`Faltam ${debtInstallments(d)-debtPaidInstallments(d)} parcela(s) · total pendente ${money(debtRemainingAmount(d))}`}</span>
+          </div>
+          ${ui.myDebts[d.id]?`<div class="debtorEdit debtPanel">
+            <span class="debtPanelTitle">Ajuste manual de parcelas</span>
+            <div class="two">
+              <input data-f="mydeb-name" type="text" value="${esc(d.name)}" placeholder="Dívida" />
+              <input data-f="mydeb-amount" type="number" step="0.01" inputmode="decimal" value="${Number(debtInstallmentValue(d))||0}" />
+            </div>
+            <div class="two">
+              <select data-f="mydeb-installments">
+                ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${debtInstallments(d)===i+1?'selected':''}>${i+1}x</option>`).join('')}
+              </select>
+              <input data-f="mydeb-paydate" type="date" value="${d.payDate||''}" />
+            </div>
+            <div class="two">
+              <input data-f="mydeb-note" type="text" maxlength="50" value="${esc(d.note||'')}" placeholder="Observação" />
+              <input type="text" value="${debtPaidInstallments(d)} de ${debtInstallments(d)} parcelas pagas" readonly />
+            </div>
+            <span class="debtPanelHint">O valor aqui representa a parcela unitária. Esta aba serve apenas para controle manual das dívidas.</span>
+          </div>`:''}
+        </div>
+        <div class="actionStack debtorActions">
+          <button type="button" class="btn" data-act="mydeb-pay" ${d.paid?'disabled':''}>${d.paid?'Quitada':'Pagar parcela'}</button>
+          <button type="button" class="ghost" data-act="mydeb-toggle">${d.paid?'Reabrir':'Marcar quitada'}</button>
+          <button type="button" class="ghost" data-act="mydeb-del">Remover</button>
+        </div>
+      </div>
+    </article>`).join('');
+}
+
+function renderGoals(){
+  if(!Array.isArray(st.goals)) st.goals=[];
+  const weekYield=goalsWeekYield();
+  el.goalActiveCount.textContent=String(st.goals.length);
+  el.goalWeekYield.textContent=money(weekYield);
+  if(!st.goals.length){el.goalList.innerHTML='<p class="empty">Nenhum objetivo ainda. Crie o primeiro para acompanhar seu patrimônio.</p>';return;}
+
+  el.goalList.innerHTML=st.goals.map(g=>{
+    const editing=Boolean(ui.goals[g.id]);
+    const target=Math.max(0,Number(g.target)||0);
+    const saved=Math.max(0,Number(g.saved)||0);
+    const left=Math.max(0,target-saved);
+    const pct=target>0?Math.min(100,Math.round((saved/target)*100)):0;
+    return `<article class="goal" data-goal-id="${g.id}">
+      <div class="line">
+        <div>
+          <strong>${safe(g.name)}</strong>
+          <p class="mut">${left>0?`Faltam ${money(left)}`:'Meta alcançada'}</p>
+        </div>
+        <div class="line">
+          <span class="tag ok">${pct}%</span>
+          <button class="iconBtn ${editing?'active':''}" type="button" data-act="goal-edit" title="Editar objetivo">✎</button>
+        </div>
+      </div>
+      <div class="goalMetaRow">
+        <strong class="goalMoney">${money(saved)} <span class="mut">de ${money(target)}</span></strong>
+        <span class="goalPct">${pct}%</span>
+      </div>
+      ${editing?`<div class="two">
+        <input data-f="goal-name" type="text" value="${esc(g.name)}" maxlength="36" />
+        <input data-f="goal-target" type="number" step="0.01" inputmode="decimal" value="${target}" />
+      </div>`:''}
+      <div class="track"><div class="fill goal" style="width:${pct}%"></div></div>
+      <div class="goalActionsWrap">
+        <div class="actionFields">
+          <input data-goal-value type="number" step="0.01" inputmode="decimal" placeholder="Valor" />
+        </div>
+        <div class="actionStack">
+          <button class="btn" type="button" data-act="goal-deposit">Depósito</button>
+          <button class="danger" type="button" data-act="goal-withdraw">Retirada</button>
+          <button class="ghost" type="button" data-act="goal-yield">Rendimento semanal</button>
+        </div>
+      </div>
+      <button class="danger" type="button" data-act="goal-remove">Remover objetivo</button>
+    </article>`;
+  }).join('');
+}
+
+function renderGoalStatement(){
+  const editing=Boolean(ui.statement.goal);
+  const items=(st.goals||[])
+    .reduce((acc,g)=>acc.concat((Array.isArray(g.tx)?g.tx:[]).map(t=>Object.assign({goal:g.name||'Objetivo',goalId:g.id},t))),[])
+    .sort((a,b)=>new Date(b.at)-new Date(a.at))
+    .slice(0,18);
+  const banner=editing?renderStatementModeBanner('Modo edição ativo nos objetivos. Você pode alterar tipo, valor e data antes de salvar.'):'';
+  if(!items.length){el.goalStmt.innerHTML=`${banner}<p class="empty">Sem movimentações de objetivos ainda.</p>`;return;}
+  el.goalStmt.innerHTML=banner+items.map(t=>{
+    const sign=t.type==='withdraw'?'-':'+'; 
+    const cls=t.type==='withdraw'?'neg':'pos';
+    const label=t.type==='yield'?'Rendimento semanal':(t.type==='deposit'?'Depósito':'Retirada');
+    const isEditing=isStatementEditorActive('goal','goal',t.id,t.goalId);
+    return renderStatementRow({
+      section:'goal',
+      primaryHtml:`<span class="${cls}">${sign} ${money(t.value)}</span> ${safe(t.goal)} · ${label}`,
+      meta:shortDate(t.at),
+      editable:editing,
+      isEditing:isEditing,
+      editorHtml:isEditing?renderStatementEditor({section:'goal',source:'goal',txId:t.id,goalId:t.goalId}):'',
+      txId:t.id,
+      source:'goal',
+      goalId:t.goalId
+    });
+  }).join('');
+}
+
+function goalMove(goal,type,value){
+  if(!goal||value<=0) return;
+  if(type==='withdraw') goal.saved=Math.max(0,(Number(goal.saved)||0)-value);
+  else goal.saved=(Number(goal.saved)||0)+value;
+  goal.tx=Array.isArray(goal.tx)?goal.tx:[];
+  goal.tx.unshift({id:id(),type,value,at:new Date().toISOString()});
+  save(true); renderGoals(); renderGoalStatement(); renderSummary();
+}
+
+function renderHero(){
+  const total=st.habits.length, done=st.habits.filter(h=>h.done).length, remaining=Math.max(0,total-done), p=total?Math.round((done/total)*100):0;
+  const debtOpen=debtOpenTotal(), used=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), uncovered=Math.max(0,used-reserved), coverageRate=used>0?(reserved/used):1;
+
+  let risk='Baixo', riskClass='ok';
+  if(uncovered>=1200||debtOpen>=2000){risk='Alto'; riskClass='hot';}
+  else if(uncovered>0||debtOpen>0||coverageRate<0.85){risk='Médio'; riskClass='mid';}
+
+  let mode='EM RITMO', modeClass='ok', title='Ativar modo foco e fechar missão de hoje', desc='Seu sistema está calibrado para consistência. Transforme execução em padrão.';
+  if(total===0){
+    mode='CONFIGURAR'; modeClass='mid';
+    title='Defina sua primeira missão para iniciar o ciclo weedverso';
+    desc='Sem hábitos ativos. Configure o plano de execução para hoje.';
+  } else if(p===100&&riskClass==='ok'){
+    mode='MODO ELITE'; modeClass='ok';
+    title='Rotina fechada com excelência operacional';
+    desc=`Você concluiu ${done}/${total} hábitos e mantém streak de ${st.streak} ${st.streak===1?'dia':'dias'}.`;
+  } else if(p>=60){
+    mode='EM RITMO'; modeClass='mid';
+    title='Execução sólida: finalize com força máxima';
+    desc=`Restam ${remaining} missão(ões). Feche acima de 90% para consolidar o progresso.`;
+  } else {
+    mode='ATIVAR FOCO'; modeClass='hot';
+    title='Disciplina primeiro: inicie com a próxima ação';
+    desc=`Você concluiu ${done}/${total}. Um passo agora muda o ritmo do dia.`;
+  }
+
+  el.focusPill.className=`focusPill ${modeClass}`;
+  el.focusPill.textContent=mode;
+  el.heroTitle.textContent=title;
+  el.heroDesc.textContent=desc;
+  el.heroRemaining.textContent=String(remaining);
+  el.heroRisk.textContent=risk;
+  el.heroRisk.style.color=riskClass==='hot'?'var(--d)':(riskClass==='mid'?'#ffcf5f':'var(--p)');
+  el.heroDebt.textContent=money(debtOpen);
+  el.heroDebt.style.color=debtOpen>0?'#ffcf5f':'var(--p)';
+}
+
+function renderSummary(){
+  const total=st.habits.length, done=st.habits.filter(h=>h.done).length, p=total?Math.round(done/total*100):0, spent=spentToday();
+  const cardOpen=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), debtOpen=debtOpenTotal(), uncovered=Math.max(0,cardOpen-reserved), coverageRate=cardOpen>0?(reserved/cardOpen):1;
+  const savedGoals=goalsTotalSaved();
+  el.sPercent.textContent=`${p}%`; el.sHabits.textContent=`${done} / ${total}`; el.sSpent.textContent=money(spent);
+  el.sCard.textContent=money(cardOpen); el.sDebt.textContent=money(debtOpen); el.sGoals.textContent=money(savedGoals);
+  renderHero();
+  renderFiveDayStatement();
+  renderCharts();
+
+  if(p===100&&debtOpen===0&&uncovered===0){el.sStatus.textContent='Dia de Elite';el.sMsg.textContent='Rotina no alvo e fatura totalmente coberta pela reserva.';}
+  else if(cardOpen>0&&coverageRate<0.35){el.sStatus.textContent='Atenção no cartão';el.sMsg.textContent='Sua reserva cobre pouco da fatura atual. Reforce esse saldo.';}
+  else if(debtOpen>0){el.sStatus.textContent='Cobrança pendente';el.sMsg.textContent='Você tem valores a receber. Priorize as cobranças do dia.';}
+  else if(p>=60){el.sStatus.textContent='Bom avanço';el.sMsg.textContent='Você está no caminho certo. Feche o dia acima de 90%.';}
+  else if(p>0){el.sStatus.textContent='Em progresso';el.sMsg.textContent='Evite perder ritmo. Complete mais um hábito agora.';}
+  else{el.sStatus.textContent='Dia em construção';el.sMsg.textContent='Seu próximo nível começa com uma única ação.';}
+}
+
+function rotateDay(){
+  const t=today(); if(!st.lastDate){st.lastDate=t;save();return;} if(st.lastDate===t)return;
+  const gap=days(st.lastDate,t); if(gap>1||(gap===1&&!st.routineDone)) st.streak=0;
+  st.habits=st.habits.map(h=>Object.assign({},h,{done:false})); st.routineDone=false; st.lastDate=t;
+  if(focusTick){clearInterval(focusTick); focusTick=null;}
+  st.focusSession.running=false;
+  st.focusSession.secondsLeft=1500;
+  save();
+}
+
+function spentToday(){
+  const t=today();
+  const walletOut=st.tx.filter(x=>x.type==='out'&&dateKey(x.at)===t).reduce((a,x)=>a+x.value,0);
+  const cardOut=(st.credit.tx||[]).filter(x=>x.type==='expense'&&dateKey(x.at)===t).reduce((a,x)=>a+x.value,0);
+  return walletOut+cardOut;
+}
+function debtOpenTotal(){return st.debtors.filter(x=>!x.paid&&shouldShowDebtorNow(x)).reduce((a,x)=>a+(Number(x.amount)||0),0);}
+function goalsTotalSaved(){return (st.goals||[]).reduce((a,g)=>a+Math.max(0,Number(g.saved)||0),0);}
+function isStatementEditorActive(section,source,txId,goalId){
+  return Boolean(
+    ui.statementEditor &&
+    ui.statementEditor.section===section &&
+    ui.statementEditor.source===source &&
+    ui.statementEditor.txId===txId &&
+    (ui.statementEditor.goalId||'')===(goalId||'')
+  );
+}
+function renderStatementModeBanner(message){
+  return `<div class="statementModeBanner">${safe(message)}</div>`;
+}
+function renderStatementControls(){
+  const toggles=el.statementPage ? el.statementPage.querySelectorAll('[data-statement-toggle]') : [];
+  for(var i=0;i<toggles.length;i++){
+    const btn=toggles[i];
+    const key=btn.getAttribute('data-statement-toggle');
+    const active=Boolean(ui.statement[key]);
+    setActive(btn,active);
+    btn.textContent=active?'Encerrar edição':'Editar transações';
+  }
+}
+function statementField(label, html){
+  return `<label class="statementField"><span>${safe(label)}</span>${html}</label>`;
+}
+function toDateTimeLocal(value){
+  const date=new Date(value||Date.now());
+  if(Number.isNaN(date.getTime())) return '';
+  const pad=num=>String(num).padStart(2,'0');
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+function fromDateTimeLocal(value,fallback){
+  if(!value) return fallback||new Date().toISOString();
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())?(fallback||new Date().toISOString()):date.toISOString();
+}
+function statementTarget(source,txId,goalId){
+  if(source==='wallet'){
+    const tx=st.tx.find(t=>t.id===txId);
+    return tx?{tx}:null;
+  }
+  if(source==='credit'){
+    const tx=(st.credit.tx||[]).find(t=>t.id===txId);
+    return tx?{tx}:null;
+  }
+  if(source==='goal'){
+    const goal=(st.goals||[]).find(g=>g.id===goalId);
+    if(!goal||!Array.isArray(goal.tx)) return null;
+    const tx=goal.tx.find(t=>t.id===txId);
+    return tx?{tx,goal}:null;
+  }
+  return null;
+}
+function renderStatementEditor(opts){
+  const target=statementTarget(opts.source,opts.txId,opts.goalId);
+  if(!target||!target.tx) return '';
+  const tx=target.tx;
+  const goalAttr=opts.goalId?` data-goal-id="${esc(opts.goalId)}"`:'';
+  const sectionAttr=` data-statement-section="${esc(opts.section)}"`;
+  const commonDate=statementField('Data e hora',`<input data-edit-field="at" type="datetime-local" value="${esc(toDateTimeLocal(tx.at))}" />`);
+  let fields='';
+  let hint='Salve para recalcular o extrato e os totais desta seção.';
+
+  if(opts.source==='wallet'){
+    const accountOptions=Object.entries(st.balances||{}).map(([key,item])=>`<option value="${esc(key)}"${key===tx.account?' selected':''}>${safe(item && item.label ? item.label : defLabel(key))}</option>`).join('');
+    const typeOptions=[
+      {value:'in',label:'Entrada'},
+      {value:'out',label:'Saída'},
+      {value:'set',label:'Definir saldo'}
+    ].map(item=>`<option value="${item.value}"${item.value===tx.type?' selected':''}>${item.label}</option>`).join('');
+    fields=[
+      statementField('Conta',`<select data-edit-field="account">${accountOptions}</select>`),
+      statementField('Tipo',`<select data-edit-field="type">${typeOptions}</select>`),
+      statementField('Valor',`<input data-edit-field="value" type="number" step="0.01" inputmode="decimal" value="${esc(Number(tx.value)||0)}" />`),
+      statementField('Descrição / categoria',`<input data-edit-field="note" type="text" maxlength="42" value="${esc(tx.note||tx.category||'')}" />`),
+      commonDate
+    ].join('');
+    hint='Edite conta, tipo, valor, descrição e data. Os saldos das carteiras serão recalculados ao salvar.';
+  }else if(opts.source==='credit'){
+    const typeOptions=[
+      {value:'expense',label:'Gasto'},
+      {value:'payment',label:'Pagamento'},
+      {value:'reserve-in',label:'Entrada reserva'},
+      {value:'reserve-out',label:'Saída reserva'}
+    ].map(item=>`<option value="${item.value}"${item.value===tx.type?' selected':''}>${item.label}</option>`).join('');
+    fields=[
+      statementField('Tipo',`<select data-edit-field="type">${typeOptions}</select>`),
+      statementField('Valor',`<input data-edit-field="value" type="number" step="0.01" inputmode="decimal" value="${esc(Number(tx.value)||0)}" />`),
+      statementField('Descrição / categoria',`<input data-edit-field="desc" type="text" maxlength="42" value="${esc(tx.desc||tx.category||'')}" />`),
+      commonDate
+    ].join('');
+    hint='Edite o lançamento do cartão e salve para atualizar fatura e reserva automaticamente.';
+  }else if(opts.source==='goal'){
+    const typeOptions=[
+      {value:'deposit',label:'Depósito'},
+      {value:'withdraw',label:'Retirada'},
+      {value:'yield',label:'Rendimento'}
+    ].map(item=>`<option value="${item.value}"${item.value===tx.type?' selected':''}>${item.label}</option>`).join('');
+    fields=[
+      statementField('Objetivo',`<input type="text" value="${esc(target.goal && target.goal.name ? target.goal.name : 'Objetivo')}" readonly />`),
+      statementField('Tipo',`<select data-edit-field="type">${typeOptions}</select>`),
+      statementField('Valor',`<input data-edit-field="value" type="number" step="0.01" inputmode="decimal" value="${esc(Number(tx.value)||0)}" />`),
+      commonDate
+    ].join('');
+    hint='A movimentação do objetivo será recalculada com o novo tipo, valor e data.';
+  }else{
+    return '';
+  }
+
+  return `<div class="statementEditor">
+    <div class="statementEditorGrid">${fields}</div>
+    <div class="statementEditorHint">${safe(hint)}</div>
+    <div class="statementEditorActions">
+      <button type="button" class="ghost" data-tx-cancel="${esc(opts.txId)}" data-source="${esc(opts.source)}"${sectionAttr}${goalAttr}>Cancelar</button>
+      <button type="button" class="btn" data-tx-save="${esc(opts.txId)}" data-source="${esc(opts.source)}"${sectionAttr}${goalAttr}>Salvar ajustes</button>
+    </div>
+  </div>`;
+}
+function renderStatementRow(opts){
+  opts=opts||{};
+  const editable=Boolean(opts.editable&&opts.txId&&opts.source);
+  const editing=Boolean(opts.isEditing);
+  const secondary=opts.secondaryHtml?`<span class="statementSecondary">${opts.secondaryHtml}</span>`:'';
+  const goalAttr=opts.goalId?` data-goal-id="${esc(opts.goalId)}"`:'';
+  const sectionAttr=opts.section?` data-statement-section="${esc(opts.section)}"`:'';
+  return `<div class="statementRow${editing?' editing':''}">
+    <div class="statementBody">
+      <span class="statementPrimary">${opts.primaryHtml||''}</span>
+      ${secondary}
+    </div>
+    <div class="statementAside">
+      <span class="statementMeta">${safe(opts.meta||'')}</span>
+      ${editable?`<div class="statementActions">
+        <button type="button" class="iconBtn statementEditAction${editing?' active':''}" title="Editar transação" data-tx-edit="${esc(opts.txId)}" data-source="${esc(opts.source)}"${sectionAttr}${goalAttr}>✎</button>
+        <button type="button" class="iconBtn danger statementDelete" title="Apagar transação" data-tx-del="${esc(opts.txId)}" data-source="${esc(opts.source)}"${goalAttr}>✕</button>
+      </div>`:''}
+    </div>
+    ${editing&&opts.editorHtml?`<div class="statementEditorWrap">${opts.editorHtml}</div>`:''}
+  </div>`;
+}
+function parseEditorValue(root,field){
+  const node=root ? root.querySelector(`[data-edit-field="${field}"]`) : null;
+  return node ? node.value : '';
+}
+function saveStatementEdit(section,source,txId,goalId,trigger){
+  const row=trigger ? trigger.closest('.statementRow') : null;
+  const valueRaw=parseFloat(String(parseEditorValue(row,'value')||'').replace(',','.'));
+  const value=Number.isFinite(valueRaw)?Math.abs(valueRaw):0;
+  if(value<=0){
+    window.alert('Informe um valor maior que zero para salvar a transação.');
+    return;
+  }
+
+  if(source==='wallet'){
+    const tx=st.tx.find(item=>item.id===txId);
+    if(!tx) return;
+    const baselines=captureWalletBaselines();
+    const account=parseEditorValue(row,'account');
+    const type=parseEditorValue(row,'type');
+    tx.account=st.balances[account]?account:tx.account;
+    tx.type=['in','out','set'].includes(type)?type:tx.type;
+    tx.value=value;
+    tx.note=txt(parseEditorValue(row,'note'),42);
+    tx.at=fromDateTimeLocal(parseEditorValue(row,'at'),tx.at);
+    const meta=categoryMeta(tx.note,tx.type==='set'?'Ajuste manual':'Sem categoria');
+    tx.category=meta.label;
+    tx.categoryKey=meta.key;
+    recomputeWalletBalances(baselines);
+  }else if(source==='credit'){
+    const tx=(st.credit.tx||[]).find(item=>item.id===txId);
+    if(!tx) return;
+    const type=parseEditorValue(row,'type');
+    tx.type=['expense','payment','reserve-in','reserve-out'].includes(type)?type:tx.type;
+    tx.value=value;
+    tx.desc=txt(parseEditorValue(row,'desc'),42);
+    tx.at=fromDateTimeLocal(parseEditorValue(row,'at'),tx.at);
+    const fallback=tx.type==='expense'?'Sem categoria':(tx.type==='payment'?'Pagamento cartao':'Reserva cartao');
+    const meta=categoryMeta(tx.desc,fallback);
+    tx.category=meta.label;
+    tx.categoryKey=meta.key;
+    recomputeCreditState();
+  }else if(source==='goal'){
+    const goal=(st.goals||[]).find(item=>item.id===goalId);
+    if(!goal||!Array.isArray(goal.tx)) return;
+    const tx=goal.tx.find(item=>item.id===txId);
+    if(!tx) return;
+    const type=parseEditorValue(row,'type');
+    tx.type=['deposit','withdraw','yield'].includes(type)?type:tx.type;
+    tx.value=value;
+    tx.at=fromDateTimeLocal(parseEditorValue(row,'at'),tx.at);
+    recomputeGoalSaved(goal);
+  }else{
+    return;
+  }
+
+  ui.statementEditor=null;
+  save(true);
+  renderAll();
+}
+function removeStatementTransaction(source,txId,goalId){
+  if(!source||!txId) return;
+  if(source==='wallet'){
+    const baselines=captureWalletBaselines();
+    const existing=st.tx.find(t=>t.id===txId);
+    if(!existing) return;
+    if(existing.debtorId){
+      const debtor=st.debtors.find(d=>d.id===existing.debtorId);
+      if(debtor){debtor.paid=false; debtor.paidAt='';}
+    }
+    if(existing.myDebtId){
+      const myDebt=(st.myDebts||[]).find(d=>d.id===existing.myDebtId);
+      if(myDebt){
+        const installments=debtInstallments(myDebt);
+        const removedInstallment=Math.max(0,parseInt(existing.myDebtInstallment||'0',10)||0);
+        const fallbackPaid=debtPaidInstallments(myDebt);
+        myDebt.installmentsPaid=Math.max(0,Math.min(installments,removedInstallment ? removedInstallment-1 : fallbackPaid-1));
+        myDebt.paid=myDebt.installmentsPaid>=installments;
+        if(!myDebt.paid) myDebt.paidAt='';
+      }
+    }
+    st.tx=st.tx.filter(t=>t.id!==txId);
+    recomputeWalletBalances(baselines);
+  }else if(source==='credit'){
+    if(!(st.credit.tx||[]).some(t=>t.id===txId)) return;
+    st.credit.tx=(st.credit.tx||[]).filter(t=>t.id!==txId);
+    recomputeCreditState();
+  }else if(source==='goal'){
+    const goal=st.goals.find(g=>g.id===goalId);
+    if(!goal||!Array.isArray(goal.tx)||!goal.tx.some(t=>t.id===txId)) return;
+    goal.tx=goal.tx.filter(t=>t.id!==txId);
+    recomputeGoalSaved(goal);
+  }else{
+    return;
+  }
+  if(ui.statementEditor && ui.statementEditor.source===source && ui.statementEditor.txId===txId && (ui.statementEditor.goalId||'')===(goalId||'')){
+    ui.statementEditor=null;
+  }
+  save(true);
+  renderAll();
+}
+function sortTransactionsAsc(items){
+  return (Array.isArray(items)?items:[]).slice().sort((a,b)=>new Date(a.at)-new Date(b.at));
+}
+function sortTransactionsDesc(items){
+  return (Array.isArray(items)?items:[]).slice().sort((a,b)=>new Date(b.at)-new Date(a.at));
+}
+function captureWalletBaselines(){
+  const baselines={};
+  Object.keys(st.balances||{}).forEach(key=>{
+    baselines[key]=Number((st.balances[key]||{}).amount)||0;
+  });
+  (st.tx||[]).forEach(t=>{
+    if(!t||!t.account||!Object.prototype.hasOwnProperty.call(baselines,t.account)) return;
+    if(t.type==='set') baselines[t.account]-=(Number(t.value)||0)-(Number(t.prev)||0);
+    else if(t.type==='in') baselines[t.account]-=Number(t.value)||0;
+    else if(t.type==='out') baselines[t.account]+=Number(t.value)||0;
+  });
+  return baselines;
+}
+function recomputeWalletBalances(baselines){
+  const seed=baselines||captureWalletBaselines();
+  Object.keys(st.balances||{}).forEach(key=>{
+    st.balances[key].amount=Number(seed[key])||0;
+  });
+  sortTransactionsAsc(st.tx).forEach(t=>{
+    if(!t||!st.balances[t.account]) return;
+    if(t.type==='set'){
+      t.prev=Number(st.balances[t.account].amount)||0;
+      st.balances[t.account].amount=Number(t.value)||0;
+    }
+    else if(t.type==='in') st.balances[t.account].amount += Number(t.value)||0;
+    else if(t.type==='out') st.balances[t.account].amount -= Number(t.value)||0;
+  });
+}
+function recomputeCreditState(){
+  st.credit.used=0;
+  st.credit.reserved=0;
+  sortTransactionsAsc(st.credit.tx).forEach(t=>{
+    const value=Math.abs(Number(t.value)||0);
+    if(t.type==='expense') st.credit.used += value;
+    else if(t.type==='payment') st.credit.used=Math.max(0,st.credit.used-value);
+    else if(t.type==='reserve-in') st.credit.reserved += value;
+    else if(t.type==='reserve-out') st.credit.reserved=Math.max(0,st.credit.reserved-value);
+  });
+}
+function recomputeGoalSaved(goal){
+  if(!goal) return;
+  goal.saved=0;
+  sortTransactionsAsc(goal.tx).forEach(t=>{
+    const value=Math.abs(Number(t.value)||0);
+    if(t.type==='withdraw') goal.saved=Math.max(0,goal.saved-value);
+    else goal.saved += value;
+  });
+}
+function goalsWeekYield(){
+  const start=startOfWeek(new Date());
+  return (st.goals||[]).reduce((sum,g)=>{
+    const tx=Array.isArray(g.tx)?g.tx:[];
+    return sum+tx.filter(t=>t.type==='yield'&&new Date(t.at)>=start).reduce((a,t)=>a+(Number(t.value)||0),0);
+  },0);
+}
+function normalizeSkills(sk){
+  const s=sk||{};
+  return {
+    estudar:Math.max(0,Number(s.estudar)||0),
+    treinar:Math.max(0,Number(s.treinar)||0),
+    trabalhar:Math.max(0,Number(s.trabalhar)||0)
+  };
+}
+function detectSkill(name){
+  const n=String(name||'').toLowerCase();
+  if(n.includes('estud')) return 'estudar';
+  if(n.includes('trein')||n.includes('academ')||n.includes('exerc')) return 'treinar';
+  if(n.includes('trabalh')||n.includes('job')||n.includes('servi')) return 'trabalhar';
+  return '';
+}
+function adjustSkillXp(skill,delta){
+  if(!skill) return;
+  st.skills=normalizeSkills(st.skills);
+  st.skills[skill]=Math.max(0,(Number(st.skills[skill])||0)+delta);
+}
+function flash(node,type){if(!node)return;const c=type==='in'?'flashIn':'flashOut';node.classList.remove('flashIn','flashOut');void node.offsetWidth;node.classList.add(c);}
+function debtorMonthValue(payDate){
+  if(!payDate||!/^\d{4}-\d{2}-\d{2}$/.test(payDate)) return 0;
+  return parseInt(payDate.slice(0,4)+payDate.slice(5,7),10);
+}
+function currentMonthValue(){
+  const now=today();
+  return parseInt(now.slice(0,4)+now.slice(5,7),10);
+}
+function shouldShowDebtorNow(debtor){
+  if(!debtor||!debtor.payDate) return true;
+  return debtorMonthValue(debtor.payDate)<=currentMonthValue();
+}
+function compareDebtorMonth(a,b){
+  const monthA=debtorMonthValue(a.payDate);
+  const monthB=debtorMonthValue(b.payDate);
+  return monthA-monthB;
+}
+function normalizeCategoryKey(value){
+  return String(value||'')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function titleizeCategory(key){
+  const lowers={de:1,da:1,do:1,das:1,dos:1,e:1,em:1,para:1,pra:1,pro:1,no:1,na:1,nos:1,nas:1};
+  return String(key||'').split(' ').filter(Boolean).map((word,index)=>index&&lowers[word]?word:(word.charAt(0).toUpperCase()+word.slice(1))).join(' ');
+}
+function categoryMeta(rawValue,fallback){
+  const key=normalizeCategoryKey(rawValue)||normalizeCategoryKey(fallback)||'sem categoria';
+  return {key:key.slice(0,48),label:(titleizeCategory(key)||fallback||'Sem categoria').slice(0,42)};
+}
+function normalizeWalletTxEntry(item){
+  item=item||{};
+  const note=txt(item.note||'',60);
+  const meta=categoryMeta(item.category||note,item.type==='set'?'Ajuste manual':'Sem categoria');
+  return Object.assign({},item,{note,category:meta.label,categoryKey:meta.key,prev:Number(item.prev)||0,value:Number(item.value)||0,debtorId:item.debtorId?String(item.debtorId):'',myDebtId:item.myDebtId?String(item.myDebtId):'',myDebtInstallment:Math.max(0,parseInt(item.myDebtInstallment||'0',10)||0)});
+}
+function normalizeCreditTxEntry(item){
+  item=item||{};
+  const desc=txt(item.desc||'',60);
+  const fallback=item.type==='payment'?'Pagamento cartao':'Reserva cartao';
+  const meta=categoryMeta(item.category||desc,item.type==='expense'?'Sem categoria':fallback);
+  return Object.assign({},item,{desc,category:meta.label,categoryKey:meta.key,value:Number(item.value)||0});
+}
+function normalizeDebtEntry(item){
+  item=item||{};
+  const installments=Math.min(12,Math.max(1,parseInt(item.installments||'1',10)||1));
+  const paid=Boolean(item.paid);
+  const installmentsPaid=Math.max(0,Math.min(installments,parseInt(item.installmentsPaid||String(paid?installments:0),10)||0));
+  const rawInstallmentValue=Number(item.installmentValue);
+  const rawAmount=Math.max(0,Number(item.amount)||0);
+  const installmentValue=Math.max(0,Number.isFinite(rawInstallmentValue)&&rawInstallmentValue>0 ? rawInstallmentValue : (installments>1 ? rawAmount/installments : rawAmount));
+  return Object.assign({},item,{
+    id:item.id||id(),
+    name:txt(item.name||'',30),
+    amount:installmentValue,
+    installmentValue:installmentValue,
+    installments:installments,
+    installmentsPaid:paid&&installmentsPaid<installments?installments:installmentsPaid,
+    note:txt(item.note||'',50),
+    payDate:item.payDate||'',
+    paid:paid||installmentsPaid>=installments,
+    paidAt:item.paidAt||''
+  });
+}
+function pageFromHash(){
+  const raw=String(window.location.hash||'').replace('#','');
+  return ['home','routine','credit','debts','goals','statement'].includes(raw)?raw:'home';
+}
+function syncPageFromHash(){
+  ui.page=pageFromHash();
+}
+function syncHash(page){
+  const next='#'+page;
+  if(window.location.hash===next) return;
+  try{
+    if(window.history && window.history.replaceState) window.history.replaceState(null,'',next);
+    else window.location.hash=next;
+  }catch(err){
+    window.location.hash=next;
+  }
+}
+function scrollTopSafe(){
+  try{ window.scrollTo({top:0,behavior:'smooth'}); }
+  catch(err){ window.scrollTo(0,0); }
+}
+function scrollNodeIntoView(node){
+  if(!node) return;
+  try{ node.scrollIntoView({behavior:'smooth',block:'center'}); }
+  catch(err){
+    try{ node.scrollIntoView(true); }
+    catch(err2){}
+  }
+}
+function normalizeLoadedState(p){
+  p=p||{};
+  const parsedCredit = p.credit || {};
+  const parsedCreditName = txt(parsedCredit.name || '',30);
+  const creditName=parsedCreditName==='Cartão Prime'||!parsedCreditName?DEF.credit.name:parsedCredit.name;
+  const base=Object.assign({},DEF,p,{appName:DEF.appName});
+  return Object.assign(base,{
+    habits:Array.isArray(p.habits)?p.habits.map(h=>Object.assign({},h,{date:h.date||today()})):DEF.habits,
+    balances:Object.assign({},DEF.balances,p.balances||{}),
+    tx:Array.isArray(p.tx)?p.tx.map(normalizeWalletTxEntry):[],
+    credit:Object.assign({},DEF.credit,parsedCredit,{name:creditName,reserved:Math.max(0,Number(parsedCredit.reserved)||0),tx:Array.isArray(parsedCredit.tx)?parsedCredit.tx.map(normalizeCreditTxEntry):[]}),
+    debtors:Array.isArray(p.debtors)?p.debtors.map(d=>Object.assign({},d,{payDate:d.payDate||'',paidAt:d.paidAt||''})):[],
+    myDebts:Array.isArray(p.myDebts)?p.myDebts.map(normalizeDebtEntry):[],
+    routineLog:Array.isArray(p.routineLog)?p.routineLog:[],
+    skills:normalizeSkills(p.skills),
+    goals:Array.isArray(p.goals)?p.goals.map(g=>({id:g.id||id(),name:g.name||'Objetivo',target:Number(g.target)||0,saved:Number(g.saved)||0,tx:Array.isArray(g.tx)?g.tx:[]})):[],
+    dailyStats:typeof p.dailyStats==='object'&&p.dailyStats?p.dailyStats:{},
+    focusSession:Object.assign({},DEF.focusSession,p.focusSession||{}),
+    lastDate:p.lastDate||today()
+  });
+}
+async function requestApi(path, options){
+  const req=Object.assign({},options||{});
+  req.headers=Object.assign({'Content-Type':'application/json'},(options&&options.headers)||{});
+  req.credentials='same-origin';
+  const res=await fetch(API_BASE+path,req);
+  if(res.status===401){
+    clearStoredState();
+    window.location.replace(loginLocation());
+    throw new Error('unauthorized');
+  }
+  if(!res.ok) throw new Error('api_unavailable');
+  return res.json();
+}
+function publishChannelsText(notifications){
+  notifications=notifications||{};
+  const labelMap={sent:'enviado',unconfigured:'não configurado',no_chat:'sem chat',failed:'falhou',idle:'aguardando'};
+  const telegram=labelMap[notifications.telegram]||'aguardando';
+  const discord=labelMap[notifications.discord]||'aguardando';
+  return `Telegram: ${telegram} | Discord: ${discord}`;
+}
+function publishStatusText(){
+  if(publishSync.busy) return 'Salvando e publicando link...';
+  if(publishSync.lastError) return publishSync.lastError;
+  if(publishSync.version>0){
+    const reasonMap={manual:'save manual',close:'fechamento',autosave:'autosave',sync:'sync'};
+    const label=reasonMap[publishSync.reason]||'sync';
+    return `Link v${publishSync.version} pronto (${label})`;
+  }
+  return 'Link pronto para publicar';
+}
+function applyPublishInfo(info){
+  info=info||{};
+  publishSync.version=Math.max(0,Number(info.version)||0);
+  publishSync.updatedAt=String(info.updatedAt||'');
+  publishSync.reason=String(info.reason||'');
+  publishSync.links=Object.assign({preferred:'',local:'',public:''},info.links||{});
+  publishSync.notifications=Object.assign({telegram:'idle',discord:'idle'},info.notifications||{});
+  publishSync.lastError='';
+  renderPublishStatus();
+}
+function renderPublishStatus(){
+  if(el.saveStatus) el.saveStatus.textContent=publishStatusText();
+  if(el.saveChannels){
+    const parts=[publishChannelsText(publishSync.notifications)];
+    if(publishSync.links.preferred) parts.push(publishSync.links.preferred);
+    el.saveChannels.textContent=parts.join(' | ');
+  }
+  if(el.saveAllBtn){
+    el.saveAllBtn.disabled=publishSync.busy;
+    el.saveAllBtn.textContent=publishSync.busy?'Salvando...':'Salvar tudo';
+  }
+  if(el.openShareLinkBtn){
+    const hasLink=Boolean(publishSync.links.preferred);
+    el.openShareLinkBtn.disabled=!hasLink;
+    el.openShareLinkBtn.style.opacity=hasLink?'1':'.55';
+  }
+}
+async function hydrateShareInfo(){
+  try{
+    const info=await requestApi('/api/share-info');
+    applyPublishInfo(info);
+  }catch(err){
+    publishSync.lastError='Link ainda não publicado';
+    renderPublishStatus();
+  }
+}
+async function publishCurrentState(reason, force){
+  if(publishSync.busy) return null;
+  publishSync.busy=true;
+  publishSync.lastError='';
+  renderPublishStatus();
+  try{
+    writeStoredState(JSON.stringify(st));
+    const payload=snapshotState();
+    const response=await requestApi('/api/publish',{method:'POST',body:JSON.stringify({state:JSON.parse(payload),reason:reason||'manual',force:Boolean(force)})});
+    serverSync.available=true;
+    serverSync.lastSnapshot=payload;
+    if(response && response.publish) applyPublishInfo(response.publish);
+    return response && response.publish ? response.publish : null;
+  }catch(err){
+    serverSync.available=false;
+    publishSync.lastError='Falha ao publicar o link';
+    renderPublishStatus();
+    throw err;
+  }finally{
+    publishSync.busy=false;
+    renderPublishStatus();
+  }
+}
+function snapshotState(){
+  return JSON.stringify(st);
+}
+function hasMeaningfulData(state){
+  state=state||{};
+  const balances=state.balances||{};
+  const credit=state.credit||{};
+  return Boolean(
+    txt(state.userName||'',24)||
+    (Array.isArray(state.habits)&&state.habits.length)||
+    (Array.isArray(state.tx)&&state.tx.length)||
+    (Array.isArray(state.goals)&&state.goals.length)||
+    (Array.isArray(state.debtors)&&state.debtors.length)||
+    (Array.isArray(state.myDebts)&&state.myDebts.length)||
+    Math.abs(Number((balances.conta||{}).amount)||0)>0||
+    Math.abs(Number((balances.vale1||{}).amount)||0)>0||
+    Math.abs(Number((balances.vale2||{}).amount)||0)>0||
+    Math.abs(Number(credit.used)||0)>0||
+    Math.abs(Number(credit.reserved)||0)>0
+  );
+}
+async function hydrateFromServer(){
+  try{
+    const remote=await requestApi('/api/state');
+    serverSync.available=true;
+    if(remote && hasMeaningfulData(remote)){
+      st=normalizeLoadedState(remote);
+      rotateDay();
+      writeStoredState(JSON.stringify(st));
+      serverSync.lastSnapshot=snapshotState();
+      renderAll();
+    } else {
+      serverSync.lastSnapshot=snapshotState();
+      if(hasMeaningfulData(st)){
+        await requestApi('/api/state',{method:'PUT',body:serverSync.lastSnapshot});
+      }
+    }
+  }catch(err){
+    serverSync.available=false;
+    serverSync.lastSnapshot=snapshotState();
+  }
+}
+function startServerPolling(){
+  if(serverSync.poller) clearInterval(serverSync.poller);
+  serverSync.poller=setInterval(pullServerState,5000);
+}
+async function pullServerState(){
+  if(serverSync.pushing) return;
+  try{
+    const remote=await requestApi('/api/state');
+    const next=JSON.stringify(remote||{});
+    serverSync.available=true;
+    if(next && next!==serverSync.lastSnapshot){
+      st=normalizeLoadedState(remote);
+      rotateDay();
+      writeStoredState(JSON.stringify(st));
+      serverSync.lastSnapshot=snapshotState();
+      renderAll();
+      hydrateShareInfo().catch(function(){});
+    }
+  }catch(err){
+    serverSync.available=false;
+  }
+}
+function scheduleServerPush(){
+  if(!serverSync.initialized) return;
+  if(serverSync.timer) clearTimeout(serverSync.timer);
+  serverSync.timer=setTimeout(pushServerState,350);
+}
+async function pushServerState(options){
+  serverSync.timer=null;
+  if(!serverSync.initialized) return;
+  if(serverSync.pushing) return;
+  serverSync.pushing=true;
+  try{
+    const payload=snapshotState();
+    await requestApi('/api/state',{method:'PUT',body:payload,keepalive:Boolean(options&&options.keepalive)});
+    serverSync.available=true;
+    serverSync.lastSnapshot=payload;
+  }catch(err){
+    serverSync.available=false;
+  }finally{
+    serverSync.pushing=false;
+  }
+}
+function flushStateOnly(){
+  if(!serverSync.initialized) return;
+  const payload=snapshotState();
+  if(serverSync.timer){
+    clearTimeout(serverSync.timer);
+    serverSync.timer=null;
+  }
+  try{
+    if(navigator.sendBeacon){
+      const blob=new Blob([payload],{type:'application/json'});
+      const sent=navigator.sendBeacon(API_BASE+'/api/state-sync',blob);
+      if(sent){
+        serverSync.lastSnapshot=payload;
+        return;
+      }
+    }
+  }catch(err){}
+  pushServerState({keepalive:true});
+}
+function flushServerState(reason){
+  if(!serverSync.initialized) return;
+  const payload=snapshotState();
+  const syncPayload=JSON.stringify({state:JSON.parse(payload),reason:reason||'close',force:false});
+  if(serverSync.timer){
+    clearTimeout(serverSync.timer);
+    serverSync.timer=null;
+  }
+  try{
+    if(navigator.sendBeacon){
+      const blob=new Blob([syncPayload],{type:'application/json'});
+      const sent=navigator.sendBeacon(API_BASE+'/api/publish-sync',blob);
+      if(sent){
+        serverSync.lastSnapshot=payload;
+        return;
+      }
+    }
+  }catch(err){}
+  publishCurrentState(reason||'close',false).catch(function(){});
+}
+function setVisible(node, visible){
+  if(!node) return;
+  if(visible) node.classList.remove('hidden');
+  else node.classList.add('hidden');
+}
+function setActive(node, active){
+  if(!node) return;
+  if(active) node.classList.add('active');
+  else node.classList.remove('active');
+}
+
+function readStoredState(){
+  try{
+    return STORAGE.getItem(KEY);
+  }catch(err){
+    return null;
+  }
+}
+function writeStoredState(value){
+  try{
+    STORAGE.setItem(KEY,value);
+  }catch(err){}
+}
+function readPrivacyMode(){
+  try{
+    return STORAGE.getItem(PRIVACY_KEY)==='1';
+  }catch(err){
+    return false;
+  }
+}
+function writePrivacyMode(value){
+  try{
+    STORAGE.setItem(PRIVACY_KEY,value?'1':'0');
+  }catch(err){}
+}
+function clearStoredState(){
+  try{
+    STORAGE.removeItem(KEY);
+  }catch(err){}
+}
+function renderPrivacyToggle(){
+  if(!el.privacyToggleBtn) return;
+  setActive(el.privacyToggleBtn, ui.privacy);
+  el.privacyToggleBtn.textContent=ui.privacy?'🙈':'👁';
+  el.privacyToggleBtn.title=ui.privacy?'Mostrar resultados':'Ocultar resultados';
+  el.privacyToggleBtn.setAttribute('aria-pressed', ui.privacy?'true':'false');
+  document.body.setAttribute('data-privacy', ui.privacy?'on':'off');
+}
+function togglePrivacyMode(){
+  ui.privacy=!ui.privacy;
+  writePrivacyMode(ui.privacy);
+  renderAll();
+}
+async function logout(){
+  try{
+    await requestApi('/api/logout',{method:'POST',body:'{}'});
+  }catch(err){}
+  clearStoredState();
+  window.location.replace(loginLocation());
+}
+
+function load(){
+  try{
+    const raw=readStoredState(); if(!raw) return normalizeLoadedState({lastDate:today()});
+    return normalizeLoadedState(JSON.parse(raw));
+  }catch(err){return normalizeLoadedState({lastDate:today()});}
+}
+function save(immediate){
+  writeStoredState(JSON.stringify(st));
+  if(immediate) pushServerState({keepalive:true});
+  else scheduleServerPush();
+}
+function money(v){return ui.privacy?'R$ ••••':new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0);} 
+function shortDate(i){return new Date(i).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});} 
+function fullDate(i){return new Date(i).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});}
+function dateBr(v){if(!v)return '--';const d=/^\d{4}-\d{2}-\d{2}$/.test(v)?parse(v):new Date(v);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function lastDaysStart(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(days-1));return d;}
+function startOfWeek(date){const d=new Date(date);const day=(d.getDay()+6)%7;d.setHours(0,0,0,0);d.setDate(d.getDate()-day);return d;}
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function dateKey(i){const d=new Date(i);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function days(a,b){const A=parse(a),B=parse(b);return Math.round((B-A)/86400000);} function parse(k){const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);} 
+function id(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-5);} 
+function defLabel(k){return k==='vale1'?'VA Mercado':k==='vale2'?'VA Refeição':'Saldo em Conta';}
+function txt(v,m){return String(v||'').replace(/\s+/g,' ').trim().slice(0,m);} 
+function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function safe(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function initial(n){return (n||'U').trim().charAt(0).toUpperCase();}
+window.showPage=showPage;
+window.addEventListener('hashchange',function(){
+  syncPageFromHash();
+  renderPage();
+});
+window.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden') flushStateOnly();
+  else if(document.visibilityState==='visible') pullServerState();
+});
+window.addEventListener('pagehide',function(){flushServerState('close');});
+window.addEventListener('beforeunload',function(){flushServerState('close');});
+window.addEventListener('focus',pullServerState);
+</script>
+</body>
+</html>

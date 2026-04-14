@@ -1,0 +1,31 @@
+# Segredos e acesso
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+
+# Windows / atalhos
+*.lnk
+*.url
+desktop.ini
+
+# Backups e pacotes locais
+*.zip
+*.tgz
+*.spg
+deploy-temp/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Runtime do app
+app/data/
+app/logs/
+app/deploy-temp/
+app/__pycache__/
+
+# Arquivos temporarios
+Thumbs.db

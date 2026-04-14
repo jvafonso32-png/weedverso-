@@ -1,0 +1,10 @@
+.env
+data/
+logs/
+dist/
+__pycache__/
+*.pyc
+chrome-*.png
+edge_extract_*.bin
+edge_latest_state.json
+assets/avatar/

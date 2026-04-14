@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>weedverso | acesso protegido</title>
+<style>
+:root{--bg:#060a08;--card:#0f1613;--card2:#121d18;--txt:#e8f4ed;--mut:#99aca0;--p:#39ff8f;--ps:rgba(57,255,143,.15);--ln:rgba(151,170,159,.24);--font-ui:'Bahnschrift','Trebuchet MS','Segoe UI',sans-serif;--font-display:'Agency FB','Bahnschrift','Trebuchet MS','Segoe UI',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:grid;place-items:center;padding:18px;font-family:var(--font-ui);background:radial-gradient(circle at 100% 0,rgba(57,255,143,.12),transparent 35%),radial-gradient(circle at 0 100%,rgba(30,75,55,.22),transparent 40%),var(--bg);color:var(--txt);overflow:hidden}
+body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02)1px,transparent 1px);background-size:22px 22px;pointer-events:none}
+.shell{position:relative;z-index:1;width:min(100%,420px);display:grid;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;justify-content:center}
+.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:radial-gradient(circle at 20% 20%,var(--p),#0f3222 70%);font-weight:800;color:#082212}
+.brand h1{font:700 2rem var(--font-display);letter-spacing:.5px}
+.card{background:linear-gradient(165deg,var(--card),var(--card2));border:1px solid var(--ln);border-radius:22px;padding:18px;box-shadow:0 18px 40px rgba(0,0,0,.34)}
+.eyebrow{font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+.title{font:700 1.7rem var(--font-display);margin-top:8px}
+.desc{margin-top:8px;color:var(--mut);line-height:1.45}
+.form{display:grid;gap:10px;margin-top:14px}
+label{font-size:.74rem;color:var(--mut);text-transform:uppercase;letter-spacing:.9px}
+input{width:100%;padding:12px;border:1px solid var(--ln);border-radius:12px;background:rgba(255,255,255,.03);color:var(--txt);font:500 .96rem var(--font-ui);outline:none}
+input:focus{border-color:var(--p);box-shadow:0 0 0 3px var(--ps)}
+button{appearance:none;-webkit-appearance:none;border:1px solid rgba(115,255,186,.6);border-radius:12px;padding:12px 14px;background:linear-gradient(135deg,#4cff9e,#22d37d);color:#04150d;font:700 .9rem var(--font-ui);cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 14px 24px rgba(18,120,71,.22);transition:transform .18s ease,box-shadow .22s ease}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(0) scale(.985)}
+.msg{min-height:20px;font-size:.86rem;color:var(--mut)}
+.msg.err{color:#ff9aa6}
+.tips{display:grid;gap:6px;margin-top:4px}
+.tip{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.02);font-size:.84rem;color:var(--mut)}
+</style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand">
+      <span class="logo">W</span>
+      <h1>weedverso</h1>
+    </div>
+    <section class="card">
+      <span class="eyebrow">Acesso protegido</span>
+      <h2 class="title">Entrar no painel</h2>
+      <p class="desc">Sua rotina, financas, cartao e objetivos agora exigem autenticacao antes de carregar qualquer dado.</p>
+      <form id="loginForm" class="form">
+        <div>
+          <label for="loginUser">Usuario</label>
+          <input id="loginUser" type="text" autocomplete="username" required />
+        </div>
+        <div>
+          <label for="loginPassword">Senha</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required />
+        </div>
+        <button id="loginBtn" type="submit">Entrar no weedverso</button>
+        <p id="loginMsg" class="msg"></p>
+      </form>
+      <div class="tips">
+        <div class="tip">A sessao fica ativa neste navegador ate voce sair manualmente ou encerrar a validade.</div>
+        <div class="tip">Depois do login, o app usa cache de sessao e limpa o acesso ao sair.</div>
+      </div>
+    </section>
+  </main>
+<script>
+try{ sessionStorage.removeItem('rotina_prime_v2'); }catch(err){}
+const form=document.getElementById('loginForm');
+const user=document.getElementById('loginUser');
+const password=document.getElementById('loginPassword');
+const msg=document.getElementById('loginMsg');
+const btn=document.getElementById('loginBtn');
+
+function setMsg(text,isError){
+  msg.textContent=text||'';
+  msg.className=isError?'msg err':'msg';
+}
+
+async function checkSession(){
+  try{
+    const res=await fetch('/api/session',{credentials:'same-origin'});
+    const data=await res.json();
+    if(data && data.authenticated){
+      window.location.replace('/');
+    }
+  }catch(err){}
+}
+
+form.addEventListener('submit',async function(e){
+  e.preventDefault();
+  setMsg('Validando acesso...',false);
+  btn.disabled=true;
+  try{
+    const res=await fetch('/api/login',{
+      method:'POST',
+      credentials:'same-origin',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:user.value.trim(),password:password.value})
+    });
+    const data=await res.json().catch(function(){ return {}; });
+    if(!res.ok){
+      if(data && data.error==='too_many_attempts'){
+        const seconds=Math.max(1,Number(data.retryAfter)||60);
+        setMsg(`Muitas tentativas seguidas. Aguarde ${seconds}s para tentar novamente.`,true);
+      }else if(data && data.error==='invalid_credentials'){
+        setMsg('Usuario ou senha invalidos.',true);
+      }else{
+        setMsg('Nao foi possivel entrar agora.',true);
+      }
+      btn.disabled=false;
+      password.focus();
+      password.select();
+      return;
+    }
+    setMsg('Acesso liberado. Entrando no painel...',false);
+    window.location.replace('/');
+  }catch(err){
+    setMsg('Falha de conexao com o Weedverso. Tente de novo.',true);
+    btn.disabled=false;
+  }
+});
+
+checkSession();
+user.focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+[Unit]
+Description=Weedverso Bot + API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=weedverso
+Group=weedverso
+WorkingDirectory=/opt/weedverso/app
+EnvironmentFile=/opt/weedverso/app/.env
+ExecStart=/usr/bin/python3 /opt/weedverso/app/weedverso_app.py
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target
