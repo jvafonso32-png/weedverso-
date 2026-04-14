@@ -9,6 +9,10 @@ $ArchiveRoot = "C:\Users\joaov\OneDrive\Documentos\WEEDVERSO-CODE-BACKUPS"
 $MirrorRoot = Join-Path $env:APPDATA "Weedverso\code-mirror"
 $StageRoot = Join-Path $env:TEMP "weedverso-code-stage"
 $ManifestPath = Join-Path $ArchiveRoot "backup-manifest.json"
+$GitExeCandidates = @(
+    "C:\Program Files\Git\cmd\git.exe",
+    "C:\Program Files\Git\bin\git.exe"
+)
 
 $RootFiles = @(
     "ABRIR WEEDVERSO.cmd",
@@ -62,6 +66,15 @@ function Invoke-RobocopyChecked {
     }
 }
 
+function Get-GitExe {
+    foreach ($candidate in $GitExeCandidates) {
+        if (Test-Path $candidate) {
+            return $candidate
+        }
+    }
+    return ""
+}
+
 if (-not (Test-Path $ProjectRoot)) {
     throw "Projeto nao encontrado em $ProjectRoot"
 }
@@ -98,6 +111,8 @@ foreach ($file in $RootFiles) {
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $archivePath = Join-Path $ArchiveRoot "weedverso-code-$timestamp.zip"
 $latestArchivePath = Join-Path $ArchiveRoot "weedverso-code-latest.zip"
+$bundlePath = Join-Path $ArchiveRoot "weedverso-history-$timestamp.bundle"
+$latestBundlePath = Join-Path $ArchiveRoot "weedverso-history-latest.bundle"
 
 if (Test-Path $archivePath) {
     Remove-Item -LiteralPath $archivePath -Force
@@ -105,25 +120,47 @@ if (Test-Path $archivePath) {
 if (Test-Path $latestArchivePath) {
     Remove-Item -LiteralPath $latestArchivePath -Force
 }
+if (Test-Path $bundlePath) {
+    Remove-Item -LiteralPath $bundlePath -Force
+}
+if (Test-Path $latestBundlePath) {
+    Remove-Item -LiteralPath $latestBundlePath -Force
+}
 
 Compress-Archive -Path (Join-Path $StageRoot "*") -DestinationPath $archivePath -CompressionLevel Optimal
 Copy-Item -LiteralPath $archivePath -Destination $latestArchivePath -Force
 
+$gitExe = Get-GitExe
+if ($gitExe -and (Test-Path (Join-Path $ProjectRoot ".git"))) {
+    & $gitExe -C $ProjectRoot bundle create $bundlePath --all | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Falha ao gerar o bundle Git do codigo."
+    }
+    Copy-Item -LiteralPath $bundlePath -Destination $latestBundlePath -Force
+}
+
 Invoke-RobocopyChecked -Source $StageRoot -Destination $MirrorRoot -ExtraArgs @("/MIR")
 
 $archiveCount = (Get-ChildItem -Path $ArchiveRoot -Filter "weedverso-code-*.zip" -File | Measure-Object).Count
+$bundleCount = (Get-ChildItem -Path $ArchiveRoot -Filter "weedverso-history-*.bundle" -File | Measure-Object).Count
 $manifest = [ordered]@{
     projectRoot = $ProjectRoot
     archiveRoot = $ArchiveRoot
     mirrorRoot = $MirrorRoot
     latestArchive = $latestArchivePath
     lastArchive = $archivePath
+    latestBundle = $(if (Test-Path $latestBundlePath) { $latestBundlePath } else { "" })
+    lastBundle = $(if (Test-Path $bundlePath) { $bundlePath } else { "" })
     lastRunAt = (Get-Date).ToString("s")
     archiveCount = $archiveCount
+    bundleCount = $bundleCount
 }
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -Path $ManifestPath -Encoding UTF8
 
 Write-Info "Backup do codigo concluido."
 Write-Info "Zip: $archivePath"
+if (Test-Path $bundlePath) {
+    Write-Info "Bundle Git: $bundlePath"
+}
 Write-Info "Espelho: $MirrorRoot"
 Write-Info "Manifesto: $ManifestPath"
