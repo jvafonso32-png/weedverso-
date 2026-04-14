@@ -10,6 +10,8 @@ from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
+from desktop_code_backup_status import read_status as read_desktop_code_backup_status
+from desktop_code_backup_status import write_status as write_desktop_code_backup_status
 from env_loader import load_env_file
 from share_publish import current_share_info, local_base_url, public_base_url, publish_state
 from shared_state import normalize_state, read_state, write_state
@@ -229,7 +231,7 @@ class WeedversoHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Credentials", "true")
             self.send_header("Vary", "Origin")
         self.send_header("Access-Control-Allow-Methods", "GET, PUT, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Weedverso-Sync-Token")
         self.send_header(
             "Content-Security-Policy",
             "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; "
@@ -432,6 +434,12 @@ class WeedversoHandler(BaseHTTPRequestHandler):
             self._send_json(current_share_info())
             return
 
+        if path == "/api/desktop-code-backup-status":
+            if not self._ensure_auth_json():
+                return
+            self._send_json(read_desktop_code_backup_status())
+            return
+
         if path in {"", "/", "/index.html"} and not self._is_authenticated():
             self._redirect("/login")
             return
@@ -546,6 +554,16 @@ class WeedversoHandler(BaseHTTPRequestHandler):
                 force=bool(payload.get("force")),
             )
             self._send_json({"ok": True, "publish": publish})
+            return
+
+        if path == "/api/desktop-code-backup-status":
+            if not self._has_sync_access():
+                self._send_json({"error": "unauthorized"}, status=401)
+                return
+            payload = self._read_json_body()
+            if payload is None:
+                return
+            self._send_json({"ok": True, "status": write_desktop_code_backup_status(payload)})
             return
 
         self._send_json({"error": "not_found"}, status=404)

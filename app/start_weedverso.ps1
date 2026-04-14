@@ -125,6 +125,18 @@ function Open-WeedversoWindow {
     Start-Process $Url
 }
 
+function Ensure-WeedversoProtocol {
+    $protocolScript = Join-Path $AppDir "register_weedverso_protocol.ps1"
+    if (-not (Test-Path $protocolScript)) {
+        return
+    }
+
+    try {
+        & powershell -NoProfile -ExecutionPolicy Bypass -File $protocolScript | Out-Null
+    }
+    catch {}
+}
+
 function Get-ExistingCloudSyncProcess {
     try {
         return Get-CimInstance Win32_Process |
@@ -190,6 +202,7 @@ function Start-LocalWeedverso {
 
 $envMap = Read-WeedversoEnv
 $cloudLoginUrl = Get-CloudLoginUrl -EnvMap $envMap
+Ensure-WeedversoProtocol
 
 if ($cloudLoginUrl) {
     Ensure-CloudMirror

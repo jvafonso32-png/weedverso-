@@ -10,7 +10,7 @@
 body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02)1px,transparent 1px);background-size:22px 22px;pointer-events:none}
 .app{width:100%;max-width:1080px;margin:auto;display:grid;gap:12px}.page{display:grid;gap:12px;min-width:0}.page.hidden{display:none}.card{width:100%;min-width:0;background:linear-gradient(165deg,var(--card),var(--card2));border:1px solid var(--ln);border-radius:18px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.33)}
 body[data-privacy="on"] canvas{filter:blur(8px)}
-  .top{display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{display:flex;align-items:center;gap:10px}.logo{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:radial-gradient(circle at 20% 20%,var(--p),#0f3222 70%);font-weight:800;color:#082212}.brand h1{font-family:var(--font-display);font-size:1.35rem;letter-spacing:.4px}.topActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.saveMeta{display:grid;gap:2px;justify-items:end;min-width:180px;text-align:right}.saveMeta strong{font-size:.82rem;color:var(--txt);font-weight:700}.saveMeta span{font-size:.72rem;color:var(--mut)}.saveActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{display:flex;align-items:center;gap:10px}.logo{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:radial-gradient(circle at 20% 20%,var(--p),#0f3222 70%);font-weight:800;color:#082212}.brand h1{font-family:var(--font-display);font-size:1.35rem;letter-spacing:.4px}.topActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.saveMeta{display:grid;gap:2px;justify-items:end;min-width:180px;text-align:right}.saveMeta strong{font-size:.82rem;color:var(--txt);font-weight:700}.saveMeta span{font-size:.72rem;color:var(--mut)}.saveMeta .codeMeta[data-tone="ok"]{color:#c6f6d8}.saveMeta .codeMeta[data-tone="running"]{color:#8fe3ff}.saveMeta .codeMeta[data-tone="error"]{color:#ff9daa}.saveActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .btn,.ghost,.danger,.quick,.navBtn,.iconBtn{position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .22s ease,border-color .22s ease,background .22s ease,color .22s ease}
 .btn,.ghost,.danger{appearance:none;-webkit-appearance:none;border:1px solid var(--ln);border-radius:12px;padding:10px 12px;font:700 .84rem var(--font-ui);letter-spacing:.15px;cursor:pointer;color:var(--txt)}
 .btn:before,.ghost:before,.danger:before,.quick:before,.navBtn:before,.iconBtn:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.13),transparent 28%,transparent 68%,rgba(57,255,143,.08));pointer-events:none}
@@ -89,9 +89,11 @@ linear-gradient(180deg,rgba(18,24,39,.99),rgba(8,12,20,.99));box-shadow:inset 0 
       <div class="saveMeta">
         <strong id="saveStatus">Link pronto para publicar</strong>
         <span id="saveChannels">Telegram e Discord aguardando configuração</span>
+        <span id="codeBackupStatus" class="codeMeta" data-tone="idle">Código GitHub aguardando desktop</span>
       </div>
       <div class="saveActions">
         <button id="privacyToggleBtn" class="iconBtn" type="button" title="Ocultar resultados">👁</button>
+        <button id="saveCodeBtn" class="ghost" type="button">Salvar código GitHub</button>
         <button id="openShareLinkBtn" class="ghost" type="button">Abrir link atual</button>
         <button id="saveAllBtn" class="btn" type="button">Salvar tudo</button>
         <button id="logoutBtn" class="ghost" type="button">Sair</button>
@@ -446,6 +448,7 @@ linear-gradient(180deg,rgba(18,24,39,.99),rgba(8,12,20,.99));box-shadow:inset 0 
 <script>
 const KEY='rotina_prime_v2', PRIVACY_KEY=`${KEY}:privacy`, XP_H=40;
 const IS_REMOTE_APP=Boolean(window.location && /^https?:$/i.test(window.location.protocol));
+const DESKTOP_BACKUP_SUPPORTED=!IS_REMOTE_APP||/Windows/i.test(String(navigator.userAgent||''));
 const API_BASE=(function(){
   if(window.WEEDVERSO_API_BASE) return window.WEEDVERSO_API_BASE;
   if(IS_REMOTE_APP) return '';
@@ -477,10 +480,11 @@ let focusTick=null;
 const ui={page:'home',privacy:readPrivacyMode(),balances:{conta:false,vale1:false,vale2:false},credit:false,debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
 const serverSync={initialized:false,available:false,timer:null,poller:null,pushing:false,lastSnapshot:''};
 const publishSync={busy:false,version:0,updatedAt:'',reason:'',links:{preferred:'',local:'',public:''},notifications:{telegram:'idle',discord:'idle'},lastError:''};
+const codeBackupSync={launching:false,poller:null,pollDeadline:0,status:'idle',message:'',startedAt:'',finishedAt:'',lastRunAt:'',branch:'',commit:'',remote:'',changedFiles:0,lastError:'',lastSeenAt:''};
 
 const $=s=>document.querySelector(s);
 const el={
-  app:$('#appName'),privacyToggleBtn:$('#privacyToggleBtn'),saveAllBtn:$('#saveAllBtn'),openShareLinkBtn:$('#openShareLinkBtn'),saveStatus:$('#saveStatus'),saveChannels:$('#saveChannels'),logoutBtn:$('#logoutBtn'),homePage:$('#homePage'),routinePage:$('#routinePage'),creditPage:$('#creditPage'),debtsPage:$('#debtsPage'),goalsPage:$('#goalsPage'),statementPage:$('#statementPage'),navBtns:document.querySelectorAll('[data-page]'),
+  app:$('#appName'),privacyToggleBtn:$('#privacyToggleBtn'),saveCodeBtn:$('#saveCodeBtn'),saveAllBtn:$('#saveAllBtn'),openShareLinkBtn:$('#openShareLinkBtn'),saveStatus:$('#saveStatus'),saveChannels:$('#saveChannels'),codeBackupStatus:$('#codeBackupStatus'),logoutBtn:$('#logoutBtn'),homePage:$('#homePage'),routinePage:$('#routinePage'),creditPage:$('#creditPage'),debtsPage:$('#debtsPage'),goalsPage:$('#goalsPage'),statementPage:$('#statementPage'),navBtns:document.querySelectorAll('[data-page]'),
   focusPill:$('#focusPill'),heroTitle:$('#heroTitle'),heroDesc:$('#heroDesc'),heroRemaining:$('#heroRemaining'),heroRisk:$('#heroRisk'),heroDebt:$('#heroDebt'),quickActions:$('#quickActions'),
   hForm:$('#habitForm'),hName:$('#hName'),hGoal:$('#hGoal'),hDate:$('#hDate'),focusHabitSelect:$('#focusHabitSelect'),focusMinutesInput:$('#focusMinutesInput'),focusStartBtn:$('#focusStartBtn'),focusPauseBtn:$('#focusPauseBtn'),focusResetBtn:$('#focusResetBtn'),focusClock:$('#focusClock'),focusStatus:$('#focusStatus'),hList:$('#habitList'),mot:$('#motivation'),routineDateInfo:$('#routineDateInfo'),routineLog:$('#routineLog'),routineChart:$('#routineChart'),
   fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
@@ -519,6 +523,7 @@ async function boot(){
   renderAll();
   await hydrateFromServer();
   await hydrateShareInfo();
+  await hydrateDesktopCodeBackupStatus();
   serverSync.initialized=true;
   startServerPolling();
 }
@@ -533,6 +538,9 @@ function bind(){
   }
   if(el.privacyToggleBtn){
     el.privacyToggleBtn.addEventListener('click',togglePrivacyMode);
+  }
+  if(el.saveCodeBtn){
+    el.saveCodeBtn.addEventListener('click',triggerDesktopCodeBackup);
   }
   if(el.saveAllBtn){
     el.saveAllBtn.addEventListener('click',async function(){
@@ -922,7 +930,7 @@ function bind(){
   });
 }
 
-function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();}
+function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();}
 function showPage(page){
   ui.page=['home','routine','credit','debts','goals','statement'].includes(page)?page:'home';
   renderPage();
@@ -2466,6 +2474,165 @@ function renderPublishStatus(){
     el.openShareLinkBtn.disabled=!hasLink;
     el.openShareLinkBtn.style.opacity=hasLink?'1':'.55';
   }
+}
+function desktopBackupStamp(info){
+  info=info||{};
+  return String(info.finishedAt||info.lastRunAt||info.startedAt||'');
+}
+function desktopBackupTone(){
+  if(codeBackupSync.launching||codeBackupSync.status==='running') return 'running';
+  if(codeBackupSync.status==='ok') return 'ok';
+  if(codeBackupSync.status==='error') return 'error';
+  return 'idle';
+}
+function formatStatusMoment(value){
+  if(!value) return '';
+  try{
+    return new Date(value).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }catch(err){
+    return value;
+  }
+}
+function desktopBackupStatusText(){
+  if(!DESKTOP_BACKUP_SUPPORTED) return 'Backup GitHub disponível no Weedverso do desktop';
+  if(codeBackupSync.launching) return 'Pedindo backup do código ao desktop...';
+  if(codeBackupSync.status==='running') return codeBackupSync.message||'Salvando código no GitHub...';
+  if(codeBackupSync.status==='ok') return codeBackupSync.message||'Código salvo no GitHub.';
+  if(codeBackupSync.status==='error') return codeBackupSync.lastError||codeBackupSync.message||'Falha no backup do código.';
+  return codeBackupSync.message||'Código GitHub aguardando desktop';
+}
+function desktopBackupDetailText(){
+  if(!DESKTOP_BACKUP_SUPPORTED) return 'Use esse botão no Weedverso aberto pelo desktop Windows.';
+  if(codeBackupSync.status==='ok'){
+    const parts=[];
+    if(codeBackupSync.branch) parts.push(`branch ${codeBackupSync.branch}`);
+    if(codeBackupSync.commit) parts.push(`commit ${codeBackupSync.commit}`);
+    if(codeBackupSync.finishedAt) parts.push(`às ${formatStatusMoment(codeBackupSync.finishedAt)}`);
+    return parts.join(' | ')||'Código confirmado no GitHub.';
+  }
+  if(codeBackupSync.status==='error'){
+    const parts=[];
+    if(codeBackupSync.message) parts.push(codeBackupSync.message);
+    if(codeBackupSync.lastError) parts.push(codeBackupSync.lastError);
+    return parts.join(' | ')||'O desktop não conseguiu salvar o código no GitHub.';
+  }
+  if(codeBackupSync.status==='running'||codeBackupSync.launching){
+    return 'O botão dispara o backup do código no seu PC e devolve o resultado aqui.';
+  }
+  return 'Esse botão salva o código atual do PC no repositório GitHub sem abrir terminal.';
+}
+function applyDesktopCodeBackupStatus(info){
+  info=info||{};
+  codeBackupSync.status=String(info.status||'idle');
+  codeBackupSync.message=String(info.message||'');
+  codeBackupSync.startedAt=String(info.startedAt||'');
+  codeBackupSync.finishedAt=String(info.finishedAt||'');
+  codeBackupSync.lastRunAt=String(info.lastRunAt||'');
+  codeBackupSync.branch=String(info.branch||'');
+  codeBackupSync.commit=String(info.commit||'');
+  codeBackupSync.remote=String(info.remote||'');
+  codeBackupSync.changedFiles=Math.max(0,Number(info.changedFiles)||0);
+  codeBackupSync.lastError=String(info.lastError||'');
+  codeBackupSync.lastSeenAt=desktopBackupStamp(info);
+  if(codeBackupSync.status!=='running') codeBackupSync.launching=false;
+  renderDesktopCodeBackupStatus();
+}
+function renderDesktopCodeBackupStatus(){
+  if(el.codeBackupStatus){
+    el.codeBackupStatus.textContent=desktopBackupStatusText();
+    el.codeBackupStatus.dataset.tone=desktopBackupTone();
+    el.codeBackupStatus.title=desktopBackupDetailText();
+  }
+  if(el.saveCodeBtn){
+    const busy=codeBackupSync.launching||codeBackupSync.status==='running';
+    el.saveCodeBtn.disabled=!DESKTOP_BACKUP_SUPPORTED||busy;
+    el.saveCodeBtn.style.opacity=!DESKTOP_BACKUP_SUPPORTED?'.55':'1';
+    el.saveCodeBtn.textContent=busy?'Salvando código...':'Salvar código GitHub';
+    el.saveCodeBtn.title=desktopBackupDetailText();
+  }
+}
+function stopDesktopCodeBackupPolling(){
+  if(codeBackupSync.poller){
+    clearInterval(codeBackupSync.poller);
+    codeBackupSync.poller=null;
+  }
+}
+async function hydrateDesktopCodeBackupStatus(){
+  try{
+    const info=await requestApi('/api/desktop-code-backup-status');
+    applyDesktopCodeBackupStatus(info);
+    return info;
+  }catch(err){
+    codeBackupSync.launching=false;
+    renderDesktopCodeBackupStatus();
+    return null;
+  }
+}
+function launchDesktopBackupProtocol(){
+  const uri='weedverso://github-backup?source=cloud-ui';
+  const link=document.createElement('a');
+  link.href=uri;
+  link.style.display='none';
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(function(){
+    try{ link.remove(); }catch(err){}
+  },500);
+}
+function startDesktopCodeBackupPolling(previousSeenAt){
+  stopDesktopCodeBackupPolling();
+  codeBackupSync.pollDeadline=Date.now()+35000;
+  let observedNewRun=false;
+  const tick=async function(){
+    try{
+      const info=await requestApi('/api/desktop-code-backup-status');
+      const seenAt=desktopBackupStamp(info);
+      if(seenAt && seenAt!==previousSeenAt) observedNewRun=true;
+      applyDesktopCodeBackupStatus(info);
+      if(observedNewRun && String(info.status||'')!=='running'){
+        stopDesktopCodeBackupPolling();
+        return;
+      }
+      if(!observedNewRun && Date.now()>codeBackupSync.pollDeadline){
+        codeBackupSync.launching=false;
+        codeBackupSync.status='error';
+        codeBackupSync.message='O desktop não respondeu ao pedido de backup.';
+        codeBackupSync.lastError='';
+        renderDesktopCodeBackupStatus();
+        stopDesktopCodeBackupPolling();
+      }
+    }catch(err){
+      if(Date.now()>codeBackupSync.pollDeadline){
+        codeBackupSync.launching=false;
+        codeBackupSync.status='error';
+        codeBackupSync.message='Não consegui confirmar o backup do código na interface.';
+        codeBackupSync.lastError='';
+        renderDesktopCodeBackupStatus();
+        stopDesktopCodeBackupPolling();
+      }
+    }
+  };
+  tick();
+  codeBackupSync.poller=setInterval(tick,2000);
+}
+function triggerDesktopCodeBackup(){
+  if(!DESKTOP_BACKUP_SUPPORTED) return;
+  const previousSeenAt=codeBackupSync.lastSeenAt||desktopBackupStamp(codeBackupSync);
+  codeBackupSync.launching=true;
+  codeBackupSync.message='Pedindo backup do código ao desktop...';
+  codeBackupSync.lastError='';
+  renderDesktopCodeBackupStatus();
+  try{
+    launchDesktopBackupProtocol();
+  }catch(err){
+    codeBackupSync.launching=false;
+    codeBackupSync.status='error';
+    codeBackupSync.message='Não consegui chamar o app do desktop.';
+    codeBackupSync.lastError=String(err&&err.message||'');
+    renderDesktopCodeBackupStatus();
+    return;
+  }
+  startDesktopCodeBackupPolling(previousSeenAt);
 }
 async function hydrateShareInfo(){
   try{
