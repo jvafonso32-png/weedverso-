@@ -29,6 +29,7 @@ if str(APP_DIR) not in sys.path:
     sys.path.insert(0, str(APP_DIR))
 
 import shared_state as shared_state_mod
+import share_publish as share_publish_mod
 import telegram_bot as telegram_bot_mod
 
 
@@ -288,6 +289,33 @@ def run_telegram_flow_test() -> tuple[str, dict]:
         temp_dir = Path(temp_dir_raw)
         state_file = temp_dir / "telegram-state.json"
         seed = copy.deepcopy(shared_state_mod.DEFAULT_STATE)
+        seed["debtors"] = [
+            {
+                "id": "deb-1",
+                "name": "Carlos",
+                "amount": 120.0,
+                "note": "pix atrasado",
+                "payDate": "2026-04-20",
+                "paid": False,
+                "paidAt": "",
+                "at": "2026-04-10T10:00:00",
+            }
+        ]
+        seed["myDebts"] = [
+            {
+                "id": "mydeb-1",
+                "name": "Notebook",
+                "amount": 250.0,
+                "installmentValue": 250.0,
+                "installments": 5,
+                "installmentsPaid": 2,
+                "note": "parcelado",
+                "payDate": "2026-04-25",
+                "paid": False,
+                "paidAt": "",
+                "at": "2026-04-08T09:00:00",
+            }
+        ]
         chat_id = 7121051643
 
         with shared_state_mod.using_state_file(state_file, seed_state=seed):
@@ -305,12 +333,17 @@ def run_telegram_flow_test() -> tuple[str, dict]:
                 ("ganhei 1 real em conta como pagamento", "Entrada registrada em"),
                 ("gastei 12,50 no cartao cafe", "Gasto registrado no cartao"),
                 ("quanto tenho na conta", "Saldo em Conta"),
+                ("Devedores", "Devedores | em aberto"),
+                ("Minhas dividas", "Minhas dividas | em aberto"),
             ]
             replies = []
             for text, expected_fragment in cases:
                 _, reply = telegram_bot_mod.route_message({"chat": {"id": chat_id}, "text": text})
                 replies.append({"input": text, "reply": reply})
                 assert_true(expected_fragment in reply, f"Resposta do Telegram deve conter '{expected_fragment}' para '{text}'")
+
+            _, fallback_reply = telegram_bot_mod.route_message({"chat": {"id": chat_id}, "text": "blabla comando maluco"})
+            assert_equal(fallback_reply, "Desculpe meu senhor, programe melhor.", "Fallback do Telegram deve usar o novo texto")
 
             state = shared_state_mod.read_state()
 
@@ -328,6 +361,73 @@ def run_telegram_flow_test() -> tuple[str, dict]:
             "sample_reply": replies[-1]["reply"],
         }
         return detail, extra
+
+
+def run_share_publish_pin_test() -> tuple[str, dict]:
+    with tempfile.TemporaryDirectory(prefix="weedverso-publish-") as temp_dir_raw:
+        temp_dir = Path(temp_dir_raw)
+        data_dir = temp_dir / "data"
+        publish_file = data_dir / "publish_runtime.json"
+
+        original_data_dir = share_publish_mod.DATA_DIR
+        original_publish_file = share_publish_mod.PUBLISH_FILE
+        original_notify_telegram = share_publish_mod._notify_telegram
+        original_notify_discord = share_publish_mod._notify_discord
+        original_env = {
+            "WEEDVERSO_PUBLIC_URL": os.getenv("WEEDVERSO_PUBLIC_URL", ""),
+            "WEEDVERSO_SHARE_HOST": os.getenv("WEEDVERSO_SHARE_HOST", ""),
+        }
+        call_log: list[dict] = []
+
+        def fake_notify_telegram(links, previous_pin=None):
+            preferred = share_publish_mod._telegram_link(links)
+            next_message_id = 700 + len(call_log) + 1
+            call_log.append({"link": preferred, "previous": dict(previous_pin or {})})
+            return {
+                "status": "sent",
+                "pin": {
+                    "chatId": "7121051643",
+                    "messageId": next_message_id,
+                    "updatedAt": "2026-04-15T03:00:00",
+                    "link": preferred,
+                    "status": "sent",
+                },
+            }
+
+        try:
+            share_publish_mod.DATA_DIR = data_dir
+            share_publish_mod.PUBLISH_FILE = publish_file
+            share_publish_mod._notify_telegram = fake_notify_telegram
+            share_publish_mod._notify_discord = lambda message: "unconfigured"
+
+            os.environ["WEEDVERSO_PUBLIC_URL"] = "https://weed.example.com"
+            os.environ["WEEDVERSO_SHARE_HOST"] = ""
+
+            first = share_publish_mod.publish_state(copy.deepcopy(shared_state_mod.DEFAULT_STATE), reason="manual", force=True)
+            runtime_first = share_publish_mod.read_publish_runtime()
+            assert_equal(first["version"], 1, "Primeiro publish deve criar versao 1")
+            assert_equal(runtime_first["telegramPin"]["link"], "https://weed.example.com/login", "Link do Telegram deve ser limpo")
+            assert_equal(runtime_first["telegramPin"]["messageId"], 701, "Pin inicial deve guardar o id retornado")
+
+            os.environ["WEEDVERSO_PUBLIC_URL"] = "https://novo.weed.example.com"
+            second = share_publish_mod.publish_state(copy.deepcopy(shared_state_mod.DEFAULT_STATE), reason="manual", force=False)
+            runtime_second = share_publish_mod.read_publish_runtime()
+            assert_equal(second["version"], 2, "Mudanca de link deve gerar nova versao mesmo sem mudar estado")
+            assert_equal(runtime_second["telegramPin"]["link"], "https://novo.weed.example.com/login", "Pin deve guardar o link atualizado")
+            assert_equal(call_log[-1]["previous"].get("messageId"), 701, "Segundo envio deve conhecer a mensagem anterior")
+            detail = "Publicacao do Weedverso manteve um unico link limpo para o Telegram e reagiu a troca de URL"
+            extra = {"first_link": runtime_first["telegramPin"]["link"], "second_link": runtime_second["telegramPin"]["link"]}
+            return detail, extra
+        finally:
+            share_publish_mod.DATA_DIR = original_data_dir
+            share_publish_mod.PUBLISH_FILE = original_publish_file
+            share_publish_mod._notify_telegram = original_notify_telegram
+            share_publish_mod._notify_discord = original_notify_discord
+            for key, value in original_env.items():
+                if value:
+                    os.environ[key] = value
+                else:
+                    os.environ.pop(key, None)
 
 
 def run_api_noauth_test() -> tuple[str, dict]:
@@ -596,6 +696,7 @@ def run_checks() -> tuple[list[CheckResult], dict]:
         ("live_local_smoke", run_live_local_smoke),
         ("shared_state_persistence", run_shared_state_persistence_test),
         ("telegram_user_flows", run_telegram_flow_test),
+        ("share_publish_pin", run_share_publish_pin_test),
         ("api_noauth_persistence", run_api_noauth_test),
         ("api_auth_security", run_api_auth_security_test),
         ("exposure_guard", run_exposure_guard_test),

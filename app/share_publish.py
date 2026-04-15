@@ -32,6 +32,18 @@ def _default_runtime():
         "stateHash": "",
         "lastLinks": {},
         "notifications": {"telegram": "idle", "discord": "idle"},
+        "telegramPin": {"chatId": "", "messageId": 0, "updatedAt": "", "link": "", "status": "idle"},
+    }
+
+
+def _normalize_telegram_pin(raw_pin):
+    raw_pin = dict(raw_pin or {})
+    return {
+        "chatId": str(raw_pin.get("chatId") or ""),
+        "messageId": max(0, int(raw_pin.get("messageId") or 0)),
+        "updatedAt": str(raw_pin.get("updatedAt") or ""),
+        "link": str(raw_pin.get("link") or ""),
+        "status": str(raw_pin.get("status") or "idle"),
     }
 
 
@@ -48,6 +60,7 @@ def _normalize_runtime(raw_runtime):
         "telegram": str(notifications.get("telegram") or "idle"),
         "discord": str(notifications.get("discord") or "idle"),
     }
+    runtime["telegramPin"] = _normalize_telegram_pin(runtime.get("telegramPin"))
     return runtime
 
 
@@ -137,6 +150,15 @@ def build_share_links(version):
     return links
 
 
+def _telegram_link(links):
+    preferred = str((links or {}).get("public") or (links or {}).get("preferred") or "").strip()
+    if not preferred:
+        preferred = str((links or {}).get("local") or "").strip()
+    if "?" in preferred:
+        preferred = preferred.split("?", 1)[0].rstrip("/")
+    return preferred
+
+
 def current_share_info():
     runtime = read_publish_runtime()
     links = build_share_links(runtime["version"])
@@ -149,26 +171,137 @@ def current_share_info():
     }
 
 
+def _telegram_call(token, method, payload=None):
+    payload = {key: value for key, value in dict(payload or {}).items() if value not in {None, ""}}
+    data = parse.urlencode(payload).encode("utf-8")
+    req = request.Request(f"https://api.telegram.org/bot{token}/{method}", data=data)
+    with request.urlopen(req, timeout=20) as response:
+        body = json.loads(response.read().decode("utf-8"))
+    if not body.get("ok"):
+        raise RuntimeError(f"Falha na API do Telegram: {body}")
+    return body.get("result")
+
+
+def _notify_telegram(links, previous_pin=None):
+    token = str(os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+    if not token:
+        return {"status": "unconfigured", "pin": _normalize_telegram_pin(previous_pin)}
+    chat_id = str(os.getenv("WEEDVERSO_NOTIFY_CHAT_ID") or "").strip() or str(latest_chat_id() or "").strip()
+    if not chat_id:
+        return {"status": "no_chat", "pin": _normalize_telegram_pin(previous_pin)}
+
+    preferred_link = _telegram_link(links)
+    if not preferred_link:
+        return {"status": "failed", "pin": _normalize_telegram_pin(previous_pin)}
+
+    previous_pin = _normalize_telegram_pin(previous_pin)
+    message_id = 0
+    try:
+        if previous_pin.get("chatId") == chat_id and previous_pin.get("messageId"):
+            message_id = int(previous_pin["messageId"])
+            _telegram_call(
+                token,
+                "editMessageText",
+                {
+                    "chat_id": chat_id,
+                    "message_id": message_id,
+                    "text": preferred_link,
+                    "disable_web_page_preview": "true",
+                },
+            )
+        else:
+            result = _telegram_call(
+                token,
+                "sendMessage",
+                {
+                    "chat_id": chat_id,
+                    "text": preferred_link,
+                    "disable_web_page_preview": "true",
+                    "disable_notification": "true",
+                },
+            )
+            message_id = int((result or {}).get("message_id") or 0)
+            if previous_pin.get("chatId") == chat_id and previous_pin.get("messageId") and previous_pin.get("messageId") != message_id:
+                try:
+                    _telegram_call(
+                        token,
+                        "deleteMessage",
+                        {"chat_id": chat_id, "message_id": int(previous_pin["messageId"])},
+                    )
+                except Exception:
+                    pass
+
+        _telegram_call(
+            token,
+            "pinChatMessage",
+            {
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "disable_notification": "true",
+            },
+        )
+        return {
+            "status": "sent",
+            "pin": {
+                "chatId": chat_id,
+                "messageId": message_id,
+                "updatedAt": _now_iso(),
+                "link": preferred_link,
+                "status": "sent",
+            },
+        }
+    except Exception:
+        try:
+            result = _telegram_call(
+                token,
+                "sendMessage",
+                {
+                    "chat_id": chat_id,
+                    "text": preferred_link,
+                    "disable_web_page_preview": "true",
+                    "disable_notification": "true",
+                },
+            )
+            message_id = int((result or {}).get("message_id") or 0)
+            _telegram_call(
+                token,
+                "pinChatMessage",
+                {
+                    "chat_id": chat_id,
+                    "message_id": message_id,
+                    "disable_notification": "true",
+                },
+            )
+            if previous_pin.get("chatId") == chat_id and previous_pin.get("messageId") and previous_pin.get("messageId") != message_id:
+                try:
+                    _telegram_call(
+                        token,
+                        "deleteMessage",
+                        {"chat_id": chat_id, "message_id": int(previous_pin["messageId"])},
+                    )
+                except Exception:
+                    pass
+            return {
+                "status": "sent",
+                "pin": {
+                    "chatId": chat_id,
+                    "messageId": message_id,
+                    "updatedAt": _now_iso(),
+                    "link": preferred_link,
+                    "status": "sent",
+                },
+            }
+        except Exception:
+            failed_pin = previous_pin if previous_pin.get("messageId") else _normalize_telegram_pin({})
+            failed_pin["status"] = "failed"
+            failed_pin["link"] = preferred_link
+            failed_pin["updatedAt"] = _now_iso()
+            return {"status": "failed", "pin": failed_pin}
+
+
 def _state_hash(state):
     payload = json.dumps(state or {}, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
-
-def _notify_telegram(message):
-    token = str(os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
-    if not token:
-        return "unconfigured"
-    chat_id = str(os.getenv("WEEDVERSO_NOTIFY_CHAT_ID") or "").strip() or str(latest_chat_id() or "").strip()
-    if not chat_id:
-        return "no_chat"
-    data = parse.urlencode({"chat_id": chat_id, "text": message}).encode("utf-8")
-    req = request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
-    try:
-        with request.urlopen(req, timeout=20) as response:
-            body = json.loads(response.read().decode("utf-8"))
-        return "sent" if body.get("ok") else "failed"
-    except Exception:
-        return "failed"
 
 
 def _notify_discord(message):
@@ -213,16 +346,20 @@ def publish_state(state, reason="manual", force=False):
     runtime = read_publish_runtime()
     snapshot_hash = _state_hash(state)
     changed = snapshot_hash != runtime["stateHash"]
-    should_publish = bool(force or changed or runtime["version"] <= 0)
+    current_links = build_share_links(runtime["version"])
+    link_changed = current_links != dict(runtime.get("lastLinks") or {})
+    should_publish = bool(force or changed or link_changed or runtime["version"] <= 0)
     version = runtime["version"]
     notifications = dict(runtime["notifications"])
+    telegram_pin = _normalize_telegram_pin(runtime.get("telegramPin"))
 
     if should_publish:
         version += 1
         links = build_share_links(version)
         message = _publish_message(version, reason, links)
+        telegram_result = _notify_telegram(links, previous_pin=telegram_pin)
         notifications = {
-            "telegram": _notify_telegram(message),
+            "telegram": str(telegram_result.get("status") or "failed"),
             "discord": _notify_discord(message),
         }
         runtime = write_publish_runtime(
@@ -233,6 +370,7 @@ def publish_state(state, reason="manual", force=False):
                 "stateHash": snapshot_hash,
                 "lastLinks": links,
                 "notifications": notifications,
+                "telegramPin": telegram_result.get("pin"),
             }
         )
     else:

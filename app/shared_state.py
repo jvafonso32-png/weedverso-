@@ -610,6 +610,55 @@ def goals_summary(state=None):
     return goals
 
 
+def debtors_summary(state=None):
+    state = state or read_state()
+    debtors = []
+    for item in state.get("debtors", []):
+        entry = normalize_debt_item(item)
+        debtors.append(
+            {
+                "name": entry["name"] or "Devedor",
+                "amount": max(0.0, safe_float(entry.get("amount"), 0)),
+                "note": normalize_spaces(entry.get("note")),
+                "payDate": str(entry.get("payDate") or ""),
+                "paid": bool(entry.get("paid")),
+                "paidAt": str(entry.get("paidAt") or ""),
+                "at": str(entry.get("at") or ""),
+            }
+        )
+    debtors.sort(key=lambda item: (item["paid"], item["payDate"] or "9999-99-99", item["name"].lower()))
+    return debtors
+
+
+def my_debts_summary(state=None):
+    state = state or read_state()
+    debts = []
+    for item in state.get("myDebts", []):
+        entry = normalize_debt_item(item)
+        installments = max(1, int(entry.get("installments") or 1))
+        installments_paid = max(0, min(installments, int(entry.get("installmentsPaid") or 0)))
+        installment_value = max(0.0, safe_float(entry.get("installmentValue"), entry.get("amount")))
+        remaining_installments = max(0, installments - installments_paid)
+        remaining_value = installment_value * remaining_installments
+        debts.append(
+            {
+                "name": entry["name"] or "Divida",
+                "installmentValue": installment_value,
+                "installments": installments,
+                "installmentsPaid": installments_paid,
+                "remainingInstallments": remaining_installments,
+                "remainingValue": remaining_value,
+                "note": normalize_spaces(entry.get("note")),
+                "payDate": str(entry.get("payDate") or ""),
+                "paid": bool(entry.get("paid")),
+                "paidAt": str(entry.get("paidAt") or ""),
+                "at": str(entry.get("at") or ""),
+            }
+        )
+    debts.sort(key=lambda item: (item["paid"], item["payDate"] or "9999-99-99", item["name"].lower()))
+    return debts
+
+
 def money(value):
     value = safe_float(value)
     return f"R$ {value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")

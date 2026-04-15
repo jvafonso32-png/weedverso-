@@ -7,6 +7,7 @@ import unicodedata
 from urllib import parse, request
 
 from env_loader import load_env_file
+from share_publish import current_share_info
 from shared_state import (
     BALANCE_ALIASES,
     add_balance_transaction,
@@ -15,10 +16,12 @@ from shared_state import (
     balance_alias_map,
     balance_summary,
     combined_history,
+    debtors_summary,
     fold_text,
     goals_summary,
     money,
     move_goal,
+    my_debts_summary,
     read_state,
     resolve_balance_key,
     titleize_words,
@@ -100,6 +103,8 @@ GREETING_WORDS = {
     "opa",
 }
 HELP_WORDS = {"ajuda", "help", "socorro", "manual", "comandos", "comando", "menu"}
+DEBTOR_WORDS = {"devedor", "devedores", "quem me deve", "meus devedores", "valores a receber", "a receber"}
+MY_DEBT_WORDS = {"minha divida", "minhas dividas", "meus debitos", "contas a pagar", "o que eu devo"}
 CARD_WORDS = {"cartao", "credito", "fatura", "amex"}
 RESERVE_WORDS = {"reserva", "reservado", "reservada", "separado", "separada"}
 EXTRATO_WORDS = {"extrato", "extratos", "movimentacoes", "movimentação", "movimentacao", "lancamentos", "lançamento", "lancamento", "historico", "histórico"}
@@ -630,6 +635,17 @@ def format_card_status():
     )
 
 
+def format_short_date(value):
+    raw = normalize_text(value)
+    if not raw:
+        return ""
+    if re.match(r"^\d{4}-\d{2}-\d{2}$", raw):
+        return f"{raw[8:10]}/{raw[5:7]}"
+    if re.match(r"^\d{4}-\d{2}-\d{2}T", raw):
+        return f"{raw[8:10]}/{raw[5:7]}"
+    return raw[:10]
+
+
 def help_text():
     return "\n".join(
         [
@@ -680,6 +696,9 @@ def help_text():
             "criar objetivo notebook | 5000",
             "depositei 200 no objetivo notebook",
             "rendeu 30 no objetivo notebook",
+            "devedores",
+            "minhas dividas",
+            "link weedverso",
             "",
             "Durante o modo teste, tudo acima vira simulacao e nada e salvo.",
             "",
@@ -727,6 +746,56 @@ def format_goals():
             f"{item['name']} | {money(item['saved'])} de {money(item['target'])} | {item['pct']}% | faltam {money(item['left'])}"
         )
     return "\n".join(lines)
+
+
+def format_debtors():
+    items = debtors_summary()
+    if not items:
+        return "Nenhum devedor cadastrado."
+    open_items = [item for item in items if not item.get("paid")]
+    if not open_items:
+        return "Nenhum devedor em aberto."
+    total_open = sum(float(item.get("amount") or 0) for item in open_items)
+    lines = [f"Devedores | em aberto: {len(open_items)} | total a receber: {money(total_open)}"]
+    for item in open_items[:8]:
+        parts = [f"{item['name']}: {money(item['amount'])}"]
+        if item.get("payDate"):
+            parts.append(f"vence {format_short_date(item['payDate'])}")
+        if item.get("note"):
+            parts.append(item["note"])
+        lines.append(" | ".join(parts))
+    return "\n".join(lines)
+
+
+def format_my_debts():
+    items = my_debts_summary()
+    if not items:
+        return "Nenhuma divida propria cadastrada."
+    open_items = [item for item in items if not item.get("paid")]
+    if not open_items:
+        return "Nenhuma divida em aberto."
+    total_open = sum(float(item.get("remainingValue") or 0) for item in open_items)
+    lines = [f"Minhas dividas | em aberto: {len(open_items)} | total restante: {money(total_open)}"]
+    for item in open_items[:8]:
+        parts = [
+            f"{item['name']}: {money(item['remainingValue'])}",
+            f"{item['installmentsPaid']}/{item['installments']} parcelas",
+            f"parcela {money(item['installmentValue'])}",
+        ]
+        if item.get("payDate"):
+            parts.append(f"vence {format_short_date(item['payDate'])}")
+        if item.get("note"):
+            parts.append(item["note"])
+        lines.append(" | ".join(parts))
+    return "\n".join(lines)
+
+
+def format_share_link():
+    info = current_share_info()
+    preferred = str(((info or {}).get("links") or {}).get("preferred") or "").strip()
+    if not preferred:
+        return "Link do Weedverso ainda nao foi publicado."
+    return preferred.split("?", 1)[0].rstrip("/")
 
 
 def format_connection(chat_id):
@@ -939,6 +1008,12 @@ def try_parse_read_query(text):
         return format_extrato()
     if normalized in {"objetivos", "metas", "meus objetivos", "minhas metas"}:
         return format_goals()
+    if normalized in DEBTOR_WORDS:
+        return format_debtors()
+    if normalized in MY_DEBT_WORDS:
+        return format_my_debts()
+    if normalized in {"link", "link weedverso", "abrir weedverso", "painel weedverso", "painel"}:
+        return format_share_link()
     if is_query_like(normalized) and text_tokens(normalized) & EXTRATO_WORDS:
         return format_extrato()
     if is_query_like(normalized) and text_tokens(normalized) & {"objetivo", "objetivos", "meta", "metas"}:
@@ -946,6 +1021,15 @@ def try_parse_read_query(text):
             return format_query_goal(text)
         except Exception:
             return format_goals()
+    if is_query_like(normalized) and (text_tokens(normalized) & {"devedor", "devedores"} or has_phrase(normalized, {"quem me deve", "o que tenho a receber"})):
+        return format_debtors()
+    if is_query_like(normalized) and (
+        has_phrase(normalized, {"minhas dividas", "meus debitos", "contas a pagar", "o que eu devo"})
+        or ("dividas" in text_tokens(normalized) and {"minha", "minhas", "meu", "meus", "eu"} & text_tokens(normalized))
+    ):
+        return format_my_debts()
+    if is_query_like(normalized) and has_phrase(normalized, {"link do weedverso", "me manda o link", "qual o link", "abre o painel"}):
+        return format_share_link()
 
     if is_query_like(normalized) and (text_tokens(normalized) & GENERAL_BALANCE_WORDS):
         return format_saldos()
@@ -1109,7 +1193,7 @@ def _route_message_impl(message):
         finance_reply = try_parse_natural_finance(text, persist=persist_changes)
         if finance_reply:
             return chat_id, maybe_decorate_test_reply(finance_reply)
-        return chat_id, "Nao entendi essa frase ainda. Use /help para ver os formatos."
+        return chat_id, "Desculpe meu senhor, programe melhor."
 
     parts = text.split()
     command = parts[0].split("@")[0].lower()
@@ -1133,10 +1217,16 @@ def _route_message_impl(message):
         return chat_id, maybe_decorate_test_reply(handle_reserva_command(args, persist=persist_changes))
     if command in {"/objetivos", "/metas"}:
         return chat_id, maybe_decorate_test_reply(format_goals())
+    if command in {"/devedores", "/receber"}:
+        return chat_id, maybe_decorate_test_reply(format_debtors())
+    if command in {"/dividas", "/minhasdividas", "/debitos"}:
+        return chat_id, maybe_decorate_test_reply(format_my_debts())
     if command == "/objetivo":
         return chat_id, maybe_decorate_test_reply(handle_goal_command(args, persist=persist_changes))
     if command in {"/extrato", "/extratos"}:
         return chat_id, maybe_decorate_test_reply(format_extrato())
+    if command in {"/link", "/painel", "/weedverso"}:
+        return chat_id, maybe_decorate_test_reply(format_share_link())
     if command in {"/meuid", "/chatid", "/conexao"}:
         return chat_id, maybe_decorate_test_reply(format_connection(chat_id))
     if command in {"/teste", "/testetelegram"}:
