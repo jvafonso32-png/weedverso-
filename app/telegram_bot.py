@@ -317,13 +317,82 @@ def call_telegram(method, payload=None):
 
 
 def send_message(chat_id, text):
-    result = call_telegram("sendMessage", {"chat_id": chat_id, "text": text})
-    schedule_delete_message(chat_id, (result or {}).get("message_id"))
-    return result
+    chunks = split_telegram_text(text)
+    first_result = None
+    for index, chunk in enumerate(chunks):
+        payload = {"chat_id": chat_id, "text": chunk}
+        if index > 0:
+            payload["disable_notification"] = "true"
+        if is_plain_link_message(chunk):
+            payload["disable_web_page_preview"] = "true"
+        result = call_telegram("sendMessage", payload)
+        schedule_delete_message(chat_id, (result or {}).get("message_id"))
+        if first_result is None:
+            first_result = result
+    return first_result
 
 
 def delete_message(chat_id, message_id):
     return call_telegram("deleteMessage", {"chat_id": chat_id, "message_id": message_id})
+
+
+def is_plain_link_message(text):
+    return bool(re.match(r"^https?://\S+$", normalize_text(text)))
+
+
+def split_telegram_text(text, max_len=900):
+    normalized = str(text or "").strip()
+    if not normalized:
+        return [""]
+    if len(normalized) <= max_len:
+        return [normalized]
+
+    chunks = []
+    current = ""
+
+    def push(value):
+        value = str(value or "").strip()
+        if value:
+            chunks.append(value)
+
+    for paragraph in re.split(r"\n{2,}", normalized):
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        candidate = paragraph if not current else current + "\n\n" + paragraph
+        if len(candidate) <= max_len:
+            current = candidate
+            continue
+
+        if current:
+            push(current)
+            current = ""
+
+        if len(paragraph) <= max_len:
+            current = paragraph
+            continue
+
+        block = ""
+        for line in paragraph.splitlines():
+            line = line.rstrip()
+            candidate = line if not block else block + "\n" + line
+            if len(candidate) <= max_len:
+                block = candidate
+                continue
+            if block:
+                push(block)
+                block = ""
+            if len(line) <= max_len:
+                block = line
+                continue
+            for start in range(0, len(line), max_len):
+                push(line[start : start + max_len])
+        if block:
+            current = block
+
+    if current:
+        push(current)
+    return chunks or [normalized]
 
 
 def _delete_message_after_delay(chat_id, message_id, delay_seconds):
@@ -625,13 +694,14 @@ def format_account_balance(account_alias):
 
 def format_card_status():
     summary = balance_summary(read_state())
-    return "\n".join(
+    return build_block(
+        summary["card_name"],
         [
-            f"{summary['card_name']}: {money(summary['card_used'])}",
-            f"Saldo reservado: {money(summary['card_reserved'])}",
+            f"Fatura atual: {money(summary['card_used'])}",
+            f"Reservado: {money(summary['card_reserved'])}",
             f"Falta cobrir: {money(summary['card_uncovered'])}",
-            f"Cobertura da fatura: {summary['card_coverage']}%",
-        ]
+            f"Cobertura: {summary['card_coverage']}%",
+        ],
     )
 
 
@@ -646,64 +716,103 @@ def format_short_date(value):
     return raw[:10]
 
 
+def join_blocks(blocks):
+    return "\n\n".join(str(block).strip() for block in blocks if str(block or "").strip())
+
+
+def build_block(title, lines=None):
+    rows = [str(title or "").strip()] if str(title or "").strip() else []
+    for line in lines or []:
+        line = str(line or "").strip()
+        if line:
+            rows.append(line)
+    return "\n".join(rows)
+
+
+def build_item_block(title, lines=None, prefix=""):
+    header = f"{prefix}{title}".strip()
+    rows = [header] if header else []
+    for line in lines or []:
+        line = str(line or "").strip()
+        if line:
+            rows.append(f"  {line}")
+    return "\n".join(rows)
+
+
 def help_text():
-    return "\n".join(
+    return join_blocks(
         [
-            "Comandos do bot weedverso:",
-            "/saldos",
-            "/saldo",
-            "/entrada conta 150 salario",
-            "/saida mercado 42,50 compras",
-            "/cartao 89,90 uber",
-            "/pagarcartao 300 pagamento parcial",
-            "/reservacartao entrada 200",
-            "/reservacartao saida 50",
-            "/objetivos",
-            "/objetivo criar Viagem Dubai | 12000",
-            "/objetivo depositar Viagem Dubai | 400",
-            "/objetivo retirar Viagem Dubai | 100",
-            "/objetivo rendimento Viagem Dubai | 35",
-            "/extrato",
-            "/meuid",
-            "/modoteste on",
-            "/modoteste off",
-            "/modoteste status",
-            "",
-            "Frases naturais que funcionam:",
-            "conta entrada 150 salario",
-            "conta saida 40 uber",
-            "mercado entrada 100 recarga",
-            "refeicao saida 35 almoco",
-            "gastei 38 no uber",
-            "passei 62 no cartao no ifood",
-            "lancei 35 de farmacia no cartao",
-            "paguei a fatura do cartao 300",
-            "recebi 1200 na conta salario",
-            "caiu 850 salario",
-            "pingou 90 cashback",
-            "depositei 200 no vale alimentacao mercado",
-            "coloquei 50 no vr almoco",
-            "retirei 45 da conta uber",
-            "mandei 120 por pix do aluguel",
-            "reservei 300 pro cartao",
-            "tirei 50 da reserva do cartao",
-            "quanto tenho na conta",
-            "qual meu saldo no vr",
-            "me mostra meus saldos",
-            "como esta a fatura do cartao",
-            "quanto tenho reservado no cartao",
-            "quanto falta pra cobrir a fatura",
-            "criar objetivo notebook | 5000",
-            "depositei 200 no objetivo notebook",
-            "rendeu 30 no objetivo notebook",
-            "devedores",
-            "minhas dividas",
-            "link weedverso",
-            "",
-            "Durante o modo teste, tudo acima vira simulacao e nada e salvo.",
-            "",
-            "Categorias agora sao agrupadas sem diferenca entre maiusculas, minusculas e acentos.",
-            f"Limpeza automatica do chat: respostas do bot sao apagadas apos {AUTO_DELETE_SECONDS} segundos.",
+            build_block(
+                "WEEDVERSO | GUIA RAPIDO",
+                [
+                    "Consultas e lancamentos em um formato mais direto para o Telegram.",
+                    f"Limpeza automatica do chat: respostas do bot somem apos {AUTO_DELETE_SECONDS} segundos.",
+                ],
+            ),
+            build_block(
+                "CONSULTAS",
+                [
+                    "/saldos",
+                    "/saldo",
+                    "/extrato",
+                    "/objetivos",
+                    "/devedores",
+                    "/dividas",
+                    "/link",
+                ],
+            ),
+            build_block(
+                "LANCAMENTOS",
+                [
+                    "/entrada conta 150 salario",
+                    "/saida mercado 42,50 compras",
+                    "/cartao 89,90 uber",
+                    "/pagarcartao 300 pagamento parcial",
+                    "/reservacartao entrada 200",
+                    "/reservacartao saida 50",
+                ],
+            ),
+            build_block(
+                "OBJETIVOS",
+                [
+                    "/objetivo criar Viagem Dubai | 12000",
+                    "/objetivo depositar Viagem Dubai | 400",
+                    "/objetivo retirar Viagem Dubai | 100",
+                    "/objetivo rendimento Viagem Dubai | 35",
+                ],
+            ),
+            build_block(
+                "FRASES NATURAIS",
+                [
+                    "conta entrada 150 salario",
+                    "conta saida 40 uber",
+                    "gastei 38 no uber",
+                    "passei 62 no cartao no ifood",
+                    "recebi 1200 na conta salario",
+                    "reservei 300 pro cartao",
+                    "quanto tenho na conta",
+                    "como esta a fatura do cartao",
+                    "devedores",
+                    "minhas dividas",
+                    "link weedverso",
+                ],
+            ),
+            build_block(
+                "MODO TESTE",
+                [
+                    "/modoteste on",
+                    "/modoteste off",
+                    "/modoteste status",
+                    "Quando o modo teste esta ativo, nada financeiro e salvo de verdade.",
+                ],
+            ),
+            build_block(
+                "OBS",
+                [
+                    "Categorias sao agrupadas sem diferenca entre maiusculas, minusculas e acentos.",
+                    "/meuid mostra o identificador do chat atual.",
+                ],
+            ),
         ]
     )
 
@@ -711,16 +820,25 @@ def help_text():
 def format_saldos():
     state = read_state()
     summary = balance_summary(state)
-    return "\n".join(
+    return join_blocks(
         [
-            "weedverso | visao financeira",
-            f"{state['balances']['conta']['label']}: {money(summary['conta'])}",
-            f"{state['balances']['vale1']['label']}: {money(summary['vale1'])}",
-            f"{state['balances']['vale2']['label']}: {money(summary['vale2'])}",
-            f"{summary['card_name']}: {money(summary['card_used'])}",
-            f"Saldo reservado cartao: {money(summary['card_reserved'])}",
-            f"Falta cobrir: {money(summary['card_uncovered'])}",
-            f"Cobertura da fatura: {summary['card_coverage']}%",
+            build_block(
+                "WEEDVERSO | VISAO FINANCEIRA",
+                [
+                    f"{state['balances']['conta']['label']}: {money(summary['conta'])}",
+                    f"{state['balances']['vale1']['label']}: {money(summary['vale1'])}",
+                    f"{state['balances']['vale2']['label']}: {money(summary['vale2'])}",
+                ],
+            ),
+            build_block(
+                summary["card_name"],
+                [
+                    f"Fatura atual: {money(summary['card_used'])}",
+                    f"Reservado: {money(summary['card_reserved'])}",
+                    f"Falta cobrir: {money(summary['card_uncovered'])}",
+                    f"Cobertura: {summary['card_coverage']}%",
+                ],
+            ),
         ]
     )
 
@@ -729,23 +847,36 @@ def format_extrato():
     items = combined_history(limit=12)
     if not items:
         return "Sem movimentacoes recentes."
-    lines = ["Ultimas movimentacoes:"]
-    for item in items:
-        note = f" | {item['note']}" if item.get("note") else ""
-        lines.append(f"{item['sign']} {money(item['value'])} | {item['text']}{note}")
-    return "\n".join(lines)
+    blocks = [build_block("ULTIMAS MOVIMENTACOES", ["As 12 mais recentes."])]
+    for index, item in enumerate(items, start=1):
+        detail_lines = [
+            f"{item['sign']} {money(item['value'])}",
+        ]
+        if item.get("note"):
+            detail_lines.append(f"Obs: {item['note']}")
+        if item.get("at"):
+            detail_lines.append(f"Data: {format_short_date(item['at'])}")
+        blocks.append(build_item_block(f"{index}. {item['text']}", detail_lines))
+    return join_blocks(blocks)
 
 
 def format_goals():
     items = goals_summary()
     if not items:
         return "Nenhum objetivo cadastrado."
-    lines = ["Objetivos ativos:"]
-    for item in items[:8]:
-        lines.append(
-            f"{item['name']} | {money(item['saved'])} de {money(item['target'])} | {item['pct']}% | faltam {money(item['left'])}"
+    blocks = [build_block("OBJETIVOS ATIVOS", [f"Total visivel: {min(len(items), 8)} de {len(items)}"])]
+    for index, item in enumerate(items[:8], start=1):
+        blocks.append(
+            build_item_block(
+                f"{index}. {item['name']}",
+                [
+                    f"Guardado: {money(item['saved'])} de {money(item['target'])}",
+                    f"Progresso: {item['pct']}%",
+                    f"Falta: {money(item['left'])}",
+                ],
+            )
         )
-    return "\n".join(lines)
+    return join_blocks(blocks)
 
 
 def format_debtors():
@@ -756,15 +887,23 @@ def format_debtors():
     if not open_items:
         return "Nenhum devedor em aberto."
     total_open = sum(float(item.get("amount") or 0) for item in open_items)
-    lines = [f"Devedores | em aberto: {len(open_items)} | total a receber: {money(total_open)}"]
-    for item in open_items[:8]:
-        parts = [f"{item['name']}: {money(item['amount'])}"]
+    blocks = [
+        build_block(
+            "DEVEDORES",
+            [
+                f"Em aberto: {len(open_items)}",
+                f"Total a receber: {money(total_open)}",
+            ],
+        )
+    ]
+    for index, item in enumerate(open_items[:8], start=1):
+        detail_lines = [f"Valor: {money(item['amount'])}"]
         if item.get("payDate"):
-            parts.append(f"vence {format_short_date(item['payDate'])}")
+            detail_lines.append(f"Vence: {format_short_date(item['payDate'])}")
         if item.get("note"):
-            parts.append(item["note"])
-        lines.append(" | ".join(parts))
-    return "\n".join(lines)
+            detail_lines.append(f"Obs: {item['note']}")
+        blocks.append(build_item_block(f"{index}. {item['name']}", detail_lines))
+    return join_blocks(blocks)
 
 
 def format_my_debts():
@@ -775,19 +914,27 @@ def format_my_debts():
     if not open_items:
         return "Nenhuma divida em aberto."
     total_open = sum(float(item.get("remainingValue") or 0) for item in open_items)
-    lines = [f"Minhas dividas | em aberto: {len(open_items)} | total restante: {money(total_open)}"]
-    for item in open_items[:8]:
-        parts = [
-            f"{item['name']}: {money(item['remainingValue'])}",
-            f"{item['installmentsPaid']}/{item['installments']} parcelas",
-            f"parcela {money(item['installmentValue'])}",
+    blocks = [
+        build_block(
+            "MINHAS DIVIDAS",
+            [
+                f"Em aberto: {len(open_items)}",
+                f"Total restante: {money(total_open)}",
+            ],
+        )
+    ]
+    for index, item in enumerate(open_items[:8], start=1):
+        detail_lines = [
+            f"Restante: {money(item['remainingValue'])}",
+            f"Parcelas: {item['installmentsPaid']}/{item['installments']}",
+            f"Valor da parcela: {money(item['installmentValue'])}",
         ]
         if item.get("payDate"):
-            parts.append(f"vence {format_short_date(item['payDate'])}")
+            detail_lines.append(f"Vence: {format_short_date(item['payDate'])}")
         if item.get("note"):
-            parts.append(item["note"])
-        lines.append(" | ".join(parts))
-    return "\n".join(lines)
+            detail_lines.append(f"Obs: {item['note']}")
+        blocks.append(build_item_block(f"{index}. {item['name']}", detail_lines))
+    return join_blocks(blocks)
 
 
 def format_share_link():

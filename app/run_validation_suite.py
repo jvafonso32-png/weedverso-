@@ -333,8 +333,8 @@ def run_telegram_flow_test() -> tuple[str, dict]:
                 ("ganhei 1 real em conta como pagamento", "Entrada registrada em"),
                 ("gastei 12,50 no cartao cafe", "Gasto registrado no cartao"),
                 ("quanto tenho na conta", "Saldo em Conta"),
-                ("Devedores", "Devedores | em aberto"),
-                ("Minhas dividas", "Minhas dividas | em aberto"),
+                ("Devedores", "DEVEDORES"),
+                ("Minhas dividas", "MINHAS DIVIDAS"),
             ]
             replies = []
             for text, expected_fragment in cases:
@@ -344,6 +344,17 @@ def run_telegram_flow_test() -> tuple[str, dict]:
 
             _, fallback_reply = telegram_bot_mod.route_message({"chat": {"id": chat_id}, "text": "blabla comando maluco"})
             assert_equal(fallback_reply, "Desculpe meu senhor, programe melhor.", "Fallback do Telegram deve usar o novo texto")
+
+            debtors_reply = next(item["reply"] for item in replies if item["input"] == "Devedores")
+            debts_reply = next(item["reply"] for item in replies if item["input"] == "Minhas dividas")
+            assert_true("Total a receber:" in debtors_reply, "Resumo de devedores deve destacar total a receber")
+            assert_true("\n\n1. " in debtors_reply, "Resposta de devedores deve separar itens em blocos")
+            assert_true("Parcelas:" in debts_reply, "Resposta de dividas deve destacar progresso das parcelas")
+            assert_true("\n\n1. " in debts_reply, "Resposta de dividas deve separar itens em blocos")
+            assert_true(
+                len(telegram_bot_mod.split_telegram_text(debts_reply, max_len=120)) > 1,
+                "Resposta longa de dividas deve quebrar em multiplos blocos para o Telegram",
+            )
 
             state = shared_state_mod.read_state()
 

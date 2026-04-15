@@ -61,15 +61,15 @@ input[readonly]{opacity:.9;cursor:default}
 .hist{margin-top:8px;padding-top:8px;border-top:1px dashed var(--ln);display:grid;gap:6px;max-height:170px;overflow:auto}.hist.inner{margin-top:0;padding-top:0;border-top:none;max-height:140px}.h{font-size:.8rem;color:var(--mut);display:flex;justify-content:space-between;gap:8px}.statementHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.statementEditBtn{min-width:154px;padding:9px 12px;font-size:.76rem}.statementEditBtn.active{color:var(--p);border-color:rgba(57,255,143,.5);box-shadow:0 0 0 1px rgba(57,255,143,.14) inset,0 0 18px rgba(57,255,143,.12)}.statementModeBanner{padding:10px 12px;border:1px solid rgba(57,255,143,.26);border-radius:12px;background:rgba(57,255,143,.08);font-size:.78rem;color:#c7f6d7}.statementRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:9px 10px;border:1px solid rgba(151,170,159,.18);border-radius:12px;background:rgba(255,255,255,.02)}.statementRow.editing{border-color:rgba(57,255,143,.45);box-shadow:0 0 0 1px rgba(57,255,143,.12) inset,0 0 20px rgba(57,255,143,.08)}.statementBody{min-width:0;display:grid;gap:4px}.statementPrimary{font-size:.83rem;color:var(--txt);line-height:1.35}.statementSecondary{font-size:.74rem;color:var(--mut);line-height:1.3}.statementAside{display:grid;justify-items:end;gap:8px}.statementMeta{font-size:.73rem;color:var(--mut);white-space:nowrap}.statementActions{display:flex;gap:6px;align-items:center}.statementDelete,.statementEditAction{width:34px;height:34px;border-radius:10px;padding:0;font-size:.9rem}.statementEditorWrap{grid-column:1/-1}.statementEditor{display:grid;gap:10px;padding-top:4px}.statementEditorGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.statementField{display:grid;gap:4px}.statementField span{font-size:.7rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}.statementEditorActions{display:flex;justify-content:flex-end;gap:8px}.statementEditorHint{font-size:.74rem;color:var(--mut)}.pos{color:var(--p)}.neg{color:var(--d)}
 .sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}.box{border:1px solid var(--ln);border-radius:12px;padding:10px;background:rgba(255,255,255,.03)}.box strong{display:block;font-family:var(--font-display);font-size:1.2rem;margin-top:3px}.empty{font-size:.85rem;color:var(--mut);padding:8px;border:1px dashed var(--ln);border-radius:10px;text-align:center}
 .actionLayout{display:grid;grid-template-columns:minmax(0,1fr) 142px;gap:10px;align-items:end}.actionFields{display:grid;gap:8px;min-width:0}.actionStack{display:grid;gap:7px;align-self:stretch}.actionStack .btn,.actionStack .ghost,.actionStack .danger{padding:9px 10px;font-size:.76rem;min-height:38px;border-radius:11px}.actionStack .ghost{background:linear-gradient(180deg,rgba(22,33,29,.96),rgba(13,19,17,.96))}
-.creditAnalytics{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:14px;align-items:center;padding-top:6px}.chartShell{position:relative;border:1px solid rgba(84,128,109,.26);border-radius:18px;padding:12px;background:radial-gradient(circle at 50% 30%,rgba(57,255,143,.08),rgba(7,13,10,.88) 60%),linear-gradient(180deg,rgba(18,26,23,.96),rgba(10,16,14,.98));box-shadow:inset 0 0 0 1px rgba(255,255,255,.02),0 10px 22px rgba(0,0,0,.22)}.ringCanvas{width:100%;max-width:280px;aspect-ratio:1/1;display:block;margin:auto}.chartCenterNote{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center;padding:28px}.chartCenterNote strong{display:block;font-family:var(--font-display);font-size:1.35rem}.chartCenterNote span{font-size:.78rem;color:var(--mut)}.legendList{display:grid;gap:8px;align-content:start}.legendItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid rgba(84,128,109,.2);border-radius:12px;background:rgba(255,255,255,.02)}.legendSwatch{width:12px;height:12px;border-radius:999px;box-shadow:0 0 12px currentColor}.legendText{min-width:0}.legendText strong{display:block;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.legendText span{font-size:.76rem;color:var(--mut)}.legendValue{font-family:var(--font-display);font-size:1rem;text-align:right}
-.accountAnalytics{margin-top:12px}.chartShell.accountShell{border-color:rgba(38,200,255,.34);background:
-radial-gradient(circle at 50% 26%,rgba(88,232,255,.16),transparent 24%),
-radial-gradient(circle at 50% 55%,rgba(46,115,255,.12),rgba(7,11,18,.94) 56%),
-linear-gradient(180deg,rgba(18,24,39,.99),rgba(8,12,20,.99));box-shadow:inset 0 0 0 1px rgba(38,200,255,.1),0 14px 28px rgba(0,0,0,.28),0 0 28px rgba(38,200,255,.12)}
-.chartCenterNote.accountCenter strong{color:#88e8ff;text-shadow:0 0 16px rgba(136,232,255,.18)}
-.chartCenterNote.accountCenter span{letter-spacing:.12em;text-transform:uppercase}
-.legendItem.accountLegend{border-color:rgba(57,154,255,.22);background:linear-gradient(180deg,rgba(14,22,34,.82),rgba(10,15,24,.92));box-shadow:inset 0 0 0 1px rgba(88,232,255,.04)}
-.legendItem.accountLegend .legendText strong{letter-spacing:.05em}
+.creditAnalytics{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:14px;align-items:center;padding-top:6px}.chartShell{position:relative;border:1px solid rgba(86,131,110,.24);border-radius:22px;padding:14px;background:
+radial-gradient(circle at 50% 0,rgba(57,255,143,.08),transparent 36%),
+linear-gradient(180deg,rgba(14,20,18,.98),rgba(8,12,11,.98));box-shadow:inset 0 0 0 1px rgba(255,255,255,.03),0 14px 26px rgba(0,0,0,.24)}.chartShell:before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent 24%,transparent 72%,rgba(57,255,143,.04));pointer-events:none}.ringCanvas{position:relative;z-index:1;width:100%;max-width:280px;aspect-ratio:1/1;display:block;margin:auto;filter:saturate(1.06)}.chartCenterNote{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center;padding:32px;z-index:2}.chartCenterNote strong{display:block;font-family:var(--font-display);font-size:1.32rem;letter-spacing:.02em;text-shadow:0 0 18px rgba(255,255,255,.08)}.chartCenterNote span{display:block;margin-top:6px;font-size:.74rem;color:#a3b6ab;letter-spacing:.08em;text-transform:uppercase}.legendList{display:grid;gap:9px;align-content:start}.legendItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 12px;border:1px solid rgba(84,128,109,.18);border-radius:14px;background:linear-gradient(180deg,rgba(17,24,21,.92),rgba(11,16,14,.94));box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)}.legendSwatch{width:12px;height:12px;border-radius:999px;box-shadow:0 0 14px currentColor}.legendText{min-width:0;display:grid;gap:6px}.legendText strong{display:block;font-size:.84rem;line-height:1.2;white-space:normal;overflow:visible;text-overflow:unset}.legendText span{font-size:.74rem;color:var(--mut)}.legendBar{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.legendBar span{display:block;height:100%;border-radius:999px;min-width:10px}.legendValue{font-family:var(--font-display);font-size:1rem;text-align:right;white-space:nowrap}
+.accountAnalytics{margin-top:12px}.chartShell.accountShell{border-color:rgba(38,200,255,.28);background:
+radial-gradient(circle at 50% 0,rgba(88,232,255,.12),transparent 34%),
+linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 0 0 1px rgba(38,200,255,.08),0 14px 28px rgba(0,0,0,.28)}
+.chartCenterNote.accountCenter strong{color:#b6efff;text-shadow:0 0 18px rgba(67,210,255,.16)}
+.chartCenterNote.accountCenter span{color:#8fb7ce}
+.legendItem.accountLegend{border-color:rgba(57,154,255,.18);background:linear-gradient(180deg,rgba(13,20,33,.9),rgba(9,13,23,.95));box-shadow:inset 0 0 0 1px rgba(88,232,255,.04)}
 .legendItem.accountLegend .legendText span{color:#8fb7ce}
 .debtorCardBody{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:9px;align-items:start}.goalActionsWrap{display:grid;grid-template-columns:minmax(0,1fr) 142px;gap:10px;align-items:start}.actionMeta{display:grid;gap:8px}
 .dock{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);width:98vw;max-width:900px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:10px;border:1px solid var(--ln);border-radius:18px;background:rgba(9,14,12,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 14px 34px rgba(0,0,0,.35);z-index:20}
@@ -77,7 +77,7 @@ linear-gradient(180deg,rgba(18,24,39,.99),rgba(8,12,20,.99));box-shadow:inset 0 
 .navBtn.active{background:linear-gradient(180deg,rgba(16,47,31,.96),rgba(9,31,20,.96));color:var(--txt);border-color:rgba(57,255,143,.45);box-shadow:0 0 0 1px rgba(57,255,143,.16) inset,0 0 22px rgba(57,255,143,.12)}
 .navIcon{font-size:1.08rem;line-height:1}
 @keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.01)}100%{transform:scale(1)}} @keyframes fg{50%{text-shadow:0 0 14px rgba(57,255,143,.85)}} @keyframes fr{50%{text-shadow:0 0 14px rgba(255,95,112,.85)}} @keyframes sweep{to{transform:translateX(160%)}}
-  @media(max-width:720px){.creditAnalytics{grid-template-columns:1fr}.chartShell{max-width:320px;margin:auto}.legendItem{grid-template-columns:auto minmax(0,1fr)}.legendValue{grid-column:2;justify-self:start}.top{align-items:start}.topActions{width:100%;justify-content:space-between}.saveMeta{justify-items:start;text-align:left;min-width:0}}
+  @media(max-width:720px){.creditAnalytics{grid-template-columns:1fr}.chartShell{max-width:340px;margin:auto;padding:12px}.ringCanvas{max-width:250px}.chartCenterNote{padding:24px}.chartCenterNote strong{font-size:1.18rem}.chartCenterNote span{font-size:.68rem;letter-spacing:.06em}.legendItem{grid-template-columns:auto minmax(0,1fr);padding:10px 11px}.legendValue{grid-column:2;justify-self:start}.top{align-items:start}.topActions{width:100%;justify-content:space-between}.saveMeta{justify-items:start;text-align:left;min-width:0}}
 @media(min-width:920px){body{padding:22px 22px 144px}.quickRow{grid-template-columns:repeat(5,minmax(0,1fr))}.debtorList{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
 </style>
 </head>
@@ -129,15 +129,15 @@ linear-gradient(180deg,rgba(18,24,39,.99),rgba(8,12,20,.99));box-shadow:inset 0 
       <p class="mut">Aqui ficam só seus saldos principais. Cartão e objetivos agora têm área exclusiva.</p>
       <div id="finGrid" class="fgrid"></div>
       <div class="creditAnalytics accountAnalytics">
-        <div class="chartShell accountShell">
-          <canvas id="accountFlowChart" class="ringCanvas" width="320" height="320"></canvas>
-          <div class="chartCenterNote accountCenter">
-            <div>
-              <strong id="accountFlowTotal">R$ 0,00</strong>
-              <span>mapa tático das saídas</span>
-            </div>
+      <div class="chartShell accountShell">
+        <canvas id="accountFlowChart" class="ringCanvas" width="320" height="320"></canvas>
+        <div class="chartCenterNote accountCenter">
+          <div>
+            <strong id="accountFlowTotal">R$ 0,00</strong>
+            <span>saídas da conta</span>
           </div>
         </div>
+      </div>
         <div id="accountFlowLegend" class="legendList"></div>
       </div>
     </section>
@@ -256,7 +256,7 @@ linear-gradient(180deg,rgba(18,24,39,.99),rgba(8,12,20,.99));box-shadow:inset 0 
               <div class="chartCenterNote">
                 <div>
                   <strong id="ccDescTotal">R$ 0,00</strong>
-                  <span>gastos classificados</span>
+                  <span>gastos do cartão</span>
                 </div>
               </div>
             </div>
@@ -1052,8 +1052,10 @@ function drawFinanceChart(){
 }
 
 function drawBarChart(ctx,labels,values,maxValue,color){
-  const w=ctx.canvas.width,h=ctx.canvas.height;
-  ctx.clearRect(0,0,w,h);
+  const viewport=canvasViewport(ctx.canvas,260);
+  if(!viewport) return;
+  ctx=viewport.ctx;
+  const w=viewport.w,h=viewport.h;
   ctx.fillStyle='rgba(255,255,255,.75)';
   ctx.font='12px Sora';
   const left=44,right=18,top=20,bottom=34,gw=w-left-right,gh=h-top-bottom;
@@ -1073,8 +1075,10 @@ function drawBarChart(ctx,labels,values,maxValue,color){
 }
 
 function drawDualLineChart(ctx,labels,aVals,bVals){
-  const w=ctx.canvas.width,h=ctx.canvas.height;
-  ctx.clearRect(0,0,w,h);
+  const viewport=canvasViewport(ctx.canvas,260);
+  if(!viewport) return;
+  ctx=viewport.ctx;
+  const w=viewport.w,h=viewport.h;
   const left=44,right=18,top=20,bottom=34,gw=w-left-right,gh=h-top-bottom;
   const all=aVals.concat(bVals,[0]);
   const min=Math.min(...all), max=Math.max(...all,1), span=(max-min)||1;
@@ -1101,7 +1105,7 @@ function drawDualLineChart(ctx,labels,aVals,bVals){
 }
 
 function renderCreditDescChart(){
-  const data=creditExpenseBreakdown();
+  const data=compressBreakdown(creditExpenseBreakdown(),5,'Outros gastos');
   if(el.ccDescTotal) el.ccDescTotal.textContent=money(data.reduce((sum,item)=>sum+item.value,0));
   if(!el.ccDescLegend) return;
   if(!data.length){
@@ -1116,6 +1120,7 @@ function renderCreditDescChart(){
       <div class="legendText">
         <strong>${safe(item.label)}</strong>
         <span>${item.pct}% do total</span>
+        <div class="legendBar"><span style="width:${Math.max(8,item.pct)}%;background:${item.color}"></span></div>
       </div>
       <span class="legendValue">${money(item.value)}</span>
     </article>
@@ -1131,7 +1136,7 @@ function creditExpenseBreakdown(){
 }
 
 function renderAccountFlowChart(){
-  const data=accountOutflowBreakdown();
+  const data=compressBreakdown(accountOutflowBreakdown(),5,'Outras saídas');
   if(el.accountFlowTotal) el.accountFlowTotal.textContent=money(data.reduce((sum,item)=>sum+item.value,0));
   if(!el.accountFlowLegend) return;
   if(!data.length){
@@ -1145,7 +1150,8 @@ function renderAccountFlowChart(){
       <span class="legendSwatch" style="color:${item.color};background:${item.color}"></span>
       <div class="legendText">
         <strong>${safe(item.label)}</strong>
-        <span>Setor ${String(item.rank).padStart(2,'0')} · ${item.pct}% das saídas</span>
+        <span>${item.pct}% das saídas</span>
+        <div class="legendBar"><span style="width:${Math.max(8,item.pct)}%;background:${item.color}"></span></div>
       </div>
       <span class="legendValue">${money(item.value)}</span>
     </article>
@@ -1173,13 +1179,17 @@ function accountOutflowBreakdown(){
 }
 
 function buildCategoryBreakdown(items,colors,fallback){
+  const genericLabels=new Set(['sem categoria','adicionar','entrada','saida','deposito','retirada','gasto rapido','reserva cartao','ajuste manual','ajuste']);
   const grouped={};
   (items||[]).forEach(item=>{
     const value=Math.abs(Number(item && item.value)||0);
     if(value<=0) return;
-    const meta=categoryMeta(item && (item.key||item.label),fallback);
+    const rawLabel=item && (item.key||item.label);
+    const meta=categoryMeta(rawLabel,fallback);
+    const safeKey=normalizeCategoryKey(meta.key||meta.label);
+    const normalizedLabel=genericLabels.has(safeKey)?categoryMeta(fallback,fallback).label:meta.label;
     const key=item && item.key ? normalizeCategoryKey(item.key) : meta.key;
-    if(!grouped[key]) grouped[key]={label:item && item.label ? categoryMeta(item.label,fallback).label : meta.label,value:0};
+    if(!grouped[key]) grouped[key]={label:normalizedLabel,value:0};
     grouped[key].value += value;
   });
   const total=Object.values(grouped).reduce((sum,item)=>sum+item.value,0);
@@ -1188,113 +1198,138 @@ function buildCategoryBreakdown(items,colors,fallback){
     .map((item,index)=>Object.assign(item,{color:colors[index%colors.length],pct:total?Math.round((item.value/total)*100):0,rank:index+1}));
 }
 
-function drawDoughnutChart(canvas,data){
-  if(!canvas||!canvas.getContext) return;
+function compressBreakdown(data,maxItems,label){
+  const items=Array.isArray(data)?data.slice():[];
+  if(items.length<=maxItems) return items;
+  const head=items.slice(0,maxItems-1);
+  const tail=items.slice(maxItems-1);
+  const othersValue=tail.reduce((sum,item)=>sum+(Number(item.value)||0),0);
+  if(othersValue>0){
+    head.push({label:label||'Outros',value:othersValue,color:'#74878a',pct:0,rank:maxItems});
+  }
+  const total=head.reduce((sum,item)=>sum+(Number(item.value)||0),0);
+  return head.map((item,index)=>Object.assign({},item,{pct:total?Math.round(((Number(item.value)||0)/total)*100):0,rank:index+1}));
+}
+
+function canvasViewport(canvas,minSize){
+  if(!canvas||!canvas.getContext) return null;
+  const rect=canvas.getBoundingClientRect();
+  const displayWidth=Math.max(minSize||220,Math.round(rect.width||canvas.clientWidth||canvas.width||minSize||220));
+  const displayHeight=Math.max(minSize||220,Math.round(rect.height||canvas.clientHeight||canvas.height||minSize||220));
+  const dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
+  const renderWidth=Math.round(displayWidth*dpr);
+  const renderHeight=Math.round(displayHeight*dpr);
+  if(canvas.width!==renderWidth||canvas.height!==renderHeight){
+    canvas.width=renderWidth;
+    canvas.height=renderHeight;
+  }
   const ctx=canvas.getContext('2d');
-  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=Math.min(w,h)*0.38,inner=r*0.56;
-  ctx.clearRect(0,0,w,h);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,displayWidth,displayHeight);
+  return {ctx,w:displayWidth,h:displayHeight};
+}
+
+function drawDoughnutChart(canvas,data){
+  const viewport=canvasViewport(canvas,260);
+  if(!viewport) return;
+  const ctx=viewport.ctx;
+  const w=viewport.w,h=viewport.h,cx=w/2,cy=h/2;
+  const radius=Math.min(w,h)*0.34;
+  const thickness=Math.max(18,Math.min(w,h)*0.14);
   const total=data.reduce((sum,item)=>sum+item.value,0);
   let start=-Math.PI/2;
+  const gap=0.03;
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,radius,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.08)';
+  ctx.lineWidth=thickness;
+  ctx.lineCap='round';
+  ctx.stroke();
+
   data.forEach(item=>{
-    const angle=total?(item.value/total)*Math.PI*2:0;
-    const end=start+angle;
+    const angle=total?(item.value/total)*(Math.PI*2-gap*data.length):0;
+    const segmentStart=start+(gap/2);
+    const end=segmentStart+angle;
     ctx.beginPath();
-    ctx.arc(cx,cy,r,start,end);
-    ctx.arc(cx,cy,inner,end,start,true);
-    ctx.closePath();
-    ctx.fillStyle=item.color;
-    ctx.shadowBlur=16;
+    ctx.arc(cx,cy,radius,segmentStart,end);
+    ctx.strokeStyle=item.color;
+    ctx.lineWidth=thickness;
+    ctx.lineCap='round';
+    ctx.shadowBlur=12;
     ctx.shadowColor=item.color;
-    ctx.fill();
-    start=end;
+    ctx.stroke();
+    start=end+(gap/2);
   });
   ctx.shadowBlur=0;
+
+  const innerRadius=Math.max(0,radius-(thickness/2)-12);
   ctx.beginPath();
-  ctx.arc(cx,cy,inner-8,0,Math.PI*2);
-  ctx.fillStyle='rgba(6,10,8,.96)';
+  ctx.arc(cx,cy,innerRadius,0,Math.PI*2);
+  ctx.fillStyle='rgba(6,10,8,.94)';
   ctx.fill();
   ctx.beginPath();
-  ctx.arc(cx,cy,r+8,0,Math.PI*2);
-  ctx.strokeStyle='rgba(255,255,255,.06)';
+  ctx.arc(cx,cy,radius+(thickness/2)+8,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.05)';
   ctx.lineWidth=1;
   ctx.stroke();
 }
 
 function drawAccountHudChart(canvas,data){
-  if(!canvas||!canvas.getContext) return;
-  const ctx=canvas.getContext('2d');
-  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2;
-  const outer=Math.min(w,h)*0.385;
-  const inner=outer*0.56;
-  const core=inner*0.76;
+  const viewport=canvasViewport(canvas,260);
+  if(!viewport) return;
+  const ctx=viewport.ctx;
+  const w=viewport.w,h=viewport.h,cx=w/2,cy=h/2;
+  const outer=Math.min(w,h)*0.345;
+  const thickness=Math.max(18,Math.min(w,h)*0.15);
+  const core=Math.max(0,outer-(thickness/2)-18);
   const total=data.reduce((sum,item)=>sum+item.value,0);
   let start=-Math.PI/2;
+  const gap=0.032;
 
-  ctx.clearRect(0,0,w,h);
-
-  const bg=ctx.createRadialGradient(cx,cy,12,cx,cy,outer+26);
-  bg.addColorStop(0,'rgba(58,214,255,.14)');
-  bg.addColorStop(.42,'rgba(20,38,64,.16)');
+  const bg=ctx.createRadialGradient(cx,cy,12,cx,cy,outer+22);
+  bg.addColorStop(0,'rgba(58,214,255,.1)');
+  bg.addColorStop(.42,'rgba(20,38,64,.12)');
   bg.addColorStop(1,'rgba(7,11,18,0)');
   ctx.fillStyle=bg;
   ctx.fillRect(0,0,w,h);
 
-  ctx.strokeStyle='rgba(95,176,214,.12)';
+  ctx.strokeStyle='rgba(95,176,214,.1)';
   ctx.lineWidth=1;
-  [outer+16,outer*0.8,outer*0.58].forEach(radius=>{
+  [outer+14,outer*0.84,outer*0.63].forEach(radius=>{
     ctx.beginPath();
     ctx.arc(cx,cy,radius,0,Math.PI*2);
     ctx.stroke();
   });
 
   ctx.beginPath();
-  ctx.moveTo(cx-(outer+20),cy);
-  ctx.lineTo(cx+(outer+20),cy);
-  ctx.moveTo(cx,cy-(outer+20));
-  ctx.lineTo(cx,cy+(outer+20));
-  ctx.strokeStyle='rgba(95,176,214,.08)';
+  ctx.arc(cx,cy,outer,0,Math.PI*2);
+  ctx.strokeStyle='rgba(120,228,255,.08)';
+  ctx.lineWidth=thickness;
+  ctx.lineCap='round';
   ctx.stroke();
 
-  for(let i=0;i<48;i++){
-    const angle=(-Math.PI/2)+(Math.PI*2*i/48);
-    const outerTick=outer+14;
-    const innerTick=i%6===0?outer+2:outer+7;
-    ctx.beginPath();
-    ctx.moveTo(cx+Math.cos(angle)*innerTick,cy+Math.sin(angle)*innerTick);
-    ctx.lineTo(cx+Math.cos(angle)*outerTick,cy+Math.sin(angle)*outerTick);
-    ctx.strokeStyle=i%6===0?'rgba(120,228,255,.28)':'rgba(120,228,255,.1)';
-    ctx.stroke();
-  }
-
   data.forEach(item=>{
-    const angle=total?(item.value/total)*Math.PI*2:0;
-    const end=start+angle;
-    const gap=0.018;
-    const segmentStart=start+gap;
-    const segmentEnd=end-gap;
-    if(segmentEnd>segmentStart){
+    const angle=total?(item.value/total)*(Math.PI*2-gap*data.length):0;
+    const segmentStart=start+(gap/2);
+    const segmentEnd=segmentStart+angle;
+    if(segmentEnd>segmentStart+0.01){
       ctx.beginPath();
       ctx.arc(cx,cy,outer,segmentStart,segmentEnd);
-      ctx.arc(cx,cy,inner,segmentEnd,segmentStart,true);
-      ctx.closePath();
-      ctx.fillStyle=item.color;
-      ctx.shadowBlur=18;
+      ctx.strokeStyle=item.color;
+      ctx.lineWidth=thickness;
+      ctx.lineCap='round';
+      ctx.shadowBlur=14;
       ctx.shadowColor=item.color;
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(cx,cy,outer+4,segmentStart,segmentEnd);
-      ctx.strokeStyle='rgba(255,255,255,.18)';
-      ctx.lineWidth=1.2;
       ctx.stroke();
     }
-    start=end;
+    start=segmentEnd+(gap/2);
   });
 
   ctx.shadowBlur=0;
-  const coreGlow=ctx.createRadialGradient(cx,cy,6,cx,cy,core+14);
-  coreGlow.addColorStop(0,'rgba(125,243,255,.26)');
-  coreGlow.addColorStop(.6,'rgba(25,42,65,.92)');
+  const coreGlow=ctx.createRadialGradient(cx,cy,6,cx,cy,core+12);
+  coreGlow.addColorStop(0,'rgba(125,243,255,.18)');
+  coreGlow.addColorStop(.6,'rgba(16,28,48,.94)');
   coreGlow.addColorStop(1,'rgba(6,10,18,.98)');
   ctx.beginPath();
   ctx.arc(cx,cy,core,0,Math.PI*2);
@@ -1302,29 +1337,21 @@ function drawAccountHudChart(canvas,data){
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(cx,cy,core+10,0,Math.PI*2);
-  ctx.strokeStyle='rgba(136,232,255,.24)';
+  ctx.arc(cx,cy,core+8,0,Math.PI*2);
+  ctx.strokeStyle='rgba(136,232,255,.18)';
   ctx.lineWidth=1;
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.arc(cx,cy,core-18,0,Math.PI*2);
-  ctx.strokeStyle='rgba(136,232,255,.14)';
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(cx-core*0.58,cy);
-  ctx.lineTo(cx+core*0.58,cy);
-  ctx.moveTo(cx,cy-core*0.58);
-  ctx.lineTo(cx,cy+core*0.58);
-  ctx.strokeStyle='rgba(136,232,255,.12)';
+  ctx.arc(cx,cy,core-14,0,Math.PI*2);
+  ctx.strokeStyle='rgba(136,232,255,.1)';
   ctx.stroke();
 }
 
 function clearCanvas(canvas){
-  if(!canvas||!canvas.getContext) return;
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const viewport=canvasViewport(canvas,220);
+  if(!viewport) return;
+  viewport.ctx.clearRect(0,0,viewport.w,viewport.h);
 }
 
 function last7DayKeys(){
