@@ -10,19 +10,28 @@ from env_loader import load_env_file
 from share_publish import current_share_info
 from shared_state import (
     BALANCE_ALIASES,
+    add_debtor,
     add_balance_transaction,
     add_credit_transaction,
     add_goal,
+    add_my_debt,
+    adjust_debtor_amount,
+    adjust_my_debt_installments,
     balance_alias_map,
     balance_summary,
     combined_history,
+    delete_transaction_entry,
     debtors_summary,
     fold_text,
     goals_summary,
     money,
     move_goal,
     my_debts_summary,
+    pay_my_debt_installments,
     read_state,
+    receive_debtor_in_account,
+    remove_debtor,
+    remove_my_debt,
     resolve_balance_key,
     titleize_words,
     using_state_file,
@@ -35,6 +44,12 @@ from telegram_runtime import (
     telegram_test_mode_enabled,
     telegram_test_state_file,
 )
+
+try:
+    from desktop_cloud_sync import trigger_background_push
+except Exception:
+    def trigger_background_push(reason="telegram"):
+        return False
 
 
 load_env_file()
@@ -109,6 +124,7 @@ CARD_WORDS = {"cartao", "credito", "fatura", "amex"}
 RESERVE_WORDS = {"reserva", "reservado", "reservada", "separado", "separada"}
 EXTRATO_WORDS = {"extrato", "extratos", "movimentacoes", "movimentação", "movimentacao", "lancamentos", "lançamento", "lancamento", "historico", "histórico"}
 BALANCE_IN_WORDS = {
+    "entrada",
     "entrou",
     "recebi",
     "recebo",
@@ -142,6 +158,7 @@ BALANCE_IN_WORDS = {
     "entrouzinho",
 }
 BALANCE_OUT_WORDS = {
+    "saida",
     "saiu",
     "retirei",
     "retiro",
@@ -184,6 +201,52 @@ BALANCE_OUT_WORDS = {
     "baixaram",
     "abati",
 }
+GOAL_IN_COMMANDS = {
+    "entrada",
+    "entrar",
+    "depositar",
+    "deposito",
+    "aportar",
+    "aporte",
+    "guardar",
+    "guardei",
+    "colocar",
+    "coloquei",
+}
+GOAL_OUT_COMMANDS = {
+    "saida",
+    "sair",
+    "retirar",
+    "retirei",
+    "tirar",
+    "tirei",
+    "saque",
+    "saquei",
+    "remover",
+    "removi",
+    "abater",
+    "abati",
+}
+GOAL_YIELD_COMMANDS = {
+    "rendimento",
+    "rendimentos",
+    "render",
+    "lucro",
+    "lucros",
+    "juros",
+}
+GOAL_ADD_COMMANDS = {
+    "acrescentar",
+    "acrescimo",
+    "acrescer",
+    "somar",
+    "soma",
+    "mais",
+    "adicionar",
+    "incrementar",
+    "aumentar",
+}
+GOAL_YIELD_HINTS = {"rendimento", "rendimentos", "lucro", "lucros", "juros", "ganho", "ganhei", "rendeu"}
 CARD_EXPENSE_WORDS = {
     "gastei",
     "gasto",
@@ -210,7 +273,7 @@ CARD_EXPENSE_WORDS = {
     "comprinha",
     "compra",
 }
-CARD_PAYMENT_WORDS = {"paguei", "abati", "abater", "amortizei", "amortizar", "quitei", "quitar", "antecipei"}
+CARD_PAYMENT_WORDS = {"paguei", "abati", "abater", "amortizei", "amortizar", "quitei", "quitar", "antecipei", "pagamento"}
 RESERVE_IN_WORDS = {"reservei", "guardei", "separei", "alimentei", "reforcei", "abasteci"}
 RESERVE_OUT_WORDS = {"tirei", "retirei", "usei", "saquei", "consumi", "desfalquei"}
 ACCOUNT_CONTEXT_WORDS = {
@@ -276,6 +339,10 @@ COMMON_FILLER_WORDS = {
     "deu",
     "fica",
 }
+DEBTOR_ADD_WORDS = {"adicionar", "adiciona", "adicione", "acrescentar", "acrescenta", "somar", "soma"}
+DEBTOR_REMOVE_WORDS = {"remover", "remove", "tirar", "tira", "descontar", "desconta", "abater", "abate"}
+DEBT_ACTION_WORDS = DEBTOR_ADD_WORDS | DEBTOR_REMOVE_WORDS | {"receber", "recebi", "quitar", "quitaram", "apagar", "deletar"}
+INSTALLMENT_WORDS = {"parcela", "parcelas"}
 
 
 def env_flag(name, default=False):
@@ -393,6 +460,13 @@ def split_telegram_text(text, max_len=900):
     if current:
         push(current)
     return chunks or [normalized]
+
+
+def current_state_snapshot():
+    try:
+        return json.dumps(read_state(), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    except Exception:
+        return ""
 
 
 def _delete_message_after_delay(chat_id, message_id, delay_seconds):
@@ -636,6 +710,60 @@ def find_goal_summary(goal_name, state=None):
     raise ValueError("Objetivo nao encontrado ou ambiguo.")
 
 
+def find_named_summary(goal_name, items, item_label):
+    target = fold_text(goal_name)
+    if not target:
+        raise ValueError(f"Informe o nome do {item_label}.")
+    exact = [item for item in items if fold_text(item.get("name")) == target or str(item.get("id") or "").strip() == str(goal_name).strip()]
+    if len(exact) == 1:
+        return exact[0]
+    if len(exact) > 1:
+        raise ValueError(f"Existem {item_label}s duplicados com esse nome.")
+    partial = [item for item in items if target in fold_text(item.get("name"))]
+    if len(partial) == 1:
+        return partial[0]
+    if len(partial) > 1:
+        raise ValueError(f"Mais de um {item_label} combina com esse nome.")
+    raise ValueError(f"{titleize_words(item_label)} nao encontrado.")
+
+
+def find_debtor_summary(debtor_name, state=None):
+    return find_named_summary(debtor_name, debtors_summary(state), "devedor")
+
+
+def find_my_debt_summary(debt_name, state=None):
+    return find_named_summary(debt_name, my_debts_summary(state), "divida")
+
+
+def split_pipe_sections(text):
+    return [normalize_text(part) for part in str(text or "").split("|") if normalize_text(part)]
+
+
+def parse_count(raw_value, label="quantidade"):
+    raw_text = normalize_text(raw_value)
+    if not raw_text:
+        raise ValueError(f"Informe a {label}.")
+    try:
+        value = int(float(raw_text.replace(",", ".")))
+    except ValueError:
+        raise ValueError(f"{titleize_words(label)} invalida.")
+    if value <= 0:
+        raise ValueError(f"A {label} precisa ser maior que zero.")
+    return value
+
+
+def history_item_by_index(index, state=None):
+    state = state or read_state()
+    items = combined_history(limit=None, state=state)
+    if index < 1 or index > len(items):
+        raise ValueError("Nao encontrei essa transacao no extrato.")
+    return items[index - 1]
+
+
+def latest_history_item(state=None):
+    return history_item_by_index(1, state=state)
+
+
 def test_mode_prefix():
     return "MODO TESTE TELEGRAM ATIVO | nada foi salvo"
 
@@ -766,19 +894,43 @@ def help_text():
                 [
                     "/entrada conta 150 salario",
                     "/saida mercado 42,50 compras",
+                    "25 entrada conta",
                     "/cartao 89,90 uber",
                     "/pagarcartao 300 pagamento parcial",
                     "/reservacartao entrada 200",
                     "/reservacartao saida 50",
+                    "/apagartransacao 1",
+                    "remover ultima transacao",
+                ],
+            ),
+            build_block(
+                "DEVEDORES",
+                [
+                    "/devedor adicionar Lucas | 50 | pix atrasado | 2026-04-20",
+                    "/devedor somar Lucas | 25",
+                    "/devedor abater Lucas | 10",
+                    "/devedor receber Lucas | conta",
+                    "/devedor remover Lucas",
+                ],
+            ),
+            build_block(
+                "DIVIDAS",
+                [
+                    "/divida adicionar Notebook | 250 | 5 | parcelado | 2026-04-25",
+                    "/divida parcelas Notebook | 2",
+                    "/divida pagar Notebook | 1 | conta",
+                    "/divida remover Notebook",
                 ],
             ),
             build_block(
                 "OBJETIVOS",
                 [
                     "/objetivo criar Viagem Dubai | 12000",
-                    "/objetivo depositar Viagem Dubai | 400",
-                    "/objetivo retirar Viagem Dubai | 100",
+                    "/objetivo entrada Viagem Dubai | 400",
+                    "/objetivo saida Viagem Dubai | 100",
+                    "/objetivo acrescentar Viagem Dubai | 35 | rendimento",
                     "/objetivo rendimento Viagem Dubai | 35",
+                    "12,55 rendimento ganho em objetivo",
                 ],
             ),
             build_block(
@@ -790,8 +942,16 @@ def help_text():
                     "passei 62 no cartao no ifood",
                     "recebi 1200 na conta salario",
                     "reservei 300 pro cartao",
+                    "entrada 200 no objetivo viagem",
+                    "saida 50 do objetivo viagem",
+                    "acrescentar 25 de rendimento no objetivo viagem",
                     "quanto tenho na conta",
                     "como esta a fatura do cartao",
+                    "adicionar mais 50 na categoria devedor para Lucas",
+                    "adicionar divida notebook 250 em 5 parcelas",
+                    "acrescentar 2 parcelas na divida notebook",
+                    "pagar parcela da divida notebook",
+                    "apagar transacao 1",
                     "devedores",
                     "minhas dividas",
                     "link weedverso",
@@ -847,7 +1007,7 @@ def format_extrato():
     items = combined_history(limit=12)
     if not items:
         return "Sem movimentacoes recentes."
-    blocks = [build_block("ULTIMAS MOVIMENTACOES", ["As 12 mais recentes."])]
+    blocks = [build_block("ULTIMAS MOVIMENTACOES", ["As 12 mais recentes.", "Para apagar: /apagartransacao numero"])]
     for index, item in enumerate(items, start=1):
         detail_lines = [
             f"{item['sign']} {money(item['value'])}",
@@ -1023,6 +1183,90 @@ def split_pipe_payload(text):
     return name, value
 
 
+def split_goal_move_payload(text):
+    parts = split_pipe_sections(text)
+    if len(parts) < 2:
+        raise ValueError("Use o formato Nome do objetivo | valor | tipo(opcional)")
+    return titleize_words(parts[0]), parse_amount(parts[1]), parts[2] if len(parts) > 2 else ""
+
+
+def infer_goal_target_name(goal_hint, state=None):
+    state = state or read_state()
+    raw_name = normalize_text(goal_hint)
+    raw_name = re.sub(r"^(?:o|a|um|uma|meu|minha|meus|minhas)\s+", "", raw_name, flags=re.IGNORECASE).strip()
+    raw_name = re.sub(r"^(?:objetivo|objetivos|meta|metas)\s*", "", raw_name, flags=re.IGNORECASE).strip()
+    raw_name = re.sub(r"\s+(?:objetivo|objetivos|meta|metas)\s*$", "", raw_name, flags=re.IGNORECASE).strip()
+    if raw_name and fold_text(raw_name) not in {"objetivo", "objetivos", "meta", "metas"}:
+        return titleize_words(raw_name), None
+
+    goals = goals_summary(state)
+    if not goals:
+        return None, "Nenhum objetivo ativo encontrado."
+    if len(goals) == 1:
+        return goals[0]["name"], None
+    return None, "Informe qual objetivo voce quer movimentar."
+
+
+def detect_goal_move_type(text):
+    normalized = fold_text(text)
+    tokens = set(normalized.split())
+    if tokens & (GOAL_YIELD_COMMANDS | GOAL_YIELD_HINTS):
+        return "yield"
+    if tokens & GOAL_OUT_COMMANDS:
+        return "withdraw"
+    if tokens & GOAL_IN_COMMANDS:
+        return "deposit"
+    if tokens & GOAL_ADD_COMMANDS:
+        if tokens & GOAL_YIELD_HINTS:
+            return "yield"
+        return "deposit"
+    return None
+
+
+def compact_goal_target_hint(text):
+    raw_text = normalize_text(text)
+    raw_text = re.sub(r"\b(?:no|na|em|do|da|de)\s+(?:objetivo|objetivos|meta|metas)\b", " ", raw_text, flags=re.IGNORECASE)
+    raw_text = re.sub(r"\b(?:objetivo|objetivos|meta|metas)\b", " ", raw_text, flags=re.IGNORECASE)
+    keep_words = []
+    for word in raw_text.split():
+        folded_word = fold_text(word)
+        if folded_word in COMMON_FILLER_WORDS:
+            continue
+        if folded_word in GOAL_IN_COMMANDS | GOAL_OUT_COMMANDS | GOAL_YIELD_COMMANDS | GOAL_ADD_COMMANDS | GOAL_YIELD_HINTS:
+            continue
+        keep_words.append(word)
+    return normalize_text(" ".join(keep_words))
+
+
+def goal_move_type_from_action(action, hint=""):
+    folded_action = fold_text(action)
+    folded_hint = fold_text(hint)
+    hint_tokens = set(folded_hint.split())
+
+    if folded_action in GOAL_OUT_COMMANDS:
+        return "withdraw"
+    if folded_action in GOAL_YIELD_COMMANDS:
+        return "yield"
+    if folded_action in GOAL_IN_COMMANDS:
+        return "deposit"
+    if folded_action in GOAL_ADD_COMMANDS:
+        if folded_hint in GOAL_YIELD_HINTS or bool(hint_tokens & GOAL_YIELD_HINTS):
+            return "yield"
+        return "deposit"
+    raise ValueError("Use criar, entrada, saida, acrescentar ou rendimento.")
+
+
+def goal_move_reply(goal_name, move_type, value, persist=True):
+    state = move_goal(goal_name, move_type, value, persist=persist)
+    goal = find_goal_summary(goal_name, state)
+    prefix = {
+        "deposit": "Entrada registrada",
+        "withdraw": "Saida registrada",
+        "yield": "Rendimento registrado",
+    }[move_type]
+    return f"{prefix} em {goal['name']}.\nGuardado: {money(goal['saved'])}"
+
+
 def handle_goal_command(args, persist=True):
     if not args:
         return format_goals()
@@ -1037,29 +1281,163 @@ def handle_goal_command(args, persist=True):
         state = add_goal(name, value, persist=persist)
         goal = find_goal_summary(name, state)
         return f"Objetivo criado: {goal['name']}.\nMeta inicial: {money(goal['target'])}"
-    if action in {"depositar", "deposito", "aportar", "guardar"}:
-        name, value = split_pipe_payload(payload)
-        state = move_goal(name, "deposit", value, persist=persist)
-        goal = find_goal_summary(name, state)
-        return f"Deposito registrado em {goal['name']}.\nGuardado: {money(goal['saved'])}"
-    if action in {"retirar", "saque", "tirar"}:
-        name, value = split_pipe_payload(payload)
-        state = move_goal(name, "withdraw", value, persist=persist)
-        goal = find_goal_summary(name, state)
-        return f"Retirada registrada em {goal['name']}.\nGuardado: {money(goal['saved'])}"
-    if action in {"rendimento", "render", "lucro"}:
-        name, value = split_pipe_payload(payload)
-        state = move_goal(name, "yield", value, persist=persist)
-        goal = find_goal_summary(name, state)
-        return f"Rendimento registrado em {goal['name']}.\nGuardado: {money(goal['saved'])}"
+    if action in GOAL_IN_COMMANDS | GOAL_OUT_COMMANDS | GOAL_YIELD_COMMANDS | GOAL_ADD_COMMANDS:
+        name, value, hint = split_goal_move_payload(payload)
+        move_type = goal_move_type_from_action(action, hint=hint)
+        return goal_move_reply(name, move_type, value, persist=persist)
 
-    raise ValueError("Use /objetivo criar|depositar|retirar|rendimento Nome | valor")
+    raise ValueError("Use /objetivo criar|entrada|saida|acrescentar|rendimento Nome | valor")
+
+
+def handle_debtor_command(args, persist=True):
+    if not args:
+        return format_debtors()
+
+    action = fold_text(args[0])
+    payload = normalize_text(" ".join(args[1:]))
+    parts = split_pipe_sections(payload)
+
+    if action in {"listar", "lista", "status"}:
+        return format_debtors()
+    if action in {"criar", "novo", "nova", "adicionar"}:
+        if len(parts) < 2:
+            raise ValueError("Use /devedor adicionar Nome | valor | observacao | 2026-04-20")
+        name = titleize_words(parts[0])
+        value = parse_amount(parts[1])
+        note = parts[2] if len(parts) > 2 else ""
+        pay_date = parts[3] if len(parts) > 3 else ""
+        state = add_debtor(name, value, note, pay_date, persist=persist)
+        item = find_debtor_summary(name, state)
+        return f"Devedor cadastrado: {item['name']}.\nTotal em aberto: {money(item['amount'])}"
+    if action in {"somar", "mais", "acrescentar"}:
+        if len(parts) < 2:
+            raise ValueError("Use /devedor somar Nome | valor | observacao")
+        name = titleize_words(parts[0])
+        value = parse_amount(parts[1])
+        note = parts[2] if len(parts) > 2 else ""
+        state = adjust_debtor_amount(name, value, mode="add", note=note, persist=persist)
+        item = find_debtor_summary(name, state)
+        return f"Saldo devedor atualizado para {item['name']}.\nNovo total: {money(item['amount'])}"
+    if action in {"abater", "tirar", "descontar"}:
+        if len(parts) < 2:
+            raise ValueError("Use /devedor abater Nome | valor")
+        name = titleize_words(parts[0])
+        value = parse_amount(parts[1])
+        note = parts[2] if len(parts) > 2 else ""
+        state = adjust_debtor_amount(name, value, mode="remove", note=note, persist=persist)
+        item = find_debtor_summary(name, state)
+        return f"Valor abatido para {item['name']}.\nNovo total: {money(item['amount'])}"
+    if action in {"receber", "quitar"}:
+        if not parts:
+            raise ValueError("Use /devedor receber Nome | conta | observacao")
+        name = titleize_words(parts[0])
+        account_alias = parts[1] if len(parts) > 1 else "conta"
+        note = parts[2] if len(parts) > 2 else ""
+        state = receive_debtor_in_account(name, account_alias=account_alias, note=note, persist=persist)
+        item = find_debtor_summary(name, state)
+        account_key = resolve_balance_key(account_alias, state)
+        return (
+            f"Recebimento de {item['name']} lançado em {state['balances'][account_key]['label']}.\n"
+            f"Saldo atual: {money(state['balances'][account_key]['amount'])}"
+        )
+    if action in {"remover", "apagar", "deletar"}:
+        name = titleize_words(parts[0] if parts else payload)
+        item = find_debtor_summary(name)
+        remove_debtor(name, persist=persist)
+        return f"Devedor removido: {item['name']}."
+
+    raise ValueError("Use /devedor adicionar|somar|abater|receber|remover Nome | ...")
+
+
+def handle_my_debt_command(args, persist=True):
+    if not args:
+        return format_my_debts()
+
+    action = fold_text(args[0])
+    payload = normalize_text(" ".join(args[1:]))
+    parts = split_pipe_sections(payload)
+
+    if action in {"listar", "lista", "status"}:
+        return format_my_debts()
+    if action in {"criar", "nova", "novo", "adicionar"}:
+        if len(parts) < 2:
+            raise ValueError("Use /divida adicionar Nome | valor da parcela | parcelas | observacao | 2026-04-20")
+        name = titleize_words(parts[0])
+        installment_value = parse_amount(parts[1])
+        installments = parse_count(parts[2], "quantidade de parcelas") if len(parts) > 2 else 1
+        note = parts[3] if len(parts) > 3 else ""
+        pay_date = parts[4] if len(parts) > 4 else ""
+        state = add_my_debt(name, installment_value, installments, note, pay_date, persist=persist)
+        item = find_my_debt_summary(name, state)
+        return (
+            f"Divida cadastrada: {item['name']}.\n"
+            f"Parcelas: {item['installments']}x de {money(item['installmentValue'])}"
+        )
+    if action in {"parcelas", "acrescentar", "somar"}:
+        if len(parts) < 2:
+            raise ValueError("Use /divida parcelas Nome | quantidade")
+        name = titleize_words(parts[0])
+        change = parse_count(parts[1], "quantidade de parcelas")
+        installment_value = parse_amount(parts[2]) if len(parts) > 2 and parts[2] else None
+        note = parts[3] if len(parts) > 3 else ""
+        state = adjust_my_debt_installments(name, change, installment_value=installment_value, note=note, persist=persist)
+        item = find_my_debt_summary(name, state)
+        return (
+            f"Parcelas ajustadas em {item['name']}.\n"
+            f"Agora sao {item['installments']}x de {money(item['installmentValue'])}"
+        )
+    if action in {"pagar", "parcela", "quitaparcela"}:
+        if not parts:
+            raise ValueError("Use /divida pagar Nome | quantidade | conta | observacao")
+        name = titleize_words(parts[0])
+        count = parse_count(parts[1], "quantidade de parcelas") if len(parts) > 1 else 1
+        account_alias = parts[2] if len(parts) > 2 else "conta"
+        note = parts[3] if len(parts) > 3 else ""
+        state = pay_my_debt_installments(name, count=count, account_alias=account_alias, note=note, persist=persist)
+        item = find_my_debt_summary(name, state)
+        account_key = resolve_balance_key(account_alias, state)
+        return (
+            f"Pagamento registrado para {item['name']} em {state['balances'][account_key]['label']}.\n"
+            f"Parcelas pagas: {item['installmentsPaid']}/{item['installments']} | Restante: {money(item['remainingValue'])}"
+        )
+    if action in {"remover", "apagar", "deletar"}:
+        name = titleize_words(parts[0] if parts else payload)
+        item = find_my_debt_summary(name)
+        remove_my_debt(name, persist=persist)
+        return f"Divida removida: {item['name']}."
+
+    raise ValueError("Use /divida adicionar|parcelas|pagar|remover Nome | ...")
+
+
+def handle_delete_transaction_command(args, persist=True):
+    if not args:
+        raise ValueError("Use /apagartransacao numero-do-extrato")
+    index = parse_count(args[0], "posicao do extrato")
+    item = history_item_by_index(index)
+    delete_transaction_entry(item.get("source"), item.get("txId"), item.get("goalId") or "", persist=persist)
+    note = f"\nObs: {item['note']}" if item.get("note") else ""
+    return f"Transacao {index} apagada: {item['text']} {item['sign']} {money(item['value'])}{note}"
+
+
+def handle_delete_last_transaction_command(persist=True):
+    item = latest_history_item()
+    delete_transaction_entry(item.get("source"), item.get("txId"), item.get("goalId") or "", persist=persist)
+    note = f"\nObs: {item['note']}" if item.get("note") else ""
+    return f"Ultima transacao apagada: {item['text']} {item['sign']} {money(item['value'])}{note}"
 
 
 def format_query_goal(text):
-    goal_name = normalize_text(re.sub(r"^(?:como esta|quanto tem|quanto tenho|mostrar|mostra|ver|status do|status da)\s+", "", text, flags=re.IGNORECASE))
-    goal_name = re.sub(r"^(?:objetivo|meta)\s+", "", goal_name, flags=re.IGNORECASE).strip()
-    if not goal_name:
+    goal_name = normalize_text(
+        re.sub(
+            r"^(?:como esta|quanto tem|quanto tenho|mostrar|mostra|ver|status do|status da|saldo do|saldo da|saldo de|saldo)\s+",
+            "",
+            text,
+            flags=re.IGNORECASE,
+        )
+    )
+    goal_name = re.sub(r"^(?:meu|minha|meus|minhas)\s+", "", goal_name, flags=re.IGNORECASE).strip()
+    goal_name = re.sub(r"^(?:objetivos|objetivo|metas|meta)\s*", "", goal_name, flags=re.IGNORECASE).strip()
+    if not goal_name or fold_text(goal_name) in {"objetivo", "objetivos", "meta", "metas", "saldo"}:
         return format_goals()
     goal = find_goal_summary(goal_name)
     return f"{goal['name']} | {money(goal['saved'])} de {money(goal['target'])} | {goal['pct']}% | faltam {money(goal['left'])}"
@@ -1069,6 +1447,7 @@ def try_parse_natural_goal(text, persist=True):
     raw_text = normalize_text(text)
     normalized = fold_text(text)
     normalized_amounts = fold_text_keep_amounts(text)
+    amount = extract_amount(text)
 
     match = re.match(rf"^(?:criar|crie|adicionar|adicione|novo|nova)(?:\s+(?:objetivo|meta))?\s+(.+?)\s*\|\s*{VALUE_RE}$", raw_text, flags=re.IGNORECASE)
     if match:
@@ -1077,32 +1456,203 @@ def try_parse_natural_goal(text, persist=True):
         add_goal(name, value, persist=persist)
         return f"Objetivo criado: {name}.\nMeta inicial: {money(value)}"
 
-    match = re.match(rf"^(?:depositei|deposita|deposita|guardei|coloquei|apliquei|aportei)\s+{VALUE_RE}\s+(?:no|na|em)\s+(?:objetivo|meta)\s+(.+)$", normalized_amounts)
+    match = re.match(
+        rf"^(?:entrada|entrar|deposito|depositar|depositei|guardar|guardei|colocar|coloquei|aporte|aportar|aportei)\s+{VALUE_RE}\s+(?:no|na|em)\s+(?:objetivo|meta)\s+(.+)$",
+        normalized_amounts,
+    )
     if match:
         value = parse_amount(match.group(1))
         goal_name = titleize_words(match.group(2))
-        state = move_goal(goal_name, "deposit", value, persist=persist)
-        goal = find_goal_summary(goal_name, state)
-        return f"Deposito registrado em {goal['name']}.\nGuardado: {money(goal['saved'])}"
+        return goal_move_reply(goal_name, "deposit", value, persist=persist)
 
-    match = re.match(rf"^(?:retirei|tirei|saquei)\s+{VALUE_RE}\s+(?:do|da|de)\s+(?:objetivo|meta)\s+(.+)$", normalized_amounts)
+    match = re.match(
+        rf"^(?:saida|sair|retirar|retirei|tirar|tirei|saquei|remover|removi|abater|abati)\s+{VALUE_RE}\s+(?:do|da|de)\s+(?:objetivo|meta)\s+(.+)$",
+        normalized_amounts,
+    )
     if match:
         value = parse_amount(match.group(1))
         goal_name = titleize_words(match.group(2))
-        state = move_goal(goal_name, "withdraw", value, persist=persist)
-        goal = find_goal_summary(goal_name, state)
-        return f"Retirada registrada em {goal['name']}.\nGuardado: {money(goal['saved'])}"
+        return goal_move_reply(goal_name, "withdraw", value, persist=persist)
 
-    match = re.match(rf"^(?:rendeu|teve rendimento de|rendimento de|lucrou)\s+{VALUE_RE}\s+(?:no|na|em)\s+(?:objetivo|meta)\s+(.+)$", normalized_amounts)
+    match = re.match(
+        rf"^(?:rendimento|rendimentos|juros|lucro|lucros|rendeu|teve rendimento de|rendimento de|lucrou)\s+{VALUE_RE}\s+(?:no|na|em)\s+(?:objetivo|meta)\s+(.+)$",
+        normalized_amounts,
+    )
     if match:
         value = parse_amount(match.group(1))
         goal_name = titleize_words(match.group(2))
-        state = move_goal(goal_name, "yield", value, persist=persist)
-        goal = find_goal_summary(goal_name, state)
-        return f"Rendimento registrado em {goal['name']}.\nGuardado: {money(goal['saved'])}"
+        return goal_move_reply(goal_name, "yield", value, persist=persist)
+
+    match = re.match(
+        rf"^(?:adicionar|adicione|acrescentar|acrescente|somar|some|mais|incrementar|aumentar)\s+{VALUE_RE}(?:\s+de\s+((?:rendimento|rendimentos|juros|lucro|lucros)))?\s+(?:no|na|em)\s+(?:objetivo|meta)\s+(.+)$",
+        normalized_amounts,
+    )
+    if match:
+        value = parse_amount(match.group(1))
+        hint = match.group(2) or ""
+        goal_name = titleize_words(match.group(3))
+        move_type = "yield" if fold_text(hint) in GOAL_YIELD_HINTS else "deposit"
+        return goal_move_reply(goal_name, move_type, value, persist=persist)
+
+    if amount is not None and ("objetivo" in normalized or "meta" in normalized):
+        move_type = detect_goal_move_type(normalized_amounts)
+        if move_type:
+            state = read_state()
+            amountless_text = normalize_text(re.sub(VALUE_RE, " ", normalized_amounts, count=1))
+            goal_hint = compact_goal_target_hint(amountless_text)
+            goal_name, error_reply = infer_goal_target_name(goal_hint, state)
+            if error_reply:
+                return error_reply
+            return goal_move_reply(goal_name, move_type, amount, persist=persist)
 
     if ("objetivo" in normalized or "meta" in normalized) and any(word in normalized.split() for word in QUERY_WORDS):
-        return format_query_goal(text)
+        try:
+            return format_query_goal(text)
+        except Exception:
+            return format_goals()
+
+    return None
+
+
+def try_parse_natural_transaction_delete(text, persist=True):
+    normalized = fold_text(text)
+    if re.match(
+        r"^(?:apagar|apaga|deletar|delete|remover|remove|desfazer|desfaz)\s+(?:a\s+)?(?:ultima|ultimo)\s+(?:transacao|lancamento|movimentacao|movimento|registro)?$",
+        normalized,
+    ):
+        return handle_delete_last_transaction_command(persist=persist)
+    match = re.match(r"^(?:apagar|apaga|deletar|delete|remover|remove)\s+(?:a\s+)?transacao\s+(\d+)$", normalized)
+    if not match:
+        return None
+    return handle_delete_transaction_command([match.group(1)], persist=persist)
+
+
+def try_parse_natural_debtor_flow(text, persist=True):
+    normalized_amounts = fold_text_keep_amounts(text)
+
+    match = re.match(
+        rf"^(?:adicionar|adicionar|acrescentar|somar)(?:\s+mais)?\s+{VALUE_RE}\s+(?:na|no)\s+(?:categoria\s+)?devedor(?:\s+para)?\s+(.+)$",
+        normalized_amounts,
+    )
+    if match:
+        value = parse_amount(match.group(1))
+        name = titleize_words(match.group(2))
+        try:
+            state = adjust_debtor_amount(name, value, mode="add", persist=persist)
+        except ValueError as exc:
+            if "nao encontrado" not in fold_text(str(exc)):
+                raise
+            state = add_debtor(name, value, persist=persist)
+        item = find_debtor_summary(name, state)
+        return f"Saldo devedor atualizado para {item['name']}.\nNovo total: {money(item['amount'])}"
+
+    match = re.match(rf"^(?:criar|cadastrar|adicionar|novo|nova)\s+(?:um\s+|uma\s+)?devedor(?:\s+para)?\s+(.+?)\s+{VALUE_RE}(?:\s+(.+))?$", normalized_amounts)
+    if match:
+        name = titleize_words(match.group(1))
+        value = parse_amount(match.group(2))
+        note = normalize_desc(match.group(3) or "", "Sem observacao")
+        note_value = note if note != "Sem Observacao" else ""
+        try:
+            state = add_debtor(name, value, note=note_value, persist=persist)
+            item = find_debtor_summary(name, state)
+            return f"Devedor cadastrado: {item['name']}.\nTotal em aberto: {money(item['amount'])}"
+        except ValueError as exc:
+            if "ja existe um devedor" not in fold_text(str(exc)):
+                raise
+            state = adjust_debtor_amount(name, value, mode="add", note=note_value, persist=persist)
+        item = find_debtor_summary(name, state)
+        return f"Saldo devedor atualizado para {item['name']}.\nNovo total: {money(item['amount'])}"
+
+    match = re.match(rf"^(?:remover|tirar|descontar|abater)\s+{VALUE_RE}\s+(?:do|da)\s+(?:categoria\s+)?devedor(?:\s+para)?\s+(.+)$", normalized_amounts)
+    if match:
+        value = parse_amount(match.group(1))
+        name = titleize_words(match.group(2))
+        state = adjust_debtor_amount(name, value, mode="remove", persist=persist)
+        item = find_debtor_summary(name, state)
+        return f"Valor abatido para {item['name']}.\nNovo total: {money(item['amount'])}"
+
+    match = re.match(r"^(?:receber|quitar|quitei)\s+(?:o\s+)?devedor\s+(.+?)(?:\s+(?:na|no)\s+(.+))?$", normalized_amounts)
+    if match:
+        name = titleize_words(match.group(1))
+        account_alias = normalize_text(match.group(2) or "conta")
+        state = receive_debtor_in_account(name, account_alias=account_alias, persist=persist)
+        account_key = resolve_balance_key(account_alias, state)
+        return (
+            f"Recebimento de {name} lançado em {state['balances'][account_key]['label']}.\n"
+            f"Saldo atual: {money(state['balances'][account_key]['amount'])}"
+        )
+
+    match = re.match(r"^(?:remover|apagar|deletar)\s+(?:o\s+)?devedor\s+(.+)$", normalized_amounts)
+    if match:
+        name = titleize_words(match.group(1))
+        item = find_debtor_summary(name)
+        remove_debtor(name, persist=persist)
+        return f"Devedor removido: {item['name']}."
+
+    return None
+
+
+def try_parse_natural_my_debt_flow(text, persist=True):
+    normalized_amounts = fold_text_keep_amounts(text)
+
+    match = re.match(
+        rf"^(?:adicionar|criar|cadastrar|novo|nova)\s+(?:uma\s+)?(?:divida|debito)\s+(?:de\s+)?(.+?)\s+{VALUE_RE}(?:\s+(?:em|de)\s+(\d+)\s+parcelas?)?(?:\s+(.+))?$",
+        normalized_amounts,
+    )
+    if match:
+        name = titleize_words(match.group(1))
+        installment_value = parse_amount(match.group(2))
+        installments = parse_count(match.group(3), "quantidade de parcelas") if match.group(3) else 1
+        note = normalize_desc(match.group(4) or "", "Sem observacao")
+        state = add_my_debt(name, installment_value, installments, note=note if note != "Sem Observacao" else "", persist=persist)
+        item = find_my_debt_summary(name, state)
+        return f"Divida cadastrada: {item['name']}.\nParcelas: {item['installments']}x de {money(item['installmentValue'])}"
+
+    match = re.match(
+        r"^(?:acrescentar|adicionar|somar)\s+(\d+)\s+parcelas?\s+(?:na|da|de|para)\s+(?:divida|debito)\s+(.+)$",
+        normalized_amounts,
+    )
+    if match:
+        installments = parse_count(match.group(1), "quantidade de parcelas")
+        name = titleize_words(match.group(2))
+        state = adjust_my_debt_installments(name, installments, persist=persist)
+        item = find_my_debt_summary(name, state)
+        return f"Parcelas ajustadas em {item['name']}.\nAgora sao {item['installments']}x de {money(item['installmentValue'])}"
+
+    match = re.match(
+        r"^(?:pagar|paguei|quitar|quitei)\s+(?:(\d+)\s+)?parcelas?\s+(?:da|de)\s+(?:divida|debito)\s+(.+?)(?:\s+(?:na|no)\s+(.+))?$",
+        normalized_amounts,
+    )
+    if match:
+        count = parse_count(match.group(1), "quantidade de parcelas") if match.group(1) else 1
+        name = titleize_words(match.group(2))
+        account_alias = normalize_text(match.group(3) or "conta")
+        state = pay_my_debt_installments(name, count=count, account_alias=account_alias, persist=persist)
+        item = find_my_debt_summary(name, state)
+        account_key = resolve_balance_key(account_alias, state)
+        return (
+            f"Pagamento registrado para {item['name']} em {state['balances'][account_key]['label']}.\n"
+            f"Parcelas pagas: {item['installmentsPaid']}/{item['installments']} | Restante: {money(item['remainingValue'])}"
+        )
+
+    match = re.match(r"^(?:pagar|paguei|quitar|quitei)\s+(?:uma\s+)?parcela\s+(?:da|de)\s+(?:divida|debito)\s+(.+?)(?:\s+(?:na|no)\s+(.+))?$", normalized_amounts)
+    if match:
+        name = titleize_words(match.group(1))
+        account_alias = normalize_text(match.group(2) or "conta")
+        state = pay_my_debt_installments(name, count=1, account_alias=account_alias, persist=persist)
+        item = find_my_debt_summary(name, state)
+        account_key = resolve_balance_key(account_alias, state)
+        return (
+            f"Pagamento registrado para {item['name']} em {state['balances'][account_key]['label']}.\n"
+            f"Parcelas pagas: {item['installmentsPaid']}/{item['installments']} | Restante: {money(item['remainingValue'])}"
+        )
+
+    match = re.match(r"^(?:remover|apagar|deletar)\s+(?:a\s+)?(?:divida|debito)\s+(.+)$", normalized_amounts)
+    if match:
+        name = titleize_words(match.group(1))
+        item = find_my_debt_summary(name)
+        remove_my_debt(name, persist=persist)
+        return f"Divida removida: {item['name']}."
 
     return None
 
@@ -1117,17 +1667,25 @@ def try_parse_structured_balance_phrase(text, persist=True):
     )
 
     for alias in aliases:
-        patterns = [
-            rf"^(entrada|saida)\s+{re.escape(alias)}\s+{VALUE_RE}(?:\s+(.+))?$",
-            rf"^{re.escape(alias)}\s+(entrada|saida)\s+{VALUE_RE}(?:\s+(.+))?$",
+        variants = [
+            ("action-first", re.match(rf"^(entrada|saida)\s+{re.escape(alias)}\s+{VALUE_RE}(?:\s+(.+))?$", normalized)),
+            ("alias-first", re.match(rf"^{re.escape(alias)}\s+(entrada|saida)\s+{VALUE_RE}(?:\s+(.+))?$", normalized)),
+            ("amount-first-action", re.match(rf"^{VALUE_RE}\s+(entrada|saida)\s+{re.escape(alias)}(?:\s+(.+))?$", normalized)),
+            ("amount-first-alias", re.match(rf"^{VALUE_RE}\s+{re.escape(alias)}\s+(entrada|saida)(?:\s+(.+))?$", normalized)),
         ]
-        for pattern in patterns:
-            match = re.match(pattern, normalized)
+        for variant, match in variants:
             if not match:
                 continue
-            direction = "in" if match.group(1) == "entrada" else "out"
-            amount = parse_amount(match.group(2))
-            note = normalize_desc(match.group(3) or "", "Entrada" if direction == "in" else "Saida")
+            if variant in {"action-first", "alias-first"}:
+                action_word = match.group(1)
+                amount = parse_amount(match.group(2))
+                note_text = match.group(3) or ""
+            else:
+                amount = parse_amount(match.group(1))
+                action_word = match.group(2)
+                note_text = match.group(3) or ""
+            direction = "in" if action_word == "entrada" else "out"
+            note = normalize_desc(note_text, "Entrada" if direction == "in" else "Saida")
             updated_state = add_balance_transaction(alias, direction, amount, note, persist=persist)
             key = resolve_balance_key(alias, updated_state)
             action = "Entrada" if direction == "in" else "Saida"
@@ -1153,7 +1711,7 @@ def try_parse_read_query(text):
         return format_saldos()
     if normalized in {"extrato", "movimentacoes", "ultimas movimentacoes", "ultimos lancamentos", "ultimas compras", "ultimos gastos"}:
         return format_extrato()
-    if normalized in {"objetivos", "metas", "meus objetivos", "minhas metas"}:
+    if normalized in {"objetivo", "objetivos", "meta", "metas", "meus objetivos", "minhas metas"}:
         return format_goals()
     if normalized in DEBTOR_WORDS:
         return format_debtors()
@@ -1221,20 +1779,34 @@ def try_parse_natural_finance(text, persist=True):
     tokens = text_tokens(normalized)
     normalized_amounts = fold_text_keep_amounts(text)
     amount = extract_amount(text)
+    reserve_in_hints = RESERVE_IN_WORDS | {"entrada", "deposito", "depositar", "adicionar", "acrescentar", "somar"}
+    reserve_out_hints = RESERVE_OUT_WORDS | {"saida", "retirada", "retirar", "tirar", "abater", "descontar"}
 
     read_reply = try_parse_read_query(text)
     if read_reply:
         return read_reply
+
+    delete_reply = try_parse_natural_transaction_delete(text, persist=persist)
+    if delete_reply:
+        return delete_reply
+
+    debtor_reply = try_parse_natural_debtor_flow(text, persist=persist)
+    if debtor_reply:
+        return debtor_reply
+
+    my_debt_reply = try_parse_natural_my_debt_flow(text, persist=persist)
+    if my_debt_reply:
+        return my_debt_reply
 
     structured_balance_reply = try_parse_structured_balance_phrase(text, persist=persist)
     if structured_balance_reply:
         return structured_balance_reply
 
     if amount and "reserva" in normalized and ("cartao" in normalized or "amex" in normalized):
-        if tokens & RESERVE_IN_WORDS:
+        if tokens & reserve_in_hints:
             state = add_credit_transaction("reserve-in", amount, "Reserva cartao", persist=persist)
             return f"Reserva do cartao reforcada.\nSaldo reservado: {money(state['credit']['reserved'])}"
-        if tokens & RESERVE_OUT_WORDS:
+        if tokens & reserve_out_hints:
             state = add_credit_transaction("reserve-out", amount, "Reserva cartao", persist=persist)
             return f"Saida da reserva registrada.\nSaldo reservado: {money(state['credit']['reserved'])}"
 
@@ -1316,6 +1888,23 @@ def try_parse_natural_finance(text, persist=True):
             key = resolve_balance_key(account_alias, state)
             return f"Saida registrada em {state['balances'][key]['label']}.\nSaldo atual: {money(state['balances'][key]['amount'])}"
 
+        generic_goal_context = "objetivo" in normalized or "meta" in normalized
+        generic_card_context = "cartao" in normalized or "fatura" in normalized or "amex" in normalized or "credito" in normalized
+        if not generic_goal_context and not generic_card_context and "reserva" not in normalized:
+            if "entrada" in tokens:
+                account_alias = account_alias or "conta"
+                note = account_note_from_text(text, account_alias, "Entrada")
+                state = add_balance_transaction(account_alias, "in", amount, note, persist=persist)
+                key = resolve_balance_key(account_alias, state)
+                return f"Entrada registrada em {state['balances'][key]['label']}.\nSaldo atual: {money(state['balances'][key]['amount'])}"
+
+            if "saida" in tokens:
+                account_alias = account_alias or "conta"
+                note = account_note_from_text(text, account_alias, "Saida")
+                state = add_balance_transaction(account_alias, "out", amount, note, persist=persist)
+                key = resolve_balance_key(account_alias, state)
+                return f"Saida registrada em {state['balances'][key]['label']}.\nSaldo atual: {money(state['balances'][key]['amount'])}"
+
     return None
 
 
@@ -1368,10 +1957,18 @@ def _route_message_impl(message):
         return chat_id, maybe_decorate_test_reply(format_debtors())
     if command in {"/dividas", "/minhasdividas", "/debitos"}:
         return chat_id, maybe_decorate_test_reply(format_my_debts())
+    if command in {"/devedor", "/devedorcfg"}:
+        return chat_id, maybe_decorate_test_reply(handle_debtor_command(args, persist=persist_changes))
+    if command in {"/divida", "/debitocfg"}:
+        return chat_id, maybe_decorate_test_reply(handle_my_debt_command(args, persist=persist_changes))
     if command == "/objetivo":
         return chat_id, maybe_decorate_test_reply(handle_goal_command(args, persist=persist_changes))
     if command in {"/extrato", "/extratos"}:
         return chat_id, maybe_decorate_test_reply(format_extrato())
+    if command in {"/apagartransacao", "/apagartx"}:
+        return chat_id, maybe_decorate_test_reply(handle_delete_transaction_command(args, persist=persist_changes))
+    if command in {"/apagarultima", "/ultimatransacao", "/desfazerultima"}:
+        return chat_id, maybe_decorate_test_reply(handle_delete_last_transaction_command(persist=persist_changes))
     if command in {"/link", "/painel", "/weedverso"}:
         return chat_id, maybe_decorate_test_reply(format_share_link())
     if command in {"/meuid", "/chatid", "/conexao"}:
@@ -1393,12 +1990,25 @@ def route_message(message):
         if command in {"/modoteste", "/modo_teste", "/testemode"}:
             return _route_message_impl(message)
 
+    before_snapshot = ""
+    should_trigger_sync = not telegram_test_mode_enabled()
+    if should_trigger_sync:
+        before_snapshot = current_state_snapshot()
+
     if telegram_test_mode_enabled():
         seed_state = read_state()
         with using_state_file(telegram_test_state_file(chat_id), seed_state=seed_state):
             return _route_message_impl(message)
 
-    return _route_message_impl(message)
+    result = _route_message_impl(message)
+    if should_trigger_sync:
+        after_snapshot = current_state_snapshot()
+        if after_snapshot and after_snapshot != before_snapshot:
+            try:
+                trigger_background_push("telegram")
+            except Exception:
+                pass
+    return result
 
 
 def run_bot():

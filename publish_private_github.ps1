@@ -11,9 +11,10 @@ $GhExe = @(
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 $GitExe = @(
+    (Get-Command git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue),
     "C:\Program Files\Git\cmd\git.exe",
     "C:\Program Files\Git\bin\git.exe"
-) | Where-Object { Test-Path $_ } | Select-Object -First 1
+) + (Get-ChildItem "$env:LOCALAPPDATA\GitHubDesktop\app-*\resources\app\git\cmd\git.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
 
 if (-not $GhExe) {
     throw "GitHub CLI nao encontrado."

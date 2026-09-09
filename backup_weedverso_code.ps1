@@ -4,15 +4,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$ProjectRoot = "C:\Users\joaov\OneDrive\Documentos\Desktop\WEEDVERSO"
+$ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ArchiveRoot = "C:\Users\joaov\OneDrive\Documentos\WEEDVERSO-CODE-BACKUPS"
 $MirrorRoot = Join-Path $env:APPDATA "Weedverso\code-mirror"
 $StageRoot = Join-Path $env:TEMP "weedverso-code-stage"
 $ManifestPath = Join-Path $ArchiveRoot "backup-manifest.json"
 $GitExeCandidates = @(
+    (Get-Command git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue),
     "C:\Program Files\Git\cmd\git.exe",
     "C:\Program Files\Git\bin\git.exe"
-)
+) + (Get-ChildItem "$env:LOCALAPPDATA\GitHubDesktop\app-*\resources\app\git\cmd\git.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
 
 $RootFiles = @(
     "ABRIR WEEDVERSO.cmd",

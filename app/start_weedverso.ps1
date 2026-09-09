@@ -89,6 +89,26 @@ function Get-CloudLoginUrl {
     return "$base/login"
 }
 
+function Test-WeedversoCloudHealth {
+    param(
+        [string]$Url
+    )
+    if (-not $Url) {
+        return $false
+    }
+    try {
+        $healthUri = ($Url.TrimEnd("/") -replace "/login$", "") + "/health"
+        $req = [System.Net.WebRequest]::Create($healthUri)
+        $req.Timeout = 1500
+        $resp = $req.GetResponse()
+        $resp.Close()
+        return $true
+    }
+    catch {
+        return $false
+    }
+}
+
 function Get-BrowserAppExe {
     $candidates = @(
         "C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -200,20 +220,11 @@ function Start-LocalWeedverso {
     }
 }
 
-$envMap = Read-WeedversoEnv
-$cloudLoginUrl = Get-CloudLoginUrl -EnvMap $envMap
 Ensure-WeedversoProtocol
-
-if ($cloudLoginUrl) {
-    Ensure-CloudMirror
-    if ($OpenBrowser) {
-        Open-WeedversoWindow -Url $cloudLoginUrl
-    }
-    exit 0
-}
-
 Start-LocalWeedverso
 
 if ($OpenBrowser) {
     Open-WeedversoWindow -Url "http://127.0.0.1:8765/"
 }
+
+

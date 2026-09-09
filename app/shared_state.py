@@ -436,32 +436,171 @@ def resolve_balance_key(alias, state=None):
     return key
 
 
-def add_balance_transaction(account_alias, direction, value, note="", persist=True):
+def _today_key():
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+def _sorted_by_at(items, reverse=False):
+    return sorted(
+        list(items or []),
+        key=lambda item: (
+            str((item or {}).get("at") or ""),
+            str((item or {}).get("id") or ""),
+        ),
+        reverse=reverse,
+    )
+
+
+def _capture_wallet_baselines(state):
+    balances = (state or {}).get("balances") or {}
+    baselines = {key: safe_float((item or {}).get("amount"), 0) for key, item in balances.items()}
+    for item in list((state or {}).get("tx") or []):
+        account = item.get("account")
+        if account not in baselines:
+            continue
+        tx_type = str(item.get("type") or "")
+        value = abs(safe_float(item.get("value"), 0))
+        prev = safe_float(item.get("prev"), 0)
+        if tx_type == "set":
+            baselines[account] -= value - prev
+        elif tx_type == "in":
+            baselines[account] -= value
+        elif tx_type == "out":
+            baselines[account] += value
+    return baselines
+
+
+def _recompute_wallet_balances(state, baselines=None):
+    balances = (state or {}).setdefault("balances", {})
+    seed = baselines or _capture_wallet_baselines(state)
+    for key, item in balances.items():
+        item["amount"] = safe_float(seed.get(key), 0)
+    for item in _sorted_by_at((state or {}).get("tx") or []):
+        account = item.get("account")
+        if account not in balances:
+            continue
+        tx_type = str(item.get("type") or "")
+        value = abs(safe_float(item.get("value"), 0))
+        if tx_type == "set":
+            item["prev"] = safe_float(balances[account].get("amount"), 0)
+            balances[account]["amount"] = value
+        elif tx_type == "in":
+            balances[account]["amount"] = safe_float(balances[account].get("amount"), 0) + value
+        elif tx_type == "out":
+            balances[account]["amount"] = safe_float(balances[account].get("amount"), 0) - value
+
+
+def _recompute_credit_state(state):
+    credit = (state or {}).setdefault("credit", {})
+    credit["used"] = 0.0
+    credit["reserved"] = 0.0
+    credit["tx"] = list(credit.get("tx") or [])
+    for item in _sorted_by_at(credit["tx"]):
+        value = abs(safe_float(item.get("value"), 0))
+        tx_type = str(item.get("type") or "")
+        if tx_type == "expense":
+            credit["used"] += value
+        elif tx_type == "payment":
+            credit["used"] = max(0.0, credit["used"] - value)
+        elif tx_type == "reserve-in":
+            credit["reserved"] += value
+        elif tx_type == "reserve-out":
+            credit["reserved"] = max(0.0, credit["reserved"] - value)
+
+
+def _recompute_goal_saved(goal):
+    if goal is None:
+        return
+    goal["saved"] = 0.0
+    goal["tx"] = list(goal.get("tx") or [])
+    for item in _sorted_by_at(goal["tx"]):
+        value = abs(safe_float(item.get("value"), 0))
+        if item.get("type") == "withdraw":
+            goal["saved"] = max(0.0, safe_float(goal.get("saved"), 0) - value)
+        else:
+            goal["saved"] = safe_float(goal.get("saved"), 0) + value
+
+
+def _resolve_named_entry(items, raw_name, item_label):
+    target = fold_text(raw_name)
+    raw_id = str(raw_name or "").strip()
+    if not target and not raw_id:
+        raise ValueError(f"Informe o nome do {item_label}.")
+
+    exact = []
+    for item in items:
+        entry_name = fold_text(item.get("name"))
+        entry_id = str(item.get("id") or "").strip()
+        if raw_id and entry_id and raw_id == entry_id:
+            exact.append(item)
+            continue
+        if target and entry_name == target:
+            exact.append(item)
+    if len(exact) == 1:
+        return exact[0]
+    if len(exact) > 1:
+        raise ValueError(f"Existem {item_label}s duplicados com esse nome. Renomeie um deles no app.")
+
+    partial = []
+    for item in items:
+        entry_name = fold_text(item.get("name"))
+        if target and target in entry_name:
+            partial.append(item)
+    if len(partial) == 1:
+        return partial[0]
+    if len(partial) > 1:
+        raise ValueError(f"Mais de um {item_label} combina com esse nome. Seja mais especifico.")
+    raise ValueError(f"{titleize_words(item_label)} nao encontrado.")
+
+
+def _apply_balance_transaction(
+    state,
+    account_alias,
+    direction,
+    value,
+    note="",
+    debtor_id="",
+    my_debt_id="",
+    my_debt_installment=0,
+    at=None,
+):
     amount = abs(safe_float(value))
     note = normalize_spaces(note)[:60]
     if amount <= 0:
         raise ValueError("O valor precisa ser maior que zero.")
 
-    def mutate(state):
-        account_key = resolve_balance_key(account_alias, state)
-        balance = state["balances"][account_key]
-        balance["amount"] = safe_float(balance.get("amount"), 0)
-        if direction == "in":
-            balance["amount"] += amount
-        elif direction == "out":
-            balance["amount"] -= amount
-        else:
-            raise ValueError("Direcao invalida.")
-        entry = {
+    account_key = resolve_balance_key(account_alias, state)
+    balances = (state or {}).setdefault("balances", {})
+    balance = balances[account_key]
+    balance["amount"] = safe_float(balance.get("amount"), 0)
+    if direction == "in":
+        balance["amount"] += amount
+    elif direction == "out":
+        balance["amount"] -= amount
+    else:
+        raise ValueError("Direcao invalida.")
+
+    entry = normalize_balance_tx(
+        {
             "id": make_id(),
             "account": account_key,
             "type": direction,
             "value": amount,
             "note": note,
-            "at": _now_iso(),
+            "debtorId": debtor_id,
+            "myDebtId": my_debt_id,
+            "myDebtInstallment": my_debt_installment,
+            "at": at or _now_iso(),
+            **build_category(note, "Sem categoria"),
         }
-        entry.update(build_category(note, "Sem categoria"))
-        state["tx"].insert(0, entry)
+    )
+    state.setdefault("tx", []).insert(0, entry)
+    return account_key, entry
+
+
+def add_balance_transaction(account_alias, direction, value, note="", persist=True):
+    def mutate(state):
+        _apply_balance_transaction(state, account_alias, direction, value, note)
 
     return update_state(mutate, persist=persist)
 
@@ -595,6 +734,293 @@ def move_goal(goal_name, move_type, value, persist=True):
     return update_state(mutate, persist=persist)
 
 
+def add_debtor(name, amount, note="", pay_date="", persist=True):
+    debtor_name = normalize_spaces(name)[:30]
+    debtor_amount = abs(safe_float(amount))
+    debtor_note = normalize_spaces(note)[:50]
+    if not debtor_name:
+        raise ValueError("O nome do devedor e obrigatorio.")
+    if debtor_amount <= 0:
+        raise ValueError("O valor do devedor precisa ser maior que zero.")
+
+    def mutate(state):
+        debtors = state.setdefault("debtors", [])
+        if any(fold_text(item.get("name")) == fold_text(debtor_name) for item in debtors):
+            raise ValueError("Ja existe um devedor com esse nome. Use adicionar mais valor ou renomeie no app.")
+        debtors.insert(
+            0,
+            normalize_debt_item(
+                {
+                    "id": make_id(),
+                    "name": debtor_name,
+                    "amount": debtor_amount,
+                    "note": debtor_note,
+                    "payDate": str(pay_date or ""),
+                    "paid": False,
+                    "paidAt": "",
+                    "at": _now_iso(),
+                }
+            ),
+        )
+        state["debtors"] = debtors[:100]
+
+    return update_state(mutate, persist=persist)
+
+
+def adjust_debtor_amount(debtor_name, value, mode="add", note="", persist=True):
+    amount = abs(safe_float(value))
+    debtor_note = normalize_spaces(note)[:50]
+    if amount <= 0:
+        raise ValueError("O valor precisa ser maior que zero.")
+    if mode not in {"add", "remove", "set"}:
+        raise ValueError("Tipo de ajuste do devedor invalido.")
+
+    def mutate(state):
+        debtor = _resolve_named_entry(state.setdefault("debtors", []), debtor_name, "devedor")
+        current_amount = max(0.0, safe_float(debtor.get("amount"), 0))
+        if mode == "add":
+            debtor["amount"] = current_amount + amount
+        elif mode == "remove":
+            debtor["amount"] = max(0.0, current_amount - amount)
+        else:
+            debtor["amount"] = amount
+        debtor["installmentValue"] = debtor["amount"]
+
+        if debtor_note:
+            debtor["note"] = debtor_note
+        if debtor["amount"] > 0:
+            debtor["paid"] = False
+            debtor["paidAt"] = ""
+        elif mode in {"remove", "set"}:
+            debtor["paid"] = True
+            debtor["paidAt"] = debtor.get("paidAt") or _now_iso()
+            if not debtor.get("payDate"):
+                debtor["payDate"] = _today_key()
+
+    return update_state(mutate, persist=persist)
+
+
+def receive_debtor_in_account(debtor_name, account_alias="conta", note="", persist=True):
+    debtor_note = normalize_spaces(note)[:50]
+
+    def mutate(state):
+        debtor = _resolve_named_entry(state.setdefault("debtors", []), debtor_name, "devedor")
+        amount = max(0.0, safe_float(debtor.get("amount"), 0))
+        if amount <= 0:
+            raise ValueError("Esse devedor nao possui saldo em aberto.")
+        now_iso = _now_iso()
+        debtor["paid"] = True
+        debtor["paidAt"] = now_iso
+        if not debtor.get("payDate"):
+            debtor["payDate"] = _today_key()
+        payment_note = debtor_note or f"Recebido de {debtor.get('name') or 'Devedor'}"
+        _apply_balance_transaction(state, account_alias, "in", amount, payment_note, debtor_id=debtor.get("id") or "", at=now_iso)
+
+    return update_state(mutate, persist=persist)
+
+
+def remove_debtor(debtor_name, persist=True):
+    def mutate(state):
+        debtors = state.setdefault("debtors", [])
+        debtor = _resolve_named_entry(debtors, debtor_name, "devedor")
+        debtor_id = str(debtor.get("id") or "")
+        state["debtors"] = [item for item in debtors if str(item.get("id") or "") != debtor_id]
+        for tx in state.setdefault("tx", []):
+            if str(tx.get("debtorId") or "") == debtor_id:
+                tx["debtorId"] = ""
+
+    return update_state(mutate, persist=persist)
+
+
+def add_my_debt(name, installment_value, installments=1, note="", pay_date="", persist=True):
+    debt_name = normalize_spaces(name)[:30]
+    unit_value = abs(safe_float(installment_value))
+    total_installments = max(1, min(12, int(safe_float(installments, 1))))
+    debt_note = normalize_spaces(note)[:50]
+    if not debt_name:
+        raise ValueError("O nome da divida e obrigatorio.")
+    if unit_value <= 0:
+        raise ValueError("O valor da parcela precisa ser maior que zero.")
+
+    def mutate(state):
+        debts = state.setdefault("myDebts", [])
+        if any(fold_text(item.get("name")) == fold_text(debt_name) for item in debts):
+            raise ValueError("Ja existe uma divida com esse nome. Use adicionar parcelas ou ajuste no app.")
+        debts.insert(
+            0,
+            normalize_debt_item(
+                {
+                    "id": make_id(),
+                    "name": debt_name,
+                    "amount": unit_value,
+                    "installmentValue": unit_value,
+                    "installments": total_installments,
+                    "installmentsPaid": 0,
+                    "note": debt_note,
+                    "payDate": str(pay_date or ""),
+                    "paid": False,
+                    "paidAt": "",
+                    "at": _now_iso(),
+                }
+            ),
+        )
+        state["myDebts"] = debts[:100]
+
+    return update_state(mutate, persist=persist)
+
+
+def adjust_my_debt_installments(debt_name, delta, installment_value=None, note="", persist=True):
+    change = int(safe_float(delta, 0))
+    unit_value = None if installment_value is None else abs(safe_float(installment_value))
+    debt_note = normalize_spaces(note)[:50]
+    if change == 0:
+        raise ValueError("Informe ao menos uma parcela para ajustar.")
+    if unit_value is not None and unit_value <= 0:
+        raise ValueError("O valor da parcela precisa ser maior que zero.")
+
+    def mutate(state):
+        debt = _resolve_named_entry(state.setdefault("myDebts", []), debt_name, "divida")
+        current_installments = max(1, min(12, int(safe_float(debt.get("installments"), 1))))
+        next_installments = max(1, min(12, current_installments + change))
+        if next_installments == current_installments:
+            raise ValueError("Nao foi possivel ajustar mais parcelas nessa divida.")
+        debt["installments"] = next_installments
+        if unit_value is not None:
+            debt["amount"] = unit_value
+            debt["installmentValue"] = unit_value
+        debt["installmentsPaid"] = max(0, min(next_installments, int(safe_float(debt.get("installmentsPaid"), 0))))
+        debt["paid"] = debt["installmentsPaid"] >= next_installments
+        if not debt["paid"]:
+            debt["paidAt"] = ""
+        elif not debt.get("paidAt"):
+            debt["paidAt"] = _now_iso()
+        if debt_note:
+            debt["note"] = debt_note
+
+    return update_state(mutate, persist=persist)
+
+
+def pay_my_debt_installments(debt_name, count=1, account_alias="conta", note="", persist=True):
+    installments_to_pay = max(1, int(safe_float(count, 1)))
+    debt_note = normalize_spaces(note)[:50]
+
+    def mutate(state):
+        debt = _resolve_named_entry(state.setdefault("myDebts", []), debt_name, "divida")
+        total_installments = max(1, int(safe_float(debt.get("installments"), 1)))
+        installments_paid = max(0, min(total_installments, int(safe_float(debt.get("installmentsPaid"), 0))))
+        installment_value = max(0.0, safe_float(debt.get("installmentValue"), debt.get("amount")))
+        if installment_value <= 0:
+            raise ValueError("Essa divida nao possui valor de parcela valido.")
+        remaining = max(0, total_installments - installments_paid)
+        if remaining <= 0:
+            raise ValueError("Essa divida ja esta quitada.")
+        if installments_to_pay > remaining:
+            raise ValueError(f"Restam apenas {remaining} parcela(s) em aberto.")
+
+        now_iso = _now_iso()
+        debt_name_label = debt.get("name") or "Divida"
+        for _ in range(installments_to_pay):
+            next_installment = installments_paid + 1
+            payment_note = debt_note or f"Parcela {next_installment}/{total_installments} {debt_name_label}"
+            _apply_balance_transaction(
+                state,
+                account_alias,
+                "out",
+                installment_value,
+                payment_note,
+                my_debt_id=debt.get("id") or "",
+                my_debt_installment=next_installment,
+                at=now_iso,
+            )
+            installments_paid = next_installment
+
+        debt["installmentsPaid"] = installments_paid
+        debt["paid"] = installments_paid >= total_installments
+        debt["paidAt"] = now_iso if debt["paid"] else ""
+        if debt_note:
+            debt["note"] = debt_note
+        if not debt.get("payDate"):
+            debt["payDate"] = _today_key()
+
+    return update_state(mutate, persist=persist)
+
+
+def remove_my_debt(debt_name, persist=True):
+    def mutate(state):
+        debts = state.setdefault("myDebts", [])
+        debt = _resolve_named_entry(debts, debt_name, "divida")
+        debt_id = str(debt.get("id") or "")
+        state["myDebts"] = [item for item in debts if str(item.get("id") or "") != debt_id]
+        for tx in state.setdefault("tx", []):
+            if str(tx.get("myDebtId") or "") == debt_id:
+                tx["myDebtId"] = ""
+                tx["myDebtInstallment"] = 0
+
+    return update_state(mutate, persist=persist)
+
+
+def delete_transaction_entry(source, tx_id, goal_id="", persist=True):
+    source = normalize_spaces(source).lower()
+    tx_id = str(tx_id or "").strip()
+    goal_id = str(goal_id or "").strip()
+    if not source or not tx_id:
+        raise ValueError("Informe a origem e a transacao que deseja apagar.")
+
+    def mutate(state):
+        if source == "wallet":
+            baselines = _capture_wallet_baselines(state)
+            existing = next((item for item in state.setdefault("tx", []) if str(item.get("id") or "") == tx_id), None)
+            if not existing:
+                raise ValueError("Transacao nao encontrada.")
+            debtor_id = str(existing.get("debtorId") or "")
+            if debtor_id:
+                debtor = next((item for item in state.setdefault("debtors", []) if str(item.get("id") or "") == debtor_id), None)
+                if debtor:
+                    debtor["paid"] = False
+                    debtor["paidAt"] = ""
+            my_debt_id = str(existing.get("myDebtId") or "")
+            if my_debt_id:
+                debt = next((item for item in state.setdefault("myDebts", []) if str(item.get("id") or "") == my_debt_id), None)
+                if debt:
+                    installments = max(1, int(safe_float(debt.get("installments"), 1)))
+                    removed_installment = max(0, int(safe_float(existing.get("myDebtInstallment"), 0)))
+                    fallback_paid = max(0, min(installments, int(safe_float(debt.get("installmentsPaid"), 0))))
+                    debt["installmentsPaid"] = max(
+                        0,
+                        min(installments, removed_installment - 1 if removed_installment else fallback_paid - 1),
+                    )
+                    debt["paid"] = debt["installmentsPaid"] >= installments
+                    if not debt["paid"]:
+                        debt["paidAt"] = ""
+            state["tx"] = [item for item in state.setdefault("tx", []) if str(item.get("id") or "") != tx_id]
+            _recompute_wallet_balances(state, baselines)
+            return
+
+        if source == "credit":
+            tx_list = state.setdefault("credit", {}).setdefault("tx", [])
+            if not any(str(item.get("id") or "") == tx_id for item in tx_list):
+                raise ValueError("Transacao nao encontrada.")
+            state["credit"]["tx"] = [item for item in tx_list if str(item.get("id") or "") != tx_id]
+            _recompute_credit_state(state)
+            return
+
+        if source == "goal":
+            goals = state.setdefault("goals", [])
+            goal = next((item for item in goals if str(item.get("id") or "") == goal_id), None)
+            if goal is None:
+                raise ValueError("Objetivo nao encontrado.")
+            tx_list = list(goal.get("tx") or [])
+            if not any(str(item.get("id") or "") == tx_id for item in tx_list):
+                raise ValueError("Transacao nao encontrada.")
+            goal["tx"] = [item for item in tx_list if str(item.get("id") or "") != tx_id]
+            _recompute_goal_saved(goal)
+            return
+
+        raise ValueError("Origem da transacao invalida.")
+
+    return update_state(mutate, persist=persist)
+
+
 def goals_summary(state=None):
     state = state or read_state()
     goals = []
@@ -617,6 +1043,7 @@ def debtors_summary(state=None):
         entry = normalize_debt_item(item)
         debtors.append(
             {
+                "id": str(entry.get("id") or ""),
                 "name": entry["name"] or "Devedor",
                 "amount": max(0.0, safe_float(entry.get("amount"), 0)),
                 "note": normalize_spaces(entry.get("note")),
@@ -642,6 +1069,7 @@ def my_debts_summary(state=None):
         remaining_value = installment_value * remaining_installments
         debts.append(
             {
+                "id": str(entry.get("id") or ""),
                 "name": entry["name"] or "Divida",
                 "installmentValue": installment_value,
                 "installments": installments,
@@ -705,6 +1133,9 @@ def combined_history(limit=10, state=None):
                 "sign": sign,
                 "value": safe_float(item.get("value"), 0),
                 "note": item.get("note", ""),
+                "source": "wallet",
+                "txId": str(item.get("id") or ""),
+                "goalId": "",
             }
         )
 
@@ -729,6 +1160,9 @@ def combined_history(limit=10, state=None):
                 "sign": sign,
                 "value": safe_float(item.get("value"), 0),
                 "note": item.get("desc", ""),
+                "source": "credit",
+                "txId": str(item.get("id") or ""),
+                "goalId": "",
             }
         )
 
@@ -737,13 +1171,13 @@ def combined_history(limit=10, state=None):
         for item in goal.get("tx", []):
             tx_type = item.get("type")
             if tx_type == "withdraw":
-                text = f"Retirada objetivo {goal_name}"
+                text = f"Saida objetivo {goal_name}"
                 sign = "-"
             elif tx_type == "yield":
                 text = f"Rendimento objetivo {goal_name}"
                 sign = "+"
             else:
-                text = f"Deposito objetivo {goal_name}"
+                text = f"Entrada objetivo {goal_name}"
                 sign = "+"
             items.append(
                 {
@@ -752,8 +1186,13 @@ def combined_history(limit=10, state=None):
                     "sign": sign,
                     "value": safe_float(item.get("value"), 0),
                     "note": "",
+                    "source": "goal",
+                    "txId": str(item.get("id") or ""),
+                    "goalId": str(goal.get("id") or ""),
                 }
             )
 
-    items.sort(key=lambda x: x.get("at", ""), reverse=True)
+    items.sort(key=lambda x: (str(x.get("at") or ""), str(x.get("txId") or "")), reverse=True)
+    if limit is None:
+        return items
     return items[:limit]

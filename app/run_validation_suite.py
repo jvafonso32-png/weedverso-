@@ -321,17 +321,30 @@ def run_telegram_flow_test() -> tuple[str, dict]:
         with shared_state_mod.using_state_file(state_file, seed_state=seed):
             cases = [
                 ("/entrada conta 150 salario", "Entrada registrada em"),
+                ("remover ultima transacao", "Ultima transacao apagada"),
+                ("25 entrada conta", "Entrada registrada em"),
                 ("/saida vale1 20 mercado", "Saida registrada em"),
                 ("/cartao 89,90 uber", "Gasto registrado no cartao"),
-                ("/pagarcartao 40 fatura", "Pagamento registrado no cartao"),
-                ("/reservacartao entrada 55", "Reserva do cartao atualizada"),
+                ("40 pagamento cartao fatura", "Pagamento registrado no cartao"),
+                ("55 entrada reserva cartao", "Reserva do cartao reforcada"),
                 ("/objetivo criar Viagem | 1000", "Objetivo criado"),
-                ("/objetivo depositar Viagem | 300", "Deposito registrado"),
+                ("/objetivo entrada Viagem | 300", "Entrada registrada em"),
+                ("saida 50 do objetivo Viagem", "Saida registrada em"),
+                ("acrescentar 15 de rendimento no objetivo Viagem", "Rendimento registrado em"),
+                ("remover ultima transacao", "Ultima transacao apagada"),
+                ("12,55 rendimento ganho em objetivo", "Rendimento registrado em"),
+                ("saldo objetivo", "OBJETIVOS ATIVOS"),
                 ("entrou 25 na conta presente", "Entrada registrada em"),
                 ("ganho 1 real conta para ajuste de saldos", "Entrada registrada em"),
                 ("ganho 1 real conta", "Entrada registrada em"),
                 ("ganhei 1 real em conta como pagamento", "Entrada registrada em"),
                 ("gastei 12,50 no cartao cafe", "Gasto registrado no cartao"),
+                ("novo devedor Lucas 50", "Devedor cadastrado"),
+                ("nova divida Celular 120 em 3 parcelas", "Divida cadastrada"),
+                ("adicionar mais 50 na categoria devedor para Carlos", "Saldo devedor atualizado"),
+                ("acrescentar 2 parcelas na divida Notebook", "Parcelas ajustadas em"),
+                ("pagar parcela da divida Notebook", "Pagamento registrado para"),
+                ("apagar transacao 1", "Transacao 1 apagada"),
                 ("quanto tenho na conta", "Saldo em Conta"),
                 ("Devedores", "DEVEDORES"),
                 ("Minhas dividas", "MINHAS DIVIDAS"),
@@ -360,15 +373,27 @@ def run_telegram_flow_test() -> tuple[str, dict]:
 
         assert_true(telegram_bot_mod.is_allowed(chat_id) is True, "Chat autorizado configurado deve ser aceito")
         assert_true(telegram_bot_mod.is_allowed(999999999) is False, "Chat aleatorio nao deve ser aceito")
+        carlos_debtor = next(item for item in state["debtors"] if item.get("name") == "Carlos")
+        lucas_debtor = next(item for item in state["debtors"] if item.get("name") == "Lucas")
+        notebook_debt = next(item for item in state["myDebts"] if item.get("name") == "Notebook")
+        celular_debt = next(item for item in state["myDebts"] if item.get("name") == "Celular")
         assert_equal(len(state["tx"]), 6, "Fluxos de conta devem gravar 6 transacoes")
         assert_equal(len(state["credit"]["tx"]), 4, "Fluxos do cartao devem gravar 4 transacoes")
         assert_equal(len(state["goals"]), 1, "Fluxo de objetivos deve criar 1 objetivo")
-        assert_equal(round(state["goals"][0]["saved"], 2), 300.0, "Fluxo do objetivo deve persistir deposito")
+        assert_equal(round(carlos_debtor["amount"], 2), 170.0, "Devedor deve aceitar acrescimo por frase natural")
+        assert_equal(round(lucas_debtor["amount"], 2), 50.0, "Fluxo natural deve permitir criar novo devedor")
+        assert_equal(notebook_debt["installments"], 7, "Divida existente deve aceitar parcelas extras")
+        assert_equal(notebook_debt["installmentsPaid"], 2, "Apagar transacao deve desfazer pagamento de parcela")
+        assert_equal(celular_debt["installments"], 3, "Fluxo natural deve criar nova divida parcelada")
+        assert_equal(len(state["myDebts"]), 2, "Fluxo natural deve permitir criar nova divida")
+        assert_equal(round(state["goals"][0]["saved"], 2), 262.55, "Fluxo do objetivo deve persistir ordem livre, objetivo implicito e desfazer ultima transacao correta")
         detail = "Telegram simulou comandos e frases naturais com persistencia isolada"
         extra = {
             "tx": len(state["tx"]),
             "credit_tx": len(state["credit"]["tx"]),
             "goal_saved": state["goals"][0]["saved"],
+            "debtor_amount": carlos_debtor["amount"],
+            "notebook_installments": notebook_debt["installments"],
             "sample_reply": replies[-1]["reply"],
         }
         return detail, extra
