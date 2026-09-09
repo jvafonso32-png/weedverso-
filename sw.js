@@ -7,9 +7,7 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -22,7 +20,13 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => self.clients.claim()).then(() => {
+      return self.clients.matchAll({ type: 'window' }).then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'NEW_VERSION_ACTIVE', version: CACHE_NAME });
+        });
+      });
+    })
   );
 });
 
@@ -35,7 +39,7 @@ self.addEventListener('message', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Nao intercepta requisicoes da API do GitHub ou da API local
+  // Não intercepta requisições da API do GitHub ou da API local
   if (url.hostname.includes('github.com') || url.pathname.startsWith('/api/')) {
     return;
   }
@@ -43,7 +47,13 @@ self.addEventListener('fetch', (event) => {
   // Se for navegação (abertura do app HTML): sempre busca a versão mais recente na rede
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
+      fetch(event.request.url, {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      })
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
@@ -52,7 +62,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          return caches.match(event.request).then((cached) => cached || caches.match('index.html'));
+          return caches.match(event.request).then((cached) => cached || caches.match('index.html') || caches.match('./'));
         })
     );
     return;

@@ -138,7 +138,7 @@ def _versioned_link(base_url, version):
     base_url = _clean_base_url(base_url)
     if not base_url:
         return ""
-    return f"{base_url}/login?v={version}"
+    return f"{base_url}/login"
 
 
 def build_share_links(version):

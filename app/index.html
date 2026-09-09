@@ -779,6 +779,51 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 </nav>
 
 <script>
+// Higienização de URL: mantém a URL sempre limpa e idêntica
+try{
+  if(window.location.search && !window.location.search.includes('code=')){
+    var cleanUrl=window.location.origin+window.location.pathname+(window.location.hash||'');
+    window.history.replaceState(null,'',cleanUrl);
+  }
+}catch(e){}
+
+var CURRENT_APP_VERSION='v6.0';
+function autoCheckRemoteUpdate(){
+  if(!navigator.onLine) return;
+  try{
+    var chkUrl=(window.location.pathname||'/')+'?_chk='+Date.now();
+    fetch(chkUrl,{
+      cache:'no-store',
+      headers:{'Cache-Control':'no-cache, no-store, must-revalidate','Pragma':'no-cache'}
+    }).then(function(r){
+      if(!r||!r.ok) return null;
+      return r.text();
+    }).then(function(html){
+      if(!html) return;
+      var m=html.match(/class="statusPill"[^>]*>v([\d\.]+)<\/span>/);
+      if(m&&m[1]){
+        var remoteVersion='v'+m[1];
+        if(remoteVersion!==CURRENT_APP_VERSION){
+          console.log('[weedverso] Nova versão no servidor:',remoteVersion,'local:',CURRENT_APP_VERSION);
+          if('caches' in window){
+            caches.keys().then(function(keys){
+              return Promise.all(keys.map(function(k){ return caches.delete(k); }));
+            });
+          }
+          if('serviceWorker' in navigator){
+            navigator.serviceWorker.getRegistrations().then(function(regs){
+              for(var i=0;i<regs.length;i++){ regs[i].unregister(); }
+            });
+          }
+          setTimeout(function(){
+            window.location.reload();
+          },250);
+        }
+      }
+    }).catch(function(){});
+  }catch(err){}
+}
+
 const KEY='rotina_prime_v2', PRIVACY_KEY=`${KEY}:privacy`, XP_H=40;
 const IS_REMOTE_APP=Boolean(window.location && /^https?:$/i.test(window.location.protocol));
 const DESKTOP_BACKUP_SUPPORTED=!IS_REMOTE_APP||/Windows/i.test(String(navigator.userAgent||''));
@@ -1152,7 +1197,7 @@ function bind(){
   }
   if(el.appRefreshBtn){
     el.appRefreshBtn.addEventListener('click',async function(){
-      showToast('🔄 Buscando versão mais recente...','ok');
+      showToast('🔄 Atualizando aplicativo...','ok');
       try{
         if('caches' in window){
           const keys=await caches.keys();
@@ -1163,9 +1208,14 @@ function bind(){
           for(let r of regs){ await r.unregister(); }
         }
       }catch(e){}
+      try{
+        if(window.location.search && !window.location.search.includes('code=')){
+          history.replaceState(null, '', window.location.pathname);
+        }
+      }catch(e){}
       setTimeout(function(){
-        window.location.href=window.location.href.split('#')[0].split('?')[0]+'?v='+Date.now();
-      },300);
+        window.location.reload();
+      },250);
     });
   }
   if(el.logoutBtn){
@@ -4406,13 +4456,33 @@ if('serviceWorker' in navigator){
       window.location.reload();
     }
   });
+  navigator.serviceWorker.addEventListener('message',function(e){
+    if(e.data && e.data.type==='NEW_VERSION_ACTIVE'){
+      if(!swRefreshing){
+        swRefreshing=true;
+        window.location.reload();
+      }
+    }
+  });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').then(function(reg){
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
       }
     }).catch(function(){});
+    setTimeout(autoCheckRemoteUpdate, 2000);
+  });
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible'){
+      autoCheckRemoteUpdate();
+      navigator.serviceWorker.getRegistration().then(function(reg){
+        if(reg) reg.update();
+      });
+    }
+  });
+  window.addEventListener('online',function(){
+    autoCheckRemoteUpdate();
   });
 }
 </script>
