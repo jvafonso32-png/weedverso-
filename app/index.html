@@ -126,6 +126,61 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .filterChip{appearance:none;-webkit-appearance:none;border:none;background:transparent;color:var(--mut);padding:5px 10px;border-radius:7px;font:600 .72rem var(--font-ui);cursor:pointer;transition:all .18s ease}
 .filterChip.active{background:rgba(57,255,143,.18);color:var(--p);font-weight:700}
 
+/* Virtual Card Widget (Apple Wallet style) */
+.virtualCard{position:relative;overflow:hidden;border-radius:20px;padding:18px 20px;background:linear-gradient(135deg,#15201b 0%,#0d1712 55%,#060c08 100%);border:1px solid rgba(57,255,143,.32);box-shadow:0 18px 36px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1);display:flex;flex-direction:column;gap:14px;min-height:165px;margin-bottom:10px}
+.virtualCard:before{content:"";position:absolute;top:-40%;right:-20%;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(57,255,143,.14),transparent 70%);pointer-events:none}
+.virtualCardTop{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+.virtualCardBrand{display:flex;align-items:center;gap:10px}
+.virtualCardChip{width:34px;height:26px;border-radius:6px;background:linear-gradient(135deg,#e4ba65,#9b7b35);box-shadow:inset 0 0 0 1px rgba(0,0,0,.3);position:relative}
+.virtualCardChip:after{content:"";position:absolute;inset:4px 8px;border:1px solid rgba(0,0,0,.25);border-radius:2px}
+.virtualCardWifi{font-size:1.1rem;color:rgba(255,255,255,.6);transform:rotate(90deg);display:inline-block;letter-spacing:-2px}
+.virtualCardStatus{font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:999px;letter-spacing:.3px;border:1px solid rgba(151,170,159,.25)}
+.virtualCardStatus.ok{color:#39ff8f;border-color:rgba(57,255,143,.45);background:rgba(57,255,143,.12)}
+.virtualCardStatus.warn{color:#ffcf5f;border-color:rgba(255,207,95,.45);background:rgba(255,207,95,.12)}
+.virtualCardBody{display:grid;gap:2px;position:relative;z-index:1}
+.virtualCardNumber{font-family:var(--font-display);font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:.5px;line-height:1.1}
+.virtualCardBottom{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1}
+
+/* Quick Action Chips */
+.quickChipsRow{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.quickActionChip{appearance:none;-webkit-appearance:none;border:1px solid rgba(151,170,159,.22);border-radius:10px;padding:8px 12px;background:rgba(255,255,255,.03);color:var(--txt);font:600 .78rem var(--font-ui);cursor:pointer;transition:all .16s ease}
+.quickActionChip:active{transform:scale(.96);background:rgba(57,255,143,.15);border-color:rgba(57,255,143,.45);color:#39ff8f}
+.quickActionChip.highlight{border-color:rgba(57,255,143,.38);background:rgba(57,255,143,.08);color:#7effb9}
+.quickActionChip.danger{border-color:rgba(255,95,112,.35);background:rgba(255,95,112,.08);color:#ff9daa}
+
+/* Segmented Control (iOS Tabs) */
+.segmentBar{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;background:rgba(0,0,0,.35);padding:4px;border-radius:13px;border:1px solid rgba(151,170,159,.18);margin-bottom:12px}
+.segmentBtn{padding:9px 8px;border-radius:10px;border:none;background:transparent;color:var(--mut);font:700 .82rem var(--font-ui);cursor:pointer;transition:all .18s ease;text-align:center}
+.segmentBtn.active{background:linear-gradient(135deg,rgba(57,255,143,.22),rgba(57,255,143,.1));color:#39ff8f;border:1px solid rgba(57,255,143,.4);box-shadow:0 4px 12px rgba(0,0,0,.25)}
+
+/* Installment Stepper Dots */
+.installmentStepper{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:4px 0}
+.stepDot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);transition:all .2s ease}
+.stepDot.done{background:#39ff8f;border-color:#39ff8f;box-shadow:0 0 6px rgba(57,255,143,.5)}
+
+/* Due date alert badge */
+.dueBadge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:.68rem;font-weight:700}
+.dueBadge.late{background:rgba(255,95,112,.15);color:#ff7c8c;border:1px solid rgba(255,95,112,.35)}
+.dueBadge.today{background:rgba(255,207,95,.15);color:#ffcf5f;border:1px solid rgba(255,207,95,.4)}
+.dueBadge.soon{background:rgba(124,199,255,.14);color:#7cc7ff;border:1px solid rgba(124,199,255,.35)}
+
+/* Goal Themes & Quick Aportes */
+.goalHeaderRow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.goalTitleWrap{display:flex;align-items:center;gap:8px}
+.goalIconBadge{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:1.25rem;background:rgba(255,255,255,.05);border:1px solid var(--ln);flex-shrink:0}
+.goalForecast{font-size:.73rem;color:#8fe3ff;padding:4px 8px;border-radius:8px;background:rgba(143,227,255,.08);border:1px solid rgba(143,227,255,.2)}
+.goalSummaryGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px}
+
+/* Unified statement feed */
+.statementDateHeader{font-size:.72rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;padding:6px 2px 2px 2px;margin-top:6px;border-bottom:1px dashed rgba(151,170,159,.18)}
+.feedRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(151,170,159,.14);transition:background .15s}
+.feedRow:active{background:rgba(255,255,255,.05)}
+.feedIcon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:1rem;background:rgba(255,255,255,.04);border:1px solid var(--ln);flex-shrink:0}
+.feedBody{display:grid;gap:2px;min-width:0}
+.feedTitle{font-size:.85rem;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feedSubtitle{font-size:.72rem;color:var(--mut)}
+.feedAmount{font-family:var(--font-display);font-size:1.05rem;font-weight:700;text-align:right;white-space:nowrap}
+
   @media(max-width:720px){body{padding:14px 14px calc(170px + env(safe-area-inset-bottom))}.creditAnalytics{grid-template-columns:1fr}.analyticsToolbar{align-items:stretch}.creditAnalyticsInfo{gap:5px}.creditMonthMeta{justify-content:flex-start}.chartMonthField{min-width:0;width:100%}.chartShell{max-width:340px;margin:auto;padding:12px}.ringCanvas{max-width:250px}.chartCenterNote{padding:24px}.chartCenterNote strong{font-size:1.18rem}.chartCenterNote span{font-size:.68rem;letter-spacing:.06em}.legendItem{grid-template-columns:auto minmax(0,1fr);padding:10px 11px}.legendValue{grid-column:2;justify-self:start}.statementRow{grid-template-columns:1fr;gap:8px}.statementAside{grid-template-columns:1fr auto;justify-items:start;align-items:center;width:100%}.statementMeta{white-space:normal}.actionLayout{grid-template-columns:1fr}.actionStack.creditActions{grid-template-columns:repeat(2,minmax(0,1fr));align-self:auto}.actionStack.creditActions button{width:100%;min-height:46px;font-size:.8rem;padding:10px 9px}.actionStack.creditActions .ghost{grid-column:1/-1}.actionStack.reserveActions{grid-template-columns:repeat(2,minmax(0,1fr));align-self:auto}.actionStack.reserveActions button{width:100%;min-height:44px;font-size:.8rem;padding:10px 9px}.cckpi{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.debtSummaryGrid{grid-template-columns:1fr}.debtSectionHead,.debtMonthHead{align-items:start}.debtMonthMeta{justify-content:flex-start}.archiveSummary{flex-direction:column;align-items:flex-start}.archiveBody{padding:0 8px 8px}.debtCard .debtorHead{grid-template-columns:1fr}.debtCard .debtorTools{justify-content:flex-start}.debtorCardBody{grid-template-columns:1fr;gap:12px}.debtStats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.debtStat{padding:9px 8px}.debtStat:last-child{grid-column:1/-1}.debtStat strong{font-size:.95rem}.debtPanel .two{grid-template-columns:1fr}.actionStack.debtorActions{grid-template-columns:repeat(2,minmax(0,1fr));align-self:auto}.actionStack.debtorActions button{width:100%;min-height:46px;font-size:.8rem;padding:10px 9px}.actionStack.debtorActions .btn{grid-column:1/-1}.top{gap:9px}.topMain{gap:7px}.brand h1{font-size:1.26rem}.brandSub{font-size:.61rem}.saveMeta strong{font-size:.9rem}.topActions{display:flex;gap:5px;align-items:center}.topActions .btn,.topActions .ghost{min-height:34px;padding:6px 9px;font-size:.72rem}.topActions .iconBtn{width:34px;height:34px;min-width:34px}.statusRow{gap:5px}.dock{width:calc(100vw - 12px);bottom:max(8px,env(safe-area-inset-bottom))}}
 @media(min-width:920px){body{padding:22px 22px 144px}.top{grid-template-columns:minmax(0,1fr)}.saveStamp{display:block}.quickRow{grid-template-columns:repeat(4,minmax(0,1fr))}.debtorList{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
 </style>
@@ -213,6 +268,17 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
     </section>
   </section>
 
+  <section class="card" id="homeMissionsCard">
+    <div class="line" style="align-items:center;">
+      <div>
+        <h2 class="title" style="margin-bottom:2px;">Missões de Hoje</h2>
+        <p class="mut" id="homeMissionsSubtitle">Marque seus hábitos para avançar o streak e o nível diário.</p>
+      </div>
+      <button type="button" class="btn" id="homeAddHabitBtn" style="padding:7px 12px;font-size:.76rem;border-radius:11px;">+ Novo Hábito</button>
+    </div>
+    <div id="homeHabitList" class="list" style="margin-top:10px;"></div>
+  </section>
+
   <section class="card">
     <h2 class="title">Resumo do dia</h2>
     <div class="sum">
@@ -292,6 +358,43 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
             <input id="ccName" type="text" maxlength="30" placeholder="Nome do cartão" />
           </div>
           <p id="ccMetaHint" class="mut"></p>
+
+          <!-- Virtual Credit Card (Apple Wallet style) -->
+          <div class="virtualCard" id="virtualCreditCard">
+            <div class="virtualCardTop">
+              <div class="virtualCardBrand">
+                <span class="virtualCardChip"></span>
+                <span class="virtualCardWifi">∿∿</span>
+              </div>
+              <span id="ccCardCoverageStatus" class="virtualCardStatus ok">🛡️ 100% Coberta</span>
+            </div>
+            <div class="virtualCardBody">
+              <span class="mini" style="color:rgba(255,255,255,.6)">Fatura Atual</span>
+              <div id="ccCardUsed" class="virtualCardNumber">R$ 0,00</div>
+            </div>
+            <div class="virtualCardBottom">
+              <div>
+                <span class="mini" style="color:rgba(255,255,255,.6)">Cartão</span>
+                <strong id="ccCardName" style="color:#fff;display:block;font-size:.92rem">weedverso Black</strong>
+              </div>
+              <div style="text-align:right">
+                <span class="mini" style="color:rgba(255,255,255,.6)">Reserva</span>
+                <strong id="ccCardReserved" style="color:var(--p);display:block;font-size:.92rem">R$ 0,00</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Reserve & Pay Chips -->
+          <div style="margin:4px 0 10px 0;">
+            <span class="mini" style="display:block;margin-bottom:6px;">Ações Rápidas de Reserva e Pagamento</span>
+            <div class="quickChipsRow" id="ccQuickChips">
+              <button type="button" class="quickActionChip highlight" data-cc-quick="coverAll">🛡️ Cobrir Fatura Total</button>
+              <button type="button" class="quickActionChip" data-cc-quick="res50">+R$ 50 Reserva</button>
+              <button type="button" class="quickActionChip" data-cc-quick="res100">+R$ 100 Reserva</button>
+              <button type="button" class="quickActionChip" data-cc-quick="res200">+R$ 200 Reserva</button>
+              <button type="button" class="quickActionChip danger" data-cc-quick="payAll">💳 Pagar Fatura Total</button>
+            </div>
+          </div>
           <div class="actionLayout">
             <div class="actionFields">
               <input id="ccValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor" />
@@ -375,12 +478,18 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
     <section class="card">
       <div class="line">
         <div>
-          <h2 class="title">Minhas dívidas</h2>
-          <p class="mut">Área dedicada para parcelas e compromissos que você acompanha manualmente, sem misturar com cartão nem com pessoas devedoras.</p>
+          <h2 class="title">Dívidas e Cobranças</h2>
+          <p class="mut">Acompanhe suas contas a pagar e cobranças a receber em um só lugar centralizado.</p>
         </div>
         <span class="chip">🧾 Dívidas</span>
       </div>
-      <div class="stack">
+
+      <div class="segmentBar" id="debtsSegmentBar">
+        <button type="button" class="segmentBtn active" data-debt-view="myDebts">🧾 Minhas Dívidas a Pagar</button>
+        <button type="button" class="segmentBtn" data-debt-view="debtors">👥 Quem me Deve (Cobranças)</button>
+      </div>
+
+      <div id="debtsMyDebtsView" class="stack">
         <article class="fcard">
           <div class="debtSummaryGrid">
             <div class="box">
@@ -435,6 +544,39 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div id="myDebtList" class="list debtorList"></div>
         </article>
       </div>
+
+      <div id="debtsDebtorsView" class="stack" style="display:none;">
+        <article class="fcard">
+          <div class="debtSummaryGrid">
+            <div class="box">
+              <span class="mini">Total a Receber</span>
+              <strong id="debtsPageTotalBox" style="color:var(--p)">R$ 0,00</strong>
+              <p class="mut">Soma das cobranças em aberto que outras pessoas te devem.</p>
+            </div>
+            <div class="box">
+              <span class="mini">Cobranças Ativas</span>
+              <strong id="debtsPageCountBox">0</strong>
+              <p class="mut">Pessoas com pendências registradas.</p>
+            </div>
+          </div>
+        </article>
+        <article class="fcard">
+          <h3 class="subtitle">Registrar cobrança a receber</h3>
+          <p class="mut">Cadastre aqui valores que você emprestou ou passou no seu cartão para alguém.</p>
+          <form id="debtsPageDebForm" class="form">
+            <div class="two">
+              <input id="debPageName" type="text" maxlength="30" placeholder="Nome da pessoa" required />
+              <input id="debPageAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor devido" required />
+            </div>
+            <div class="two">
+              <input id="debPageNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
+              <input id="debPagePayDate" type="date" />
+            </div>
+            <button class="btn" type="submit">Adicionar devedor</button>
+          </form>
+          <div id="debtsPageDebList" class="list debtorList"></div>
+        </article>
+      </div>
     </section>
   </section>
 
@@ -448,21 +590,35 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
         <span class="chip">🎯 Metas</span>
       </div>
       <div class="stack">
+        <div class="goalSummaryGrid">
+          <div class="box">
+            <span class="mini">Total Guardado</span>
+            <strong id="goalsTotalSavedBox" style="color:var(--p)">R$ 0,00</strong>
+            <p class="mut">Soma acumulada em todos os seus objetivos.</p>
+          </div>
+          <div class="box">
+            <span class="mini">Metas Ativas</span>
+            <strong id="goalActiveCount">0</strong>
+            <p class="mut">Objetivos em andamento.</p>
+          </div>
+          <div class="box">
+            <span class="mini">Rendimento Estimado</span>
+            <strong id="goalWeekYield">R$ 0,00</strong>
+            <p class="mut">Cálculo semanal dos rendimentos.</p>
+          </div>
+        </div>
+
         <article class="fcard">
-          <h3 class="subtitle">Planejamento dos objetivos</h3>
-          <p class="mut">Campo com 3 interações: depósito, retirada e rendimento (cálculo semanal).</p>
+          <h3 class="subtitle">Criar novo objetivo</h3>
+          <p class="mut">Defina um valor alvo para sua reserva, viagem, veículo ou patrimônio.</p>
           <form id="goalForm" class="form">
             <div class="two">
-              <input id="goalName" type="text" maxlength="36" placeholder="Nome do objetivo" required />
-              <input id="goalTarget" type="number" step="0.01" inputmode="decimal" placeholder="Meta (R$)" required />
+              <input id="goalName" type="text" maxlength="36" placeholder="Nome do objetivo (ex: ✈️ Viagem, 🛡️ Reserva)" required />
+              <input id="goalTarget" type="number" step="0.01" inputmode="decimal" placeholder="Meta alvo (R$)" required />
             </div>
-            <button class="btn" type="submit">Adicionar objetivo</button>
+            <button class="btn" type="submit">+ Adicionar objetivo</button>
           </form>
-          <div class="two">
-            <div class="line"><span class="mini">Objetivos ativos</span><strong id="goalActiveCount" class="goalTotal">0</strong></div>
-            <div class="line"><span class="mini">Rendimento semana</span><strong id="goalWeekYield" class="goalTotal">R$ 0,00</strong></div>
-          </div>
-          <div id="goalList" class="list"></div>
+          <div id="goalList" class="list" style="margin-top:8px;"></div>
         </article>
       </div>
     </section>
@@ -478,6 +634,27 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
         <span class="chip">▤ Extrato</span>
       </div>
       <div class="stack">
+        <article class="fcard" id="unifiedStatementCard">
+          <div class="line" style="align-items:center;">
+            <div>
+              <h3 class="subtitle" style="margin-bottom:2px">Feed Unificado de Movimentações</h3>
+              <p class="mut">Pesquise e filtre todo o seu histórico em tempo real.</p>
+            </div>
+            <button type="button" class="ghost" id="copyStatementBtn" style="padding:6px 10px;font-size:.74rem;border-radius:10px;">📋 Copiar Resumo</button>
+          </div>
+          <div class="two" style="margin-top:6px;">
+            <input type="text" id="statementSearchInput" placeholder="🔍 Buscar por descrição ou valor..." style="padding:8px 12px;font-size:.84rem;" />
+            <div class="chartFilterChips" id="statementFeedFilters" style="width:100%;overflow-x:auto;">
+              <button type="button" class="filterChip active" data-stmt-filter="all">Todos</button>
+              <button type="button" class="filterChip" data-stmt-filter="wallet">Conta</button>
+              <button type="button" class="filterChip" data-stmt-filter="credit">Cartão</button>
+              <button type="button" class="filterChip" data-stmt-filter="food">VA</button>
+              <button type="button" class="filterChip" data-stmt-filter="goal">Metas</button>
+            </div>
+          </div>
+          <div id="unifiedStatementFeed" class="hist inner" style="max-height:360px;margin-top:8px;"></div>
+        </article>
+
         <article class="fcard">
           <div class="statementHead">
             <h3 class="subtitle">Conta principal</h3>
@@ -627,7 +804,7 @@ const DEF={
 };
 let st=load(); rotateDay();
 let focusTick=null;
-const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'all',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
+const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'all',debtsView:'myDebts',statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
 const serverSync={initialized:false,available:false,timer:null,poller:null,pushing:false,lastSnapshot:''};
 const SERVER_POLL_ACTIVE_MS=1000;
 const SERVER_POLL_BACKGROUND_MS=3000;
@@ -798,8 +975,12 @@ const el={
   ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
   debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
   myDebtForm:$('#myDebtForm'),myDebtName:$('#myDebtName'),myDebtAmount:$('#myDebtAmount'),myDebtInstallments:$('#myDebtInstallments'),myDebtNote:$('#myDebtNote'),myDebtPayDate:$('#myDebtPayDate'),myDebtList:$('#myDebtList'),myDebtTotalBox:$('#myDebtTotalBox'),myDebtPaidBox:$('#myDebtPaidBox'),myDebtMonthBox:$('#myDebtMonthBox'),
-  goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),
-  sPercent:$('#sPercent'),sHabits:$('#sHabits'),sSpent:$('#sSpent'),sCard:$('#sCard'),sDebt:$('#sDebt'),sGoals:$('#sGoals'),sStatus:$('#sStatus'),sMsg:$('#sMsg')
+  goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),goalsTotalSavedBox:$('#goalsTotalSavedBox'),
+  sPercent:$('#sPercent'),sHabits:$('#sHabits'),sSpent:$('#sSpent'),sCard:$('#sCard'),sDebt:$('#sDebt'),sGoals:$('#sGoals'),sStatus:$('#sStatus'),sMsg:$('#sMsg'),
+  homeMissionsCard:$('#homeMissionsCard'),homeHabitList:$('#homeHabitList'),homeAddHabitBtn:$('#homeAddHabitBtn'),
+  virtualCreditCard:$('#virtualCreditCard'),ccCardCoverageStatus:$('#ccCardCoverageStatus'),ccCardUsed:$('#ccCardUsed'),ccCardName:$('#ccCardName'),ccCardReserved:$('#ccCardReserved'),ccQuickChips:$('#ccQuickChips'),
+  debtsSegmentBar:$('#debtsSegmentBar'),debtsMyDebtsView:$('#debtsMyDebtsView'),debtsDebtorsView:$('#debtsDebtorsView'),debtsPageTotalBox:$('#debtsPageTotalBox'),debtsPageCountBox:$('#debtsPageCountBox'),debtsPageDebForm:$('#debtsPageDebForm'),debPageName:$('#debPageName'),debPageAmount:$('#debPageAmount'),debPageNote:$('#debPageNote'),debPagePayDate:$('#debPagePayDate'),debtsPageDebList:$('#debtsPageDebList'),
+  unifiedStatementCard:$('#unifiedStatementCard'),copyStatementBtn:$('#copyStatementBtn'),statementSearchInput:$('#statementSearchInput'),statementFeedFilters:$('#statementFeedFilters'),unifiedStatementFeed:$('#unifiedStatementFeed')
 };
 
 const quickAddSheet={
@@ -1068,21 +1249,7 @@ function bind(){
     const c=e.target.closest('[data-id]'); if(!c) return;
     const h=st.habits.find(x=>x.id===c.dataset.id); if(!h) return;
     if(e.target.matches('[data-act="toggle"]')){
-      h.done=!h.done; st.xp=Math.max(0,st.xp+(h.done?XP_H:-XP_H));
-      if(h.done){
-        h.lastDoneAt=new Date().toISOString();
-        h.skillTag=detectSkill(h.name)||'';
-        adjustSkillXp(h.skillTag,25);
-        pushRoutineLog('done',h);
-        haptic('success');
-        showToast('✓ Hábito cumprido! +'+XP_H+' XP','ok');
-      } else {
-        adjustSkillXp(h.skillTag||detectSkill(h.name),-25);
-        h.skillTag='';
-        pushRoutineLog('undo',h);
-        haptic('light');
-      }
-      save(true); renderHabits(); refreshGame();
+      toggleHabit(h.id);
     }
     if(e.target.matches('[data-act="del"]')){
       if(h.done) st.xp=Math.max(0,st.xp-XP_H);
@@ -1092,6 +1259,29 @@ function bind(){
       save(true); renderHabits(); refreshGame();
     }
   });
+
+  if(el.homeHabitList){
+    el.homeHabitList.addEventListener('click',e=>{
+      const c=e.target.closest('[data-id]'); if(!c) return;
+      if(e.target.matches('[data-act="toggle"]')){
+        toggleHabit(c.dataset.id);
+      }
+    });
+  }
+
+  if(el.homeAddHabitBtn){
+    el.homeAddHabitBtn.addEventListener('click',()=>{
+      const name=prompt('Qual é a nova missão/hábito de hoje?');
+      if(name && name.trim()){
+        const n=txt(name.trim(),60);
+        st.habits.push({id:id(),name:n,goal:'',done:false,date:today()});
+        pushRoutineLog('add',{name:n});
+        save(true); renderHabits(); refreshGame();
+        haptic('success');
+        showToast('✓ Missão criada: '+n,'ok');
+      }
+    });
+  }
 
   el.hList.addEventListener('input',e=>{
     const c=e.target.closest('[data-id]'); if(!c) return;
@@ -1164,20 +1354,83 @@ function bind(){
     st.credit.used=0; st.credit.tx=[]; save(true); renderCredit(); renderSummary();
   });
 
-  el.debForm.addEventListener('submit',e=>{
-    e.preventDefault();
-    const name=txt(el.debName.value,30);
-    const amount=parseFloat((el.debAmount.value||'').replace(',','.'));
-    const note=txt(el.debNote.value,50);
-    const payDate=el.debPayDate.value||'';
+  if(el.ccQuickChips){
+    el.ccQuickChips.addEventListener('click',e=>{
+      const btn=e.target.closest('[data-cc-quick]'); if(!btn) return;
+      const q=btn.dataset.ccQuick;
+      const used=Math.max(0,Number(st.credit.used)||0);
+      const reserved=Math.max(0,Number(st.credit.reserved)||0);
+      if(q==='coverAll'){
+        const diff=Math.max(0,used-reserved);
+        if(diff<=0){ showToast('Sua fatura já está totalmente coberta pela reserva!','ok'); return; }
+        st.credit.reserved+=diff;
+        st.credit.tx.unshift({id:id(),type:'reserve-in',value:diff,desc:'Cobertura total da fatura',category:'Reserva cartao',categoryKey:'reserva',at:new Date().toISOString()});
+        haptic('success');
+        save(true); renderCredit(); renderSummary();
+        showToast(`✓ Fatura 100% coberta (+${money(diff)} na reserva)!`,'ok');
+      } else if(q==='res50' || q==='res100' || q==='res200'){
+        const amt=q==='res50'?50:(q==='res100'?100:200);
+        st.credit.reserved+=amt;
+        st.credit.tx.unshift({id:id(),type:'reserve-in',value:amt,desc:`Aporte rápido reserva`,category:'Reserva cartao',categoryKey:'reserva',at:new Date().toISOString()});
+        haptic('medium');
+        save(true); renderCredit(); renderSummary();
+        showToast(`✓ +${money(amt)} guardado na reserva!`,'ok');
+      } else if(q==='payAll'){
+        if(used<=0){ showToast('Não há fatura em aberto para quitar!','warn'); return; }
+        if(!confirm(`Deseja registrar o pagamento integral da fatura de ${money(used)}?`)) return;
+        const resUsed=Math.min(reserved,used);
+        if(resUsed>0) st.credit.reserved-=resUsed;
+        st.credit.used=0;
+        st.credit.tx.unshift({id:id(),type:'payment',value:used,desc:'Quitação integral da fatura',category:'Pagamento cartao',categoryKey:'pagamento',at:new Date().toISOString()});
+        haptic('success');
+        save(true); renderCredit(); renderSummary();
+        showToast('✓ Fatura quitada com sucesso!','ok');
+      }
+    });
+  }
+
+  function handleDebtorFormSubmit(nameVal, amountVal, noteVal, payDateVal){
+    const name=txt(nameVal,30);
+    const amount=parseFloat((amountVal||'').replace(',','.'));
+    const note=txt(noteVal,50);
+    const payDate=payDateVal||'';
     if(!name||!Number.isFinite(amount)||amount<=0) return;
     st.debtors.unshift({id:id(),name,amount,note,payDate,paid:false,paidAt:'',at:new Date().toISOString()});
     st.debtors=st.debtors.slice(0,100);
-    el.debName.value=''; el.debAmount.value=''; el.debNote.value=''; el.debPayDate.value='';
     save(true); renderDebtors(); renderSummary();
-  });
+    haptic('medium');
+    showToast(`✓ Cobrança adicionada para ${name} (${money(amount)})!`, 'ok');
+  }
 
-  el.debList.addEventListener('click',e=>{
+  if(el.debForm){
+    el.debForm.addEventListener('submit',e=>{
+      e.preventDefault();
+      handleDebtorFormSubmit(el.debName.value, el.debAmount.value, el.debNote.value, el.debPayDate.value);
+      el.debName.value=''; el.debAmount.value=''; el.debNote.value=''; el.debPayDate.value='';
+    });
+  }
+
+  if(el.debtsPageDebForm){
+    el.debtsPageDebForm.addEventListener('submit',e=>{
+      e.preventDefault();
+      handleDebtorFormSubmit(el.debPageName.value, el.debPageAmount.value, el.debPageNote.value, el.debPagePayDate.value);
+      el.debPageName.value=''; el.debPageAmount.value=''; el.debPageNote.value=''; el.debPagePayDate.value='';
+    });
+  }
+
+  if(el.debtsSegmentBar){
+    el.debtsSegmentBar.addEventListener('click',e=>{
+      const btn=e.target.closest('[data-debt-view]'); if(!btn) return;
+      const view=btn.dataset.debtView;
+      ui.debtsView=view;
+      if(el.debtsMyDebtsView) el.debtsMyDebtsView.style.display=view==='myDebts'?'grid':'none';
+      if(el.debtsDebtorsView) el.debtsDebtorsView.style.display=view==='debtors'?'grid':'none';
+      el.debtsSegmentBar.querySelectorAll('.segmentBtn').forEach(b=>b.classList.toggle('active',b===btn));
+      haptic('light');
+    });
+  }
+
+  function handleDebtorClick(e){
     const row=e.target.closest('[data-deb]'); if(!row) return;
     const d=st.debtors.find(x=>x.id===row.dataset.deb); if(!d) return;
     if(e.target.matches('[data-act="deb-edit"]')){
@@ -1211,9 +1464,12 @@ function bind(){
       showToast(`✓ Recebido ${money(d.amount)} de ${d.name}!`, 'ok');
       save(true); renderDebtors(); renderFinance(); renderSummary(); flash(document.querySelector('[data-acc="conta"] [data-bal]'),'in');
     }
-  });
+  }
 
-  el.debList.addEventListener('input',e=>{
+  if(el.debList) el.debList.addEventListener('click', handleDebtorClick);
+  if(el.debtsPageDebList) el.debtsPageDebList.addEventListener('click', handleDebtorClick);
+
+  function handleDebtorInput(e){
     const row=e.target.closest('[data-deb]'); if(!row) return;
     const d=st.debtors.find(x=>x.id===row.dataset.deb); if(!d) return;
     if(e.target.matches('[data-f="deb-name"]')) d.name=txt(e.target.value,30);
@@ -1224,7 +1480,10 @@ function bind(){
     }
     if(e.target.matches('[data-f="deb-paydate"]')) d.payDate=e.target.value||'';
     save(); renderSummary();
-  });
+  }
+
+  if(el.debList) el.debList.addEventListener('input', handleDebtorInput);
+  if(el.debtsPageDebList) el.debtsPageDebList.addEventListener('input', handleDebtorInput);
 
   el.myDebtForm.addEventListener('submit',e=>{
     e.preventDefault();
@@ -1334,6 +1593,18 @@ function bind(){
   el.goalList.addEventListener('click',e=>{
     const card=e.target.closest('[data-goal-id]'); if(!card) return;
     const goal=st.goals.find(g=>g.id===card.dataset.goalId); if(!goal) return;
+
+    const quickAporte=e.target.dataset.goalDeposit;
+    if(quickAporte){
+      const amt=parseFloat(quickAporte);
+      if(amt>0){
+        goalMove(goal,'deposit',amt);
+        haptic('success');
+        showToast(`✓ Aporte de ${money(amt)} em ${goal.name}!`, 'ok');
+        return;
+      }
+    }
+
     const input=card.querySelector('[data-goal-value]');
     const inputValue=input ? input.value : '';
     const raw=parseFloat((inputValue||'').replace(',','.'));
@@ -1346,6 +1617,7 @@ function bind(){
     }
 
     if(e.target.matches('[data-act="goal-remove"]')){
+      if(!confirm(`Deseja realmente remover o objetivo "${goal.name}"?`)) return;
       st.goals=st.goals.filter(g=>g.id!==goal.id);
       delete ui.goals[goal.id];
       save(true); renderGoals(); renderGoalStatement(); renderSummary();
@@ -1359,6 +1631,27 @@ function bind(){
 
     if(input) input.value='';
   });
+
+  if(el.copyStatementBtn){
+    el.copyStatementBtn.addEventListener('click',copyStatementSummary);
+  }
+
+  if(el.statementSearchInput){
+    el.statementSearchInput.addEventListener('input',e=>{
+      ui.statementSearch=e.target.value||'';
+      renderUnifiedStatement();
+    });
+  }
+
+  if(el.statementFeedFilters){
+    el.statementFeedFilters.addEventListener('click',e=>{
+      const chip=e.target.closest('[data-stmt-filter]'); if(!chip) return;
+      ui.statementFilter=chip.dataset.stmtFilter;
+      el.statementFeedFilters.querySelectorAll('.filterChip').forEach(c=>c.classList.toggle('active',c===chip));
+      haptic('light');
+      renderUnifiedStatement();
+    });
+  }
 
   el.goalList.addEventListener('input',e=>{
     const card=e.target.closest('[data-goal-id]'); if(!card) return;
@@ -1425,7 +1718,7 @@ function bind(){
   });
 }
 
-function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();}
+function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();renderUnifiedStatement();}
 function showPage(page){
   ui.page=['home','credit','debts','goals','statement'].includes(page)?page:'home';
   renderPage();
@@ -1442,6 +1735,7 @@ function renderPage(){
   for(var i=0;i<el.navBtns.length;i++){
     setActive(el.navBtns[i], el.navBtns[i].getAttribute('data-page')===ui.page);
   }
+  if(ui.page==='statement') renderUnifiedStatement();
 }
 function renderProfile(){
   el.app.textContent=st.appName;
@@ -2057,23 +2351,60 @@ function pruneDailyStats(maxDays){
 }
 
 // Funções de rotina/hábitos
+function toggleHabit(habitId){
+  const h=st.habits.find(x=>x.id===habitId); if(!h) return;
+  h.done=!h.done; st.xp=Math.max(0,st.xp+(h.done?XP_H:-XP_H));
+  if(h.done){
+    h.lastDoneAt=new Date().toISOString();
+    h.skillTag=detectSkill(h.name)||'';
+    adjustSkillXp(h.skillTag,25);
+    pushRoutineLog('done',h);
+    haptic('success');
+    showToast('✓ Hábito cumprido! +'+XP_H+' XP','ok');
+  } else {
+    adjustSkillXp(h.skillTag||detectSkill(h.name),-25);
+    h.skillTag='';
+    pushRoutineLog('undo',h);
+    haptic('light');
+  }
+  save(true); renderHabits(); refreshGame();
+}
+
 function renderHabits(){
-  if(!st.habits.length){el.hList.innerHTML='<p class="empty">Nenhum hábito ainda. Adicione o primeiro para começar.</p>'; renderFocusHabitOptions(); renderFocusSession(); renderRoutineTimeline(); return;}
-  el.hList.innerHTML=st.habits.map(h=>`
-    <article class="habit ${h.done?'done':''}" data-id="${h.id}">
-      <div class="r1">
-        <input data-f="name" type="text" value="${esc(h.name)}" placeholder="Nome do hábito" />
-        <button class="ck ${h.done?'done':''}" type="button" data-act="toggle">${h.done?'✓':'○'}</button>
+  const emptyHtml='<p class="empty" style="padding:12px;">Nenhum hábito ainda. Adicione o primeiro para começar hoje!</p>';
+  if(!st.habits.length){
+    if(el.hList) el.hList.innerHTML=emptyHtml;
+    if(el.homeHabitList) el.homeHabitList.innerHTML='<p class="empty" style="padding:14px;">Nenhuma missão ativa para hoje. Clique em "+ Novo Hábito" para começar!</p>';
+    renderFocusHabitOptions(); renderFocusSession(); renderRoutineTimeline(); return;
+  }
+  if(el.hList){
+    el.hList.innerHTML=st.habits.map(h=>`
+      <article class="habit ${h.done?'done':''}" data-id="${h.id}">
+        <div class="r1">
+          <input data-f="name" type="text" value="${esc(h.name)}" placeholder="Nome do hábito" />
+          <button class="ck ${h.done?'done':''}" type="button" data-act="toggle">${h.done?'✓':'○'}</button>
+        </div>
+        <div class="two">
+          <input data-f="goal" type="text" value="${esc(h.goal||'')}" placeholder="Meta (min, quantidade...)" />
+          <input data-f="date" type="date" value="${h.date||today()}" />
+        </div>
+        <div class="line">
+          <span class="mut">${h.done?'Concluído':'Pendente'}${h.lastDoneAt?` · Última: ${shortDate(h.lastDoneAt)}`:''}${h.date?` · Data: ${dateBr(h.date)}`:''}</span>
+          <button class="danger" type="button" data-act="del">Remover</button>
+        </div>
+      </article>`).join('');
+  }
+  if(el.homeHabitList){
+    el.homeHabitList.innerHTML=st.habits.map(h=>`
+      <div class="habit ${h.done?'done':''}" data-id="${h.id}" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--ln);">
+        <div style="display:grid;gap:2px;min-width:0;">
+          <strong style="font-size:.9rem;${h.done?'text-decoration:line-through;color:var(--mut);':''}">${safe(h.name)}</strong>
+          <span class="mut" style="font-size:.73rem;">${h.goal?safe(h.goal):'Sem meta definida'}${h.done?' · ✓ Cumprido':' · Pendente'}</span>
+        </div>
+        <button class="ck ${h.done?'done':''}" type="button" data-act="toggle" style="width:36px;height:36px;border-radius:10px;font-size:1.1rem;flex-shrink:0;">${h.done?'✓':'○'}</button>
       </div>
-      <div class="two">
-        <input data-f="goal" type="text" value="${esc(h.goal||'')}" placeholder="Meta (min, quantidade...)" />
-        <input data-f="date" type="date" value="${h.date||today()}" />
-      </div>
-      <div class="line">
-        <span class="mut">${h.done?'Concluído':'Pendente'}${h.lastDoneAt?` · Última: ${shortDate(h.lastDoneAt)}`:''}${h.date?` · Data: ${dateBr(h.date)}`:''}</span>
-        <button class="danger" type="button" data-act="del">Remover</button>
-      </div>
-    </article>`).join('');
+    `).join('');
+  }
   renderFocusHabitOptions();
   renderFocusSession();
   renderRoutineTimeline();
@@ -2234,6 +2565,133 @@ function renderFoodStatement(){
   }).join('');
 }
 
+function shortTime(iso){
+  try{
+    const d=new Date(iso);
+    return isNaN(d)?'':`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }catch(e){return '';}
+}
+
+function allTransactions(){
+  const account=(st.tx||[]).map(t=>{
+    const labelName=(st.balances[t.account] && st.balances[t.account].label) ? st.balances[t.account].label : defLabel(t.account);
+    const isIn=t.type==='in';
+    const isSet=t.type==='set';
+    const diff=(Number(t.value)||0)-(Number(t.prev)||0);
+    const val=isSet?Math.abs(diff):Math.abs(Number(t.value)||0);
+    const sign=isSet?(diff>=0?'+':'-'):(isIn?'+':'-');
+    const isFood=t.account==='vale1'||t.account==='vale2';
+    return {
+      id:t.id,at:t.at,value:val,sign,cls:sign==='+'?'pos':'neg',
+      title:isSet?`Ajuste ${labelName}`:`${isIn?'Entrada':'Saída'} ${labelName}`,
+      note:t.note||'',category:t.category||'Sem categoria',
+      source:isFood?'food':'wallet',
+      icon:isFood?'🍽️':'💰'
+    };
+  });
+
+  const card=(st.credit.tx||[]).map(t=>{
+    const isExpense=t.type==='expense';
+    const isPayment=t.type==='payment';
+    const isReserveIn=t.type==='reserve-in';
+    const isReserveOut=t.type==='reserve-out';
+    const sign=(isExpense||isReserveOut)?'-':'+';
+    const label=isExpense?'Gasto no Cartão':(isPayment?'Pagamento Cartão':(isReserveIn?'Entrada Reserva Cartão':'Saída Reserva Cartão'));
+    return {
+      id:t.id,at:t.at,value:Math.abs(Number(t.value)||0),sign,cls:sign==='+'?'pos':'neg',
+      title:label,note:t.desc||'',category:t.category||'Crédito',
+      source:'credit',
+      icon:isExpense?'💳':(isPayment?'💵':'🛡️')
+    };
+  });
+
+  const goals=(st.goals||[]).reduce((acc,g)=>{
+    const gtx=(Array.isArray(g.tx)?g.tx:[]).map(t=>{
+      const isWithdraw=t.type==='withdraw';
+      const label=t.type==='yield'?'Rendimento':(isWithdraw?'Resgate':'Aporte');
+      return {
+        id:t.id,at:t.at,value:Math.abs(Number(t.value)||0),sign:isWithdraw?'-':'+',cls:isWithdraw?'neg':'pos',
+        title:`${label} · ${g.name||'Meta'}`,note:t.note||'',category:'Objetivos',
+        source:'goal',
+        icon:'🎯'
+      };
+    });
+    return acc.concat(gtx);
+  },[]);
+
+  return account.concat(card).concat(goals).sort((a,b)=>new Date(b.at)-new Date(a.at));
+}
+
+function renderUnifiedStatement(){
+  if(!el.unifiedStatementFeed) return;
+  let items=allTransactions();
+
+  if(ui.statementFilter && ui.statementFilter!=='all'){
+    items=items.filter(i=>i.source===ui.statementFilter);
+  }
+
+  if(ui.statementSearch && ui.statementSearch.trim()){
+    const q=ui.statementSearch.trim().toLowerCase();
+    items=items.filter(i=>{
+      return (i.title||'').toLowerCase().includes(q) ||
+             (i.note||'').toLowerCase().includes(q) ||
+             (i.category||'').toLowerCase().includes(q) ||
+             String(i.value).includes(q);
+    });
+  }
+
+  if(!items.length){
+    el.unifiedStatementFeed.innerHTML='<p class="empty" style="padding:16px;">Nenhuma movimentação encontrada com os filtros atuais.</p>';
+    return;
+  }
+
+  let html='';
+  let lastDay='';
+  const todayStr=today();
+
+  items.slice(0,60).forEach(i=>{
+    const day=(i.at||'').slice(0,10);
+    if(day && day!==lastDay){
+      lastDay=day;
+      let dayTitle=dateBr(day);
+      if(day===todayStr) dayTitle='Hoje';
+      html+=`<div class="statementDateHeader">${dayTitle}</div>`;
+    }
+    const noteText=i.note?` · ${safe(i.note)}`:'';
+    html+=`
+      <div class="feedRow">
+        <div class="feedIcon">${i.icon}</div>
+        <div class="feedBody">
+          <div class="feedTitle">${safe(i.title)}${noteText}</div>
+          <div class="feedSubtitle">${safe(i.category)} · ${shortTime(i.at)}</div>
+        </div>
+        <div class="feedAmount ${i.cls}">${i.sign} ${money(i.value)}</div>
+      </div>
+    `;
+  });
+
+  el.unifiedStatementFeed.innerHTML=html;
+}
+
+function copyStatementSummary(){
+  const items=allTransactions().slice(0,35);
+  if(!items.length){ showToast('Não há movimentações para copiar.','warn'); return; }
+  let text=`📊 RESUMO DE MOVIMENTAÇÕES - WEEDVERSO\nGerado em: ${fullDate(new Date())}\n\n`;
+  items.forEach(i=>{
+    text+=`${i.sign} ${money(i.value)} | ${i.title}${i.note?' ('+i.note+')':''} [${shortDate(i.at)}]\n`;
+  });
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{
+      haptic('success');
+      showToast('✓ Resumo copiado para a área de transferência!','ok');
+    }).catch(()=>{
+      showToast('Não foi possível acessar a área de transferência.','error');
+    });
+  } else {
+    showToast('Área de transferência indisponível.','warn');
+  }
+}
+
 function renderFiveDayStatement(){
   const editing=Boolean(ui.statement.five);
   const items=last5DaysTransactions();
@@ -2307,6 +2765,24 @@ function renderCredit(){
   el.ccUsed.style.color=used>reserved&&used>0?'#ffcf5f':'var(--txt)';
   if(el.ccUncovered) el.ccUncovered.style.color=uncovered>0?'#ffcf5f':'var(--p)';
   el.ccBar.style.width=`${pct}%`;
+
+  // Atualiza dados no Cartão Virtual
+  if(el.ccCardUsed) el.ccCardUsed.textContent=money(used);
+  if(el.ccCardReserved) el.ccCardReserved.textContent=money(reserved);
+  if(el.ccCardName) el.ccCardName.textContent=st.credit.name||'weedverso Black';
+  if(el.ccCardCoverageStatus){
+    if(used>0 && uncovered<=0){
+      el.ccCardCoverageStatus.className='virtualCardStatus ok';
+      el.ccCardCoverageStatus.textContent='🛡️ 100% Coberta';
+    } else if(uncovered>0){
+      el.ccCardCoverageStatus.className='virtualCardStatus warn';
+      el.ccCardCoverageStatus.textContent=`⚠️ Falta ${money(uncovered)}`;
+    } else {
+      el.ccCardCoverageStatus.className='virtualCardStatus ok';
+      el.ccCardCoverageStatus.textContent='✓ Zerado';
+    }
+  }
+
   renderCreditDescChart();
 
   const banner=editing?renderStatementModeBanner('Modo edição ativo no cartão. Ajuste o lançamento com o lápis ou remova com o X.'):'';
@@ -2450,11 +2926,32 @@ function groupMyDebtEntries(items,desc){
   return Object.values(grouped).sort((a,b)=>compareMonthGroupKeys(a.key,b.key,desc));
 }
 function renderMyDebtCard(d){
+  const totalInst = debtInstallments(d);
+  const paidInst = debtPaidInstallments(d);
+  const dots = Array.from({length: Math.min(12, totalInst)}, (_, i) => 
+    `<span class="stepDot ${i < paidInst ? 'done' : ''}"></span>`
+  ).join('');
+  const stepperHtml = totalInst > 1 ? `<div class="installmentStepper">${dots}</div>` : '';
+
+  let dueBadgeHtml = '';
+  if(!d.paid && d.payDate){
+    const todayStr = new Date().toISOString().slice(0,10);
+    const d1 = new Date(todayStr), d2 = new Date(d.payDate);
+    const diffDays = Math.round((d2 - d1) / (1000*60*60*24));
+    if(diffDays < 0){
+      dueBadgeHtml = `<span class="dueBadge late">🚨 Venceu há ${Math.abs(diffDays)}d</span>`;
+    } else if(diffDays === 0){
+      dueBadgeHtml = `<span class="dueBadge today">⚠️ Vence hoje!</span>`;
+    } else if(diffDays <= 3){
+      dueBadgeHtml = `<span class="dueBadge soon">⏳ Vence em ${diffDays}d</span>`;
+    }
+  }
+
   return `
     <article class="debtor debtCard ${d.paid?'paid':''}" data-mydeb="${d.id}">
       <div class="debtorHead">
         <div>
-          <div class="debtorName">${safe(d.name)}</div>
+          <div class="debtorName">${safe(d.name)} ${dueBadgeHtml}</div>
           <div class="debtorAmount">${money(debtInstallmentValue(d))}</div>
         </div>
         <div class="debtorTools">
@@ -2480,6 +2977,7 @@ function renderMyDebtCard(d){
               <strong>${money(d.paid?debtPaidAmount(d):debtRemainingAmount(d))}</strong>
             </div>
           </div>
+          ${stepperHtml}
           <div class="debtProgress"><div class="debtProgressFill" style="width:${debtCompletionPct(d)}%"></div></div>
           <div class="debtorMeta">
             <span>${d.paidAt?`Quitada em ${shortDate(d.paidAt)}`:(d.payDate?`Vence em: ${dateBr(d.payDate)}`:'Data de vencimento não definida')} · ${safe(monthInfoLabel(d.payDate))}</span>
@@ -2646,11 +3144,21 @@ function renderDebtorPaidSection(items){
 function renderDebtors(){
   const openItems=sortDebtEntries((st.debtors||[]).filter(d=>!d.paid));
   const paidItems=sortDebtEntries((st.debtors||[]).filter(d=>d.paid));
-  el.debList.className='list debtBoard';
-  el.debList.innerHTML=[
+  const html=[
     renderDebtorOpenSection(openItems),
     renderDebtorPaidSection(paidItems)
   ].join('');
+  if(el.debList){
+    el.debList.className='list debtBoard';
+    el.debList.innerHTML=html;
+  }
+  if(el.debtsPageDebList){
+    el.debtsPageDebList.className='list debtBoard';
+    el.debtsPageDebList.innerHTML=html;
+  }
+  const openTotal=roundMoneyValue(openItems.reduce((sum,d)=>sum+(Number(d.amount)||0),0));
+  if(el.debtsPageTotalBox) el.debtsPageTotalBox.textContent=money(openTotal);
+  if(el.debtsPageCountBox) el.debtsPageCountBox.textContent=String(openItems.length);
 }
 
 function renderMyDebts(){
@@ -2682,11 +3190,24 @@ function renderMyDebts(){
   ].join('');
 }
 
+function goalThemeIcon(name){
+  const s=(name||'').toLowerCase();
+  if(/viagem|praia|ferias|voo|passagem/i.test(s)) return '✈️';
+  if(/carro|moto|veiculo|ipva|cnh|auto/i.test(s)) return '🚗';
+  if(/reserva|emergencia|seguranca|colchao/i.test(s)) return '🛡️';
+  if(/casa|ape|apartamento|reforma|aluguel|constru/i.test(s)) return '🏠';
+  if(/invest|renda|bolsa|fii|cdi|selic|cripto|btc/i.test(s)) return '📈';
+  if(/pc|mac|computador|setup|iphone|ipad|tech/i.test(s)) return '💻';
+  return '🎯';
+}
+
 function renderGoals(){
   if(!Array.isArray(st.goals)) st.goals=[];
   const weekYield=goalsWeekYield();
-  el.goalActiveCount.textContent=String(st.goals.length);
-  el.goalWeekYield.textContent=money(weekYield);
+  const totalSaved=goalsTotalSaved();
+  if(el.goalActiveCount) el.goalActiveCount.textContent=String(st.goals.length);
+  if(el.goalWeekYield) el.goalWeekYield.textContent=money(weekYield);
+  if(el.goalsTotalSavedBox) el.goalsTotalSavedBox.textContent=money(totalSaved);
   if(!st.goals.length){el.goalList.innerHTML='<p class="empty">Nenhum objetivo ainda. Crie o primeiro para acompanhar seu patrimônio.</p>';return;}
 
   el.goalList.innerHTML=st.goals.map(g=>{
@@ -2695,37 +3216,53 @@ function renderGoals(){
     const saved=Math.max(0,Number(g.saved)||0);
     const left=Math.max(0,target-saved);
     const pct=target>0?Math.min(100,Math.round((saved/target)*100)):0;
+    const icon=goalThemeIcon(g.name);
     return `<article class="goal" data-goal-id="${g.id}">
-      <div class="line">
-        <div>
-          <strong>${safe(g.name)}</strong>
-          <p class="mut">${left>0?`Faltam ${money(left)}`:'Meta alcançada'}</p>
+      <div class="goalHeaderRow">
+        <div class="goalTitleWrap">
+          <span class="goalIconBadge">${icon}</span>
+          <div>
+            <strong style="font-size:.95rem;">${safe(g.name)}</strong>
+            <p class="mut" style="font-size:.74rem;">${left>0?`Faltam ${money(left)}`:'🎉 Meta alcançada!'}</p>
+          </div>
         </div>
-        <div class="line">
+        <div class="line" style="align-items:center;">
           <span class="tag ok">${pct}%</span>
           <button class="iconBtn ${editing?'active':''}" type="button" data-act="goal-edit" title="Editar objetivo">✎</button>
         </div>
       </div>
-      <div class="goalMetaRow">
-        <strong class="goalMoney">${money(saved)} <span class="mut">de ${money(target)}</span></strong>
+      <div class="goalMetaRow" style="margin-top:2px;">
+        <strong class="goalMoney">${money(saved)} <span class="mut" style="font-size:.82rem;">de ${money(target)}</span></strong>
         <span class="goalPct">${pct}%</span>
       </div>
-      ${editing?`<div class="two">
+      ${editing?`<div class="two" style="margin-top:4px;">
         <input data-f="goal-name" type="text" value="${esc(g.name)}" maxlength="36" />
         <input data-f="goal-target" type="number" step="0.01" inputmode="decimal" value="${target}" />
       </div>`:''}
       <div class="track"><div class="fill goal" style="width:${pct}%"></div></div>
-      <div class="goalActionsWrap">
+      
+      <!-- Quick Aportes Chips -->
+      <div class="wrap" style="margin-top:2px;">
+        <span class="mini">Aporte Rápido</span>
+        <div class="quickChipsRow">
+          <button type="button" class="quickActionChip highlight" data-goal-deposit="20" data-goal-id="${g.id}">+R$ 20</button>
+          <button type="button" class="quickActionChip highlight" data-goal-deposit="50" data-goal-id="${g.id}">+R$ 50</button>
+          <button type="button" class="quickActionChip highlight" data-goal-deposit="100" data-goal-id="${g.id}">+R$ 100</button>
+          <button type="button" class="quickActionChip highlight" data-goal-deposit="200" data-goal-id="${g.id}">+R$ 200</button>
+        </div>
+      </div>
+
+      <div class="goalActionsWrap" style="margin-top:6px;">
         <div class="actionFields">
-          <input data-goal-value type="number" step="0.01" inputmode="decimal" placeholder="Valor" />
+          <input data-goal-value type="number" step="0.01" inputmode="decimal" placeholder="Outro valor (R$)" />
         </div>
         <div class="actionStack">
-          <button class="btn" type="button" data-act="goal-deposit">Entrada</button>
-          <button class="danger" type="button" data-act="goal-withdraw">Saída</button>
+          <button class="btn" type="button" data-act="goal-deposit">Aportar</button>
+          <button class="danger" type="button" data-act="goal-withdraw">Resgatar</button>
           <button class="ghost" type="button" data-act="goal-yield">Rendimento</button>
         </div>
       </div>
-      <button class="danger" type="button" data-act="goal-remove">Remover objetivo</button>
+      <button class="danger" type="button" data-act="goal-remove" style="margin-top:4px;">Remover objetivo</button>
     </article>`;
   }).join('');
 }
