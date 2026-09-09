@@ -370,12 +370,26 @@ class WeedversoHandler(BaseHTTPRequestHandler):
         self._send_json({"error": "unauthorized"}, status=401)
         return False
 
+    ALLOWED_STATIC_EXTENSIONS = {
+        ".html", ".css", ".js", ".png", ".jpg", ".jpeg", ".ico", ".svg", ".webmanifest"
+    }
+    BLOCKED_FILENAMES = {
+        ".env", "shared_state.json", "cloud_sync_status.json", "telegram_chats.json"
+    }
+
     def _serve_static(self, path):
         cleaned = path.lstrip("/")
         target = (BASE_DIR / cleaned).resolve()
         try:
             target.relative_to(BASE_DIR.resolve())
         except ValueError:
+            return False
+
+        if target.name.startswith(".") or target.name in self.BLOCKED_FILENAMES:
+            return False
+        if target.name == "manifest.json":
+            pass
+        elif target.suffix.lower() not in self.ALLOWED_STATIC_EXTENSIONS and target.name != "VERSION":
             return False
 
         if target.is_file():
