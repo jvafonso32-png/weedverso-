@@ -153,6 +153,11 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .segmentBtn{padding:9px 8px;border-radius:10px;border:none;background:transparent;color:var(--mut);font:700 .82rem var(--font-ui);cursor:pointer;transition:all .18s ease;text-align:center}
 .segmentBtn.active{background:linear-gradient(135deg,rgba(57,255,143,.22),rgba(57,255,143,.1));color:#39ff8f;border:1px solid rgba(57,255,143,.4);box-shadow:0 4px 12px rgba(0,0,0,.25)}
 
+/* Card Coverage Bar & Sections */
+.cardCoverageWrap{padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(151,170,159,.16);border-radius:14px;margin:10px 0 14px 0}
+.cardSectionBox{padding:13px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(151,170,159,.16);border-radius:14px;margin-bottom:12px}
+.cardSectionTitle{display:flex;align-items:center;gap:6px;font:700 .82rem var(--font-ui);color:var(--txt);margin-bottom:8px}
+
 /* Installment Stepper Dots */
 .installmentStepper{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:4px 0}
 .stepDot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);transition:all .2s ease}
@@ -195,7 +200,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v5.0</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v6.0</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
           </div>
@@ -344,24 +349,24 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
     <section class="card">
       <div class="line">
         <div>
-          <h2 class="title">Cartão e cobranças</h2>
-          <p class="mut">Área exclusiva para fatura, reserva do cartão e pessoas que te devem valores ligados ao crédito.</p>
+          <h2 class="title">Cartão de Crédito</h2>
+          <p class="mut">Controle de fatura, cobertura de saldo reservado e análise de gastos.</p>
         </div>
         <span class="chip">💳 Crédito</span>
       </div>
       <div class="stack">
         <article class="fcard">
-          <div class="line">
+          <div class="line" style="align-items:center;margin-bottom:10px">
             <div>
-              <h3 class="subtitle">Cartão de crédito</h3>
-              <p id="ccMetaSummary" class="mut"></p>
+              <h3 class="subtitle" style="margin-bottom:0">Cartão Virtual</h3>
+              <p id="ccMetaHint" class="mut" style="margin:2px 0 0 0;font-size:.8rem"></p>
             </div>
-            <button id="ccEditBtn" type="button" class="iconBtn" title="Editar nome do cartão">✎</button>
+            <button id="ccEditBtn" type="button" class="iconBtn" title="Personalizar nome do cartão">✎</button>
           </div>
-          <div id="ccMeta" class="two">
-            <input id="ccName" type="text" maxlength="30" placeholder="Nome do cartão" />
+          <div id="ccMeta" class="two" hidden style="margin-bottom:10px">
+            <input id="ccName" type="text" maxlength="30" placeholder="Nome do cartão (ex: Nubank Black)" />
           </div>
-          <p id="ccMetaHint" class="mut"></p>
+          <span id="ccMetaSummary" style="display:none"></span>
 
           <!-- Virtual Credit Card (Apple Wallet style) -->
           <div class="virtualCard" id="virtualCreditCard">
@@ -374,7 +379,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
             </div>
             <div class="virtualCardBody">
               <span class="mini" style="color:rgba(255,255,255,.6)">Fatura Atual</span>
-              <div id="ccCardUsed" class="virtualCardNumber">R$ 0,00</div>
+              <div id="ccUsed" class="virtualCardNumber">R$ 0,00</div>
             </div>
             <div class="virtualCardBottom">
               <div>
@@ -382,15 +387,26 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
                 <strong id="ccCardName" style="color:#fff;display:block;font-size:.92rem">weedverso Black</strong>
               </div>
               <div style="text-align:right">
-                <span class="mini" style="color:rgba(255,255,255,.6)">Reserva</span>
-                <strong id="ccCardReserved" style="color:var(--p);display:block;font-size:.92rem">R$ 0,00</strong>
+                <span class="mini" style="color:rgba(255,255,255,.6)">Saldo Reservado</span>
+                <strong id="ccReserved" style="color:var(--p);display:block;font-size:.92rem">R$ 0,00</strong>
               </div>
             </div>
           </div>
 
-          <!-- Quick Reserve & Pay Chips -->
-          <div style="margin:4px 0 10px 0;">
-            <span class="mini" style="display:block;margin-bottom:6px;">Ações Rápidas de Reserva e Pagamento</span>
+          <!-- Cobertura da Fatura -->
+          <div class="cardCoverageWrap">
+            <div class="line" style="justify-content:space-between;align-items:center;font-size:.82rem;margin-bottom:6px">
+              <span class="mut" style="display:flex;align-items:center;gap:5px">
+                <span>🛡️</span> <strong>Cobertura da Fatura</strong>
+              </span>
+              <span class="mini">Falta cobrir: <strong id="ccUncovered" style="font-size:.9rem;color:var(--p)">R$ 0,00</strong></span>
+            </div>
+            <div class="track" style="height:8px;border-radius:6px;overflow:hidden;margin:0"><div id="ccBar" class="fill cc"></div></div>
+          </div>
+
+          <!-- Ações Rápidas de Reserva e Pagamento -->
+          <div style="margin:4px 0 12px 0;">
+            <span class="mini" style="display:block;margin-bottom:6px;font-weight:600">⚡ Ações Rápidas</span>
             <div class="quickChipsRow" id="ccQuickChips">
               <button type="button" class="quickActionChip highlight" data-cc-quick="coverAll">🛡️ Cobrir Fatura Total</button>
               <button type="button" class="quickActionChip" data-cc-quick="res50">+R$ 50 Reserva</button>
@@ -399,35 +415,38 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
               <button type="button" class="quickActionChip danger" data-cc-quick="payAll">💳 Pagar Fatura Total</button>
             </div>
           </div>
-          <div class="actionLayout">
-            <div class="actionFields">
-              <input id="ccValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor" />
-              <input id="ccDesc" type="text" maxlength="42" placeholder="Descrição do gasto ou pagamento" />
-            </div>
-            <div class="actionStack creditActions">
-              <button id="ccExpense" type="button" class="danger">Lançar gasto</button>
-              <button id="ccPay" type="button" class="btn">Registrar pagamento</button>
-              <button id="ccClear" type="button" class="ghost">Zerar fatura</button>
-            </div>
-          </div>
-          <div class="cckpi">
-            <div class="kpi"><span class="mini">Fatura atual</span><strong id="ccUsed">R$ 0,00</strong></div>
-            <div class="kpi"><span class="mini">Falta cobrir</span><strong id="ccUncovered">R$ 0,00</strong></div>
-          </div>
-          <div class="track"><div id="ccBar" class="fill cc"></div></div>
-          <article class="kpi reserveBox">
-            <span class="mini">Saldo reservado cartão</span>
-            <strong id="ccReserved">R$ 0,00</strong>
+
+          <!-- Lançamentos na Fatura -->
+          <div class="cardSectionBox">
+            <span class="cardSectionTitle">💳 Lançar na Fatura</span>
             <div class="actionLayout">
               <div class="actionFields">
-                <input id="ccReserveValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor reservado" />
+                <input id="ccValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor (R$)" />
+                <input id="ccDesc" type="text" maxlength="42" placeholder="Descrição do gasto ou pagamento" />
               </div>
-              <div class="actionStack reserveActions">
-                <button id="ccReserveIn" type="button" class="btn">+ Entrada</button>
-                <button id="ccReserveOut" type="button" class="danger">- Saída</button>
+              <div class="actionStack creditActions">
+                <button id="ccExpense" type="button" class="danger">Lançar gasto</button>
+                <button id="ccPay" type="button" class="btn">Pagar fatura</button>
+                <button id="ccClear" type="button" class="ghost">Zerar fatura</button>
               </div>
             </div>
-          </article>
+          </div>
+
+          <!-- Gestão de Reserva Manual -->
+          <div class="cardSectionBox">
+            <span class="cardSectionTitle">🛡️ Ajuste Manual da Reserva</span>
+            <div class="actionLayout">
+              <div class="actionFields">
+                <input id="ccReserveValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor a transferir (R$)" />
+              </div>
+              <div class="actionStack reserveActions">
+                <button id="ccReserveIn" type="button" class="btn">+ Guardar na Reserva</button>
+                <button id="ccReserveOut" type="button" class="danger">- Retirar da Reserva</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Análise de Gastos -->
           <div class="creditAnalytics">
             <div class="analyticsToolbar">
               <div class="creditAnalyticsInfo">
@@ -456,23 +475,6 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
             </div>
             <div id="ccDescLegend" class="legendList"></div>
           </div>
-        </article>
-
-        <article class="fcard">
-          <h3 class="subtitle">Pessoas devedoras</h3>
-          <p class="mut">Centralize aqui as cobranças que normalmente cobrem gastos feitos no cartão. Datas futuras ficam visíveis aqui, mas só entram na home no mês do pagamento.</p>
-          <form id="debForm" class="form">
-            <div class="two">
-              <input id="debName" type="text" maxlength="30" placeholder="Nome da pessoa" required />
-              <input id="debAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor devido" required />
-            </div>
-            <div class="two">
-              <input id="debNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
-              <input id="debPayDate" type="date" />
-            </div>
-            <button class="btn" type="submit">Adicionar devedor</button>
-          </form>
-          <div id="debList" class="list debtorList"></div>
         </article>
       </div>
     </section>
@@ -567,18 +569,18 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
         <article class="fcard">
           <h3 class="subtitle">Registrar cobrança a receber</h3>
           <p class="mut">Cadastre aqui valores que você emprestou ou passou no seu cartão para alguém.</p>
-          <form id="debtsPageDebForm" class="form">
+          <form id="debForm" class="form">
             <div class="two">
-              <input id="debPageName" type="text" maxlength="30" placeholder="Nome da pessoa" required />
-              <input id="debPageAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor devido" required />
+              <input id="debName" type="text" maxlength="30" placeholder="Nome da pessoa" required />
+              <input id="debAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor devido" required />
             </div>
             <div class="two">
-              <input id="debPageNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
-              <input id="debPagePayDate" type="date" />
+              <input id="debNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
+              <input id="debPayDate" type="date" />
             </div>
             <button class="btn" type="submit">Adicionar devedor</button>
           </form>
-          <div id="debtsPageDebList" class="list debtorList"></div>
+          <div id="debList" class="list debtorList"></div>
         </article>
       </div>
     </section>
@@ -982,8 +984,8 @@ const el={
   goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),goalsTotalSavedBox:$('#goalsTotalSavedBox'),
   sPercent:$('#sPercent'),sHabits:$('#sHabits'),sSpent:$('#sSpent'),sCard:$('#sCard'),sDebt:$('#sDebt'),sGoals:$('#sGoals'),sStatus:$('#sStatus'),sMsg:$('#sMsg'),
   homeMissionsCard:$('#homeMissionsCard'),homeHabitList:$('#homeHabitList'),homeAddHabitBtn:$('#homeAddHabitBtn'),
-  virtualCreditCard:$('#virtualCreditCard'),ccCardCoverageStatus:$('#ccCardCoverageStatus'),ccCardUsed:$('#ccCardUsed'),ccCardName:$('#ccCardName'),ccCardReserved:$('#ccCardReserved'),ccQuickChips:$('#ccQuickChips'),
-  debtsSegmentBar:$('#debtsSegmentBar'),debtsMyDebtsView:$('#debtsMyDebtsView'),debtsDebtorsView:$('#debtsDebtorsView'),debtsPageTotalBox:$('#debtsPageTotalBox'),debtsPageCountBox:$('#debtsPageCountBox'),debtsPageDebForm:$('#debtsPageDebForm'),debPageName:$('#debPageName'),debPageAmount:$('#debPageAmount'),debPageNote:$('#debPageNote'),debPagePayDate:$('#debPagePayDate'),debtsPageDebList:$('#debtsPageDebList'),
+  virtualCreditCard:$('#virtualCreditCard'),ccCardCoverageStatus:$('#ccCardCoverageStatus'),ccCardUsed:$('#ccUsed'),ccCardName:$('#ccCardName'),ccCardReserved:$('#ccReserved'),ccQuickChips:$('#ccQuickChips'),
+  debtsSegmentBar:$('#debtsSegmentBar'),debtsMyDebtsView:$('#debtsMyDebtsView'),debtsDebtorsView:$('#debtsDebtorsView'),debtsPageTotalBox:$('#debtsPageTotalBox'),debtsPageCountBox:$('#debtsPageCountBox'),debtsPageDebForm:$('#debForm'),debPageName:$('#debName'),debPageAmount:$('#debAmount'),debPageNote:$('#debNote'),debPagePayDate:$('#debPayDate'),debtsPageDebList:$('#debList'),
   unifiedStatementCard:$('#unifiedStatementCard'),copyStatementBtn:$('#copyStatementBtn'),statementSearchInput:$('#statementSearchInput'),statementFeedFilters:$('#statementFeedFilters'),unifiedStatementFeed:$('#unifiedStatementFeed')
 };
 
@@ -1232,6 +1234,7 @@ function bind(){
     }
     if(act==='debtor'){
       showPage('debts');
+      switchDebtsView('debtors');
       scrollNodeIntoView(el.debForm);
       if(el.debName) el.debName.focus();
     }
@@ -1432,7 +1435,7 @@ function bind(){
     });
   }
 
-  if(el.debtsPageDebForm){
+  if(el.debtsPageDebForm && el.debtsPageDebForm !== el.debForm){
     el.debtsPageDebForm.addEventListener('submit',e=>{
       e.preventDefault();
       handleDebtorFormSubmit(el.debPageName.value, el.debPageAmount.value, el.debPageNote.value, el.debPagePayDate.value);
@@ -1440,14 +1443,21 @@ function bind(){
     });
   }
 
+  function switchDebtsView(view){
+    ui.debtsView=view;
+    if(el.debtsMyDebtsView) el.debtsMyDebtsView.style.display=view==='myDebts'?'grid':'none';
+    if(el.debtsDebtorsView) el.debtsDebtorsView.style.display=view==='debtors'?'grid':'none';
+    if(el.debtsSegmentBar){
+      el.debtsSegmentBar.querySelectorAll('.segmentBtn').forEach(b=>{
+        b.classList.toggle('active', b.dataset.debtView===view);
+      });
+    }
+  }
+
   if(el.debtsSegmentBar){
     el.debtsSegmentBar.addEventListener('click',e=>{
       const btn=e.target.closest('[data-debt-view]'); if(!btn) return;
-      const view=btn.dataset.debtView;
-      ui.debtsView=view;
-      if(el.debtsMyDebtsView) el.debtsMyDebtsView.style.display=view==='myDebts'?'grid':'none';
-      if(el.debtsDebtorsView) el.debtsDebtorsView.style.display=view==='debtors'?'grid':'none';
-      el.debtsSegmentBar.querySelectorAll('.segmentBtn').forEach(b=>b.classList.toggle('active',b===btn));
+      switchDebtsView(btn.dataset.debtView);
       haptic('light');
     });
   }
@@ -1489,7 +1499,7 @@ function bind(){
   }
 
   if(el.debList) el.debList.addEventListener('click', handleDebtorClick);
-  if(el.debtsPageDebList) el.debtsPageDebList.addEventListener('click', handleDebtorClick);
+  if(el.debtsPageDebList && el.debtsPageDebList !== el.debList) el.debtsPageDebList.addEventListener('click', handleDebtorClick);
 
   function handleDebtorInput(e){
     const row=e.target.closest('[data-deb]'); if(!row) return;
@@ -1505,7 +1515,7 @@ function bind(){
   }
 
   if(el.debList) el.debList.addEventListener('input', handleDebtorInput);
-  if(el.debtsPageDebList) el.debtsPageDebList.addEventListener('input', handleDebtorInput);
+  if(el.debtsPageDebList && el.debtsPageDebList !== el.debList) el.debtsPageDebList.addEventListener('input', handleDebtorInput);
 
   el.myDebtForm.addEventListener('submit',e=>{
     e.preventDefault();
@@ -2779,18 +2789,20 @@ function renderCredit(){
   const used=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), uncovered=Math.max(0,used-reserved), pct=used>0?Math.min(100,Math.round((reserved/used)*100)):(reserved>0?100:0);
   el.ccMeta.hidden=!ui.credit;
   setActive(el.ccEditBtn, ui.credit);
-  el.ccMetaSummary.textContent=`${st.credit.name||'Cartão weedverso'}`;
-  el.ccMetaHint.textContent=ui.credit?'Edição do cartão ativa.':creditReserveStatus(used,reserved);
-  el.ccUsed.textContent=money(used);
+  if(el.ccMetaSummary) el.ccMetaSummary.textContent=`${st.credit.name||'Cartão weedverso'}`;
+  if(el.ccMetaHint) el.ccMetaHint.textContent=ui.credit?'Edição do cartão ativa.':creditReserveStatus(used,reserved);
+  if(el.ccUsed){
+    el.ccUsed.textContent=money(used);
+    el.ccUsed.style.color=used>reserved&&used>0?'#ffcf5f':'#ffffff';
+  }
   if(el.ccUncovered) el.ccUncovered.textContent=money(uncovered);
-  el.ccReserved.textContent=money(reserved);
-  el.ccUsed.style.color=used>reserved&&used>0?'#ffcf5f':'var(--txt)';
+  if(el.ccReserved) el.ccReserved.textContent=money(reserved);
   if(el.ccUncovered) el.ccUncovered.style.color=uncovered>0?'#ffcf5f':'var(--p)';
-  el.ccBar.style.width=`${pct}%`;
+  if(el.ccBar) el.ccBar.style.width=`${pct}%`;
 
   // Atualiza dados no Cartão Virtual
-  if(el.ccCardUsed) el.ccCardUsed.textContent=money(used);
-  if(el.ccCardReserved) el.ccCardReserved.textContent=money(reserved);
+  if(el.ccCardUsed && el.ccCardUsed !== el.ccUsed) el.ccCardUsed.textContent=money(used);
+  if(el.ccCardReserved && el.ccCardReserved !== el.ccReserved) el.ccCardReserved.textContent=money(reserved);
   if(el.ccCardName) el.ccCardName.textContent=st.credit.name||'weedverso Black';
   if(el.ccCardCoverageStatus){
     if(used>0 && uncovered<=0){
@@ -3174,7 +3186,7 @@ function renderDebtors(){
     el.debList.className='list debtBoard';
     el.debList.innerHTML=html;
   }
-  if(el.debtsPageDebList){
+  if(el.debtsPageDebList && el.debtsPageDebList !== el.debList){
     el.debtsPageDebList.className='list debtBoard';
     el.debtsPageDebList.innerHTML=html;
   }
