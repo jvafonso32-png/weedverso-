@@ -524,6 +524,135 @@ const SERVER_POLL_BACKGROUND_MS=3000;
 const publishSync={busy:false,version:0,updatedAt:'',reason:'',links:{preferred:'',local:'',public:''},notifications:{telegram:'idle',discord:'idle'},lastError:''};
 const codeBackupSync={launching:false,poller:null,pollDeadline:0,status:'idle',message:'',startedAt:'',finishedAt:'',lastRunAt:'',branch:'',commit:'',remote:'',changedFiles:0,lastError:'',lastSeenAt:''};
 
+const GIST_SYNC={
+  id:'20470ade1d831a08ca6f87955658d8a2',
+  tokenKey:'weedverso_gh_sync_token',
+  pushTimer:null,
+  busy:false,
+  statusText:'',
+  getToken:function(){
+    try{return localStorage.getItem(this.tokenKey)||'';}catch(e){return '';}
+  },
+  setToken:function(val){
+    try{
+      if(val) localStorage.setItem(this.tokenKey,val.trim());
+      else localStorage.removeItem(this.tokenKey);
+    }catch(e){}
+  },
+  hasToken:function(){
+    return Boolean(this.getToken());
+  },
+  pull:async function(quiet){
+    const token=this.getToken();
+    if(!token) return false;
+    this.busy=true;
+    this.updateStatus('☁️ Sincronizando com GitHub...','running');
+    try{
+      const resp=await fetch('https://api.github.com/gists/'+this.id,{
+        headers:{
+          'Authorization':'token '+token,
+          'Accept':'application/vnd.github+json'
+        }
+      });
+      if(!resp.ok){
+        if(resp.status===401) throw new Error('Token inválido');
+        throw new Error('HTTP '+resp.status);
+      }
+      const data=await resp.json();
+      const fileInfo=data.files && data.files['weedverso_state.json'];
+      if(fileInfo && fileInfo.content){
+        const parsed=JSON.parse(fileInfo.content);
+        if(parsed && typeof parsed==='object'){
+          st=normalizeLoadedState(parsed);
+          rotateDay();
+          writeStoredState(JSON.stringify(st));
+          renderAll();
+          const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+          this.updateStatus('☁️ Git Sincronizado '+hora,'ok');
+          if(!quiet) alert('Sincronização concluída! Dados atualizados do GitHub.');
+          return true;
+        }
+      }
+    }catch(err){
+      console.warn('Gist pull err:',err);
+      this.updateStatus('☁️ Git: '+(err.message||'Falha ao sincronizar'),'error');
+      if(!quiet) alert('Erro ao sincronizar com GitHub: '+err.message);
+    }finally{
+      this.busy=false;
+    }
+    return false;
+  },
+  push:async function(){
+    const token=this.getToken();
+    if(!token||this.busy) return;
+    this.busy=true;
+    this.updateStatus('☁️ Enviando ao GitHub...','running');
+    try{
+      const payload={
+        files:{
+          'weedverso_state.json':{
+            content:JSON.stringify(st,null,2)
+          }
+        }
+      };
+      const resp=await fetch('https://api.github.com/gists/'+this.id,{
+        method:'PATCH',
+        headers:{
+          'Authorization':'token '+token,
+          'Accept':'application/vnd.github+json',
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(payload)
+      });
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      this.updateStatus('☁️ Git Atualizado '+hora,'ok');
+    }catch(err){
+      console.warn('Gist push err:',err);
+      this.updateStatus('☁️ Git: Falha ao enviar','error');
+    }finally{
+      this.busy=false;
+    }
+  },
+  schedulePush:function(){
+    if(!this.hasToken()) return;
+    if(this.pushTimer) clearTimeout(this.pushTimer);
+    this.pushTimer=setTimeout(()=>this.push(),1200);
+  },
+  updateStatus:function(text,tone){
+    this.statusText=text;
+    if(el.codeBackupStatus){
+      el.codeBackupStatus.textContent=text;
+      el.codeBackupStatus.dataset.tone=tone||'ok';
+    }
+    if(el.saveCodeBtn){
+      el.saveCodeBtn.disabled=false;
+      el.saveCodeBtn.style.opacity='1';
+      el.saveCodeBtn.textContent=this.hasToken()?'☁️ Sincronizar':'☁️ Conectar Git';
+    }
+  },
+  handleClick:function(){
+    if(!this.hasToken()){
+      const token=prompt('Para sincronizar os gastos entre seu iPhone e o computador, cole seu Token do GitHub:');
+      if(token && token.trim()){
+        this.setToken(token.trim());
+        this.pull(false);
+      }
+    }else{
+      const opt=confirm('Sincronizar agora com o GitHub?\n\n(Dica: Para desconectar o token, clique em Cancelar)');
+      if(opt){
+        this.pull(false);
+      }else{
+        if(confirm('Deseja desconectar o token do GitHub deste aparelho?')){
+          this.setToken('');
+          this.updateStatus('☁️ Conectar Git','idle');
+          alert('Token desconectado.');
+        }
+      }
+    }
+  }
+};
+
 const $=s=>document.querySelector(s);
 const el={
   app:$('#appName'),privacyToggleBtn:$('#privacyToggleBtn'),saveCodeBtn:$('#saveCodeBtn'),saveAllBtn:$('#saveAllBtn'),openShareLinkBtn:$('#openShareLinkBtn'),saveStatus:$('#saveStatus'),saveStamp:$('#saveStamp'),saveChannels:$('#saveChannels'),codeBackupStatus:$('#codeBackupStatus'),logoutBtn:$('#logoutBtn'),homePage:$('#homePage'),routinePage:$('#routinePage'),creditPage:$('#creditPage'),debtsPage:$('#debtsPage'),goalsPage:$('#goalsPage'),statementPage:$('#statementPage'),navBtns:document.querySelectorAll('[data-page]'),
@@ -563,6 +692,9 @@ async function boot(){
   if(!el.hDate.value) el.hDate.value=today();
   syncPageFromHash();
   renderAll();
+  if(GIST_SYNC.hasToken()){
+    try{ await GIST_SYNC.pull(true); }catch(e){}
+  }
   await hydrateFromServer();
   await hydrateShareInfo();
   await hydrateDesktopCodeBackupStatus();
@@ -582,7 +714,9 @@ function bind(){
     el.privacyToggleBtn.addEventListener('click',togglePrivacyMode);
   }
   if(el.saveCodeBtn){
-    el.saveCodeBtn.addEventListener('click',triggerDesktopCodeBackup);
+    el.saveCodeBtn.addEventListener('click',function(){
+      GIST_SYNC.handleClick();
+    });
   }
   if(el.saveAllBtn){
     el.saveAllBtn.addEventListener('click',async function(){
@@ -2948,19 +3082,23 @@ function applyDesktopCodeBackupStatus(info){
   renderDesktopCodeBackupStatus();
 }
 function renderDesktopCodeBackupStatus(){
+  if(GIST_SYNC.hasToken()){
+    GIST_SYNC.updateStatus(GIST_SYNC.statusText || '☁️ Git Conectado', 'ok');
+    return;
+  }
   if(el.codeBackupStatus){
-    el.codeBackupStatus.textContent=desktopBackupStatusText();
-    el.codeBackupStatus.dataset.tone=desktopBackupTone();
-    el.codeBackupStatus.title=desktopBackupDetailText();
+    el.codeBackupStatus.textContent='☁️ Conecte o Git para espelhar no PC';
+    el.codeBackupStatus.dataset.tone='idle';
+    el.codeBackupStatus.title='Clique em Conectar Git para vincular com o PC';
   }
   if(el.saveCodeBtn){
-    const busy=codeBackupSync.launching||codeBackupSync.status==='running';
-    el.saveCodeBtn.disabled=!DESKTOP_BACKUP_SUPPORTED||busy;
-    el.saveCodeBtn.style.opacity=!DESKTOP_BACKUP_SUPPORTED?'.55':'1';
-    el.saveCodeBtn.textContent=busy?'Salvando...':'Backup GitHub';
-    el.saveCodeBtn.title=desktopBackupDetailText();
+    el.saveCodeBtn.disabled=false;
+    el.saveCodeBtn.style.opacity='1';
+    el.saveCodeBtn.textContent='☁️ Conectar Git';
+    el.saveCodeBtn.title='Vincular sincronização com o GitHub';
   }
 }
+
 function stopDesktopCodeBackupPolling(){
   if(codeBackupSync.poller){
     clearInterval(codeBackupSync.poller);
@@ -3270,6 +3408,7 @@ function load(){
 }
 function save(immediate){
   writeStoredState(JSON.stringify(st));
+  if(typeof GIST_SYNC!=='undefined') GIST_SYNC.schedulePush();
   if(immediate) pushServerState({keepalive:true});
   else scheduleServerPush();
 }
@@ -3332,7 +3471,10 @@ window.addEventListener('hashchange',function(){
 window.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='hidden') flushStateOnly();
   startServerPolling();
-  if(document.visibilityState==='visible') pullServerState();
+  if(document.visibilityState==='visible'){
+    pullServerState();
+    if(typeof GIST_SYNC!=='undefined' && GIST_SYNC.hasToken()) GIST_SYNC.pull(true);
+  }
 });
 window.addEventListener('pagehide',function(){flushServerState('close');});
 window.addEventListener('beforeunload',function(){flushServerState('close');});

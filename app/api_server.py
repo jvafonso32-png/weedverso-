@@ -583,6 +583,11 @@ class WeedversoHandler(BaseHTTPRequestHandler):
             return
 
         state = write_state(normalize_state(payload))
+        try:
+            import sync_github_gist
+            threading.Thread(target=sync_github_gist.push_to_gist, daemon=True).start()
+        except Exception:
+            pass
         self._send_json(state)
 
     def log_message(self, format_text, *args):
@@ -599,6 +604,11 @@ def create_server():
 
 
 def run_server():
+    try:
+        import sync_github_gist
+        sync_github_gist.pull_from_gist()
+    except Exception:
+        pass
     server = create_server()
     print(f"Weedverso API ativa em http://{HOST}:{PORT}")
     server.serve_forever()
