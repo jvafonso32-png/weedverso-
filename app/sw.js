@@ -1,4 +1,4 @@
-const CACHE_NAME = 'weedverso-pwa-v2';
+const CACHE_NAME = 'weedverso-pwa-v3';
 const ASSETS_TO_CACHE = [
   './',
   'index.html',
