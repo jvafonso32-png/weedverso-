@@ -3479,6 +3479,24 @@ window.addEventListener('visibilitychange',function(){
 window.addEventListener('pagehide',function(){flushServerState('close');});
 window.addEventListener('beforeunload',function(){flushServerState('close');});
 window.addEventListener('focus',pullServerState);
+window.addEventListener('online',function(){
+  if(typeof GIST_SYNC!=='undefined' && GIST_SYNC.hasToken()){
+    GIST_SYNC.updateStatus('🌐 Reconectado! Sincronizando...','running');
+    GIST_SYNC.push();
+    GIST_SYNC.pull(true);
+  }
+});
+window.addEventListener('offline',function(){
+  if(typeof GIST_SYNC!=='undefined'){
+    GIST_SYNC.updateStatus('📴 Modo Offline (dados salvos no aparelho)','idle');
+  }
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
 </script>
+
 </body>
 </html>
