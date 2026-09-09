@@ -198,6 +198,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           </div>
         </div>
         <div class="topActions">
+          <button id="appRefreshBtn" class="iconBtn" type="button" title="Recarregar versão mais recente do aplicativo">🔄</button>
           <button id="saveCodeBtn" class="ghost" type="button" title="Sincronização com GitHub">☁️ Nuvem Git</button>
           <button id="privacyToggleBtn" class="iconBtn" type="button" title="Ocultar resultados">👁</button>
           <button id="logoutBtn" class="ghost" type="button" title="Sair do sistema">Sair</button>
@@ -966,7 +967,7 @@ const GIST_SYNC={
 
 const $=s=>document.querySelector(s);
 const el={
-  app:$('#appName'),privacyToggleBtn:$('#privacyToggleBtn'),saveCodeBtn:$('#saveCodeBtn'),saveAllBtn:$('#saveAllBtn'),openShareLinkBtn:$('#openShareLinkBtn'),saveStatus:$('#saveStatus'),saveStamp:$('#saveStamp'),saveChannels:$('#saveChannels'),codeBackupStatus:$('#codeBackupStatus'),logoutBtn:$('#logoutBtn'),homePage:$('#homePage'),routinePage:$('#routinePage'),creditPage:$('#creditPage'),debtsPage:$('#debtsPage'),goalsPage:$('#goalsPage'),statementPage:$('#statementPage'),navBtns:document.querySelectorAll('[data-page]'),
+  app:$('#appName'),appRefreshBtn:$('#appRefreshBtn'),privacyToggleBtn:$('#privacyToggleBtn'),saveCodeBtn:$('#saveCodeBtn'),saveAllBtn:$('#saveAllBtn'),openShareLinkBtn:$('#openShareLinkBtn'),saveStatus:$('#saveStatus'),saveStamp:$('#saveStamp'),saveChannels:$('#saveChannels'),codeBackupStatus:$('#codeBackupStatus'),logoutBtn:$('#logoutBtn'),homePage:$('#homePage'),routinePage:$('#routinePage'),creditPage:$('#creditPage'),debtsPage:$('#debtsPage'),goalsPage:$('#goalsPage'),statementPage:$('#statementPage'),navBtns:document.querySelectorAll('[data-page]'),
   focusPill:$('#focusPill'),heroTitle:$('#heroTitle'),heroDesc:$('#heroDesc'),heroRemaining:$('#heroRemaining'),heroRisk:$('#heroRisk'),heroDebt:$('#heroDebt'),quickActions:$('#quickActions'),
   financeChartFilters:$('#financeChartFilters'),accountFlowFilters:$('#accountFlowFilters'),accountFlowPeriodLabel:$('#accountFlowPeriodLabel'),
   hForm:$('#habitForm'),hName:$('#hName'),hGoal:$('#hGoal'),hDate:$('#hDate'),focusHabitSelect:$('#focusHabitSelect'),focusMinutesInput:$('#focusMinutesInput'),focusStartBtn:$('#focusStartBtn'),focusPauseBtn:$('#focusPauseBtn'),focusResetBtn:$('#focusResetBtn'),focusClock:$('#focusClock'),focusStatus:$('#focusStatus'),hList:$('#habitList'),mot:$('#motivation'),routineDateInfo:$('#routineDateInfo'),routineLog:$('#routineLog'),routineChart:$('#routineChart'),
@@ -1143,6 +1144,24 @@ function bind(){
     (function(btn){
       btn.addEventListener('click',function(){showPage(btn.getAttribute('data-page'));});
     })(el.navBtns[i]);
+  }
+  if(el.appRefreshBtn){
+    el.appRefreshBtn.addEventListener('click',async function(){
+      showToast('🔄 Buscando versão mais recente...','ok');
+      try{
+        if('caches' in window){
+          const keys=await caches.keys();
+          await Promise.all(keys.map(k=>caches.delete(k)));
+        }
+        if('serviceWorker' in navigator){
+          const regs=await navigator.serviceWorker.getRegistrations();
+          for(let r of regs){ await r.unregister(); }
+        }
+      }catch(e){}
+      setTimeout(function(){
+        window.location.href=window.location.href.split('#')[0].split('?')[0]+'?v='+Date.now();
+      },300);
+    });
   }
   if(el.logoutBtn){
     el.logoutBtn.addEventListener('click',logout);
@@ -4365,8 +4384,20 @@ window.addEventListener('offline',function(){
   }
 });
 if('serviceWorker' in navigator){
+  var swRefreshing=false;
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(!swRefreshing){
+      swRefreshing=true;
+      window.location.reload();
+    }
+  });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      reg.update();
+      if(reg.waiting){
+        reg.waiting.postMessage({type:'SKIP_WAITING'});
+      }
+    }).catch(function(){});
   });
 }
 </script>
