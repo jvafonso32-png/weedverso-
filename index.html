@@ -789,6 +789,7 @@ try{
 }catch(e){}
 
 const KEY='rotina_prime_v2', PRIVACY_KEY=`${KEY}:privacy`, XP_H=40;
+const MONTH_SHORT_LABELS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const IS_REMOTE_APP=Boolean(window.location && /^https?:$/i.test(window.location.protocol));
 const DESKTOP_BACKUP_SUPPORTED=!IS_REMOTE_APP||/Windows/i.test(String(navigator.userAgent||''));
 const API_BASE=(function(){
@@ -4341,7 +4342,6 @@ function money(v){return ui.privacy?'R$ ••••':new Intl.NumberFormat('pt-
 function shortDate(i){return new Date(i).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});} 
 function fullDate(i){return new Date(i).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});}
 function dateBr(v){if(!v)return '--';const d=/^\d{4}-\d{2}-\d{2}$/.test(v)?parse(v):new Date(v);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});}
-const MONTH_SHORT_LABELS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 function monthKeyFromValue(v,fallback){
   const raw=v||fallback||'';
   if(!raw) return '';
@@ -4355,7 +4355,8 @@ function monthLabelFromKey(key){
   if(!/^\d{4}-\d{2}$/.test(key||'')) return 'Sem mês';
   const [year,month]=key.split('-').map(Number);
   if(!year||!month||month<1||month>12) return 'Sem mês';
-  return `${MONTH_SHORT_LABELS[month-1]}/${year}`;
+  const labels=(typeof MONTH_SHORT_LABELS!=='undefined'&&Array.isArray(MONTH_SHORT_LABELS))?MONTH_SHORT_LABELS:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return `${labels[month-1]}/${year}`;
 }
 function currentMonthKey(){
   const d=new Date();
