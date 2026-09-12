@@ -1,5 +1,5 @@
-const CACHE_NAME = 'weedverso-pwa-v6';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'weedverso-v7';
+const PRECACHE_ASSETS = [
   './',
   'manifest.json',
   'icon.png',
@@ -7,6 +7,20 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.allSettled(
+        PRECACHE_ASSETS.map(async (url) => {
+          try {
+            const res = await fetch(url, { cache: 'reload' });
+            if (res.ok) await cache.put(url, res);
+          } catch (e) {
+            try { await cache.add(url); } catch (err) {}
+          }
+        })
+      );
+    })
+  );
   self.skipWaiting();
 });
 
@@ -20,13 +34,7 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => self.clients.claim()).then(() => {
-      return self.clients.matchAll({ type: 'window' }).then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({ type: 'NEW_VERSION_ACTIVE', version: CACHE_NAME });
-        });
-      });
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
@@ -37,23 +45,15 @@ self.addEventListener('message', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  // Não intercepta requisições da API do GitHub ou da API local
-  if (url.hostname.includes('github.com') || url.pathname.startsWith('/api/')) {
+  // Ignora requisicoes de API ou dominios externos
+  if (event.request.url.includes('/api/') || event.request.url.includes('github.com') || event.request.method !== 'GET') {
     return;
   }
 
-  // Se for navegação (abertura do app HTML): sempre busca a versão mais recente na rede
+  // Navegacao: Rede primeiro, com fallback seguro para cache
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request.url, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
-        }
-      })
+      fetch(event.request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
@@ -61,14 +61,16 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => {
-          return caches.match(event.request).then((cached) => cached || caches.match('index.html') || caches.match('./'));
+        .catch(async () => {
+          const cached = (await caches.match('./')) || (await caches.match('index.html'));
+          if (cached) return cached;
+          return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
         })
     );
     return;
   }
 
-  // Para recursos estáticos (ícones, manifest)
+  // Recursos estaticos (imagens, icones, manifest): Cache primeiro com atualizacao em segundo plano
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {

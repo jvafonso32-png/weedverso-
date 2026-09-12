@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>weedverso</title>
 <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Weedverso" />
 <meta name="theme-color" content="#060a08" />
@@ -200,7 +201,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v6.0</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v7.0</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
           </div>
@@ -787,43 +788,6 @@ try{
   }
 }catch(e){}
 
-var CURRENT_APP_VERSION='v6.0';
-function autoCheckRemoteUpdate(){
-  if(!navigator.onLine) return;
-  try{
-    var chkUrl=(window.location.pathname||'/')+'?_chk='+Date.now();
-    fetch(chkUrl,{
-      cache:'no-store',
-      headers:{'Cache-Control':'no-cache, no-store, must-revalidate','Pragma':'no-cache'}
-    }).then(function(r){
-      if(!r||!r.ok) return null;
-      return r.text();
-    }).then(function(html){
-      if(!html) return;
-      var m=html.match(/class="statusPill"[^>]*>v([\d\.]+)<\/span>/);
-      if(m&&m[1]){
-        var remoteVersion='v'+m[1];
-        if(remoteVersion!==CURRENT_APP_VERSION){
-          console.log('[weedverso] Nova versão no servidor:',remoteVersion,'local:',CURRENT_APP_VERSION);
-          if('caches' in window){
-            caches.keys().then(function(keys){
-              return Promise.all(keys.map(function(k){ return caches.delete(k); }));
-            });
-          }
-          if('serviceWorker' in navigator){
-            navigator.serviceWorker.getRegistrations().then(function(regs){
-              for(var i=0;i<regs.length;i++){ regs[i].unregister(); }
-            });
-          }
-          setTimeout(function(){
-            window.location.reload();
-          },250);
-        }
-      }
-    }).catch(function(){});
-  }catch(err){}
-}
-
 const KEY='rotina_prime_v2', PRIVACY_KEY=`${KEY}:privacy`, XP_H=40;
 const IS_REMOTE_APP=Boolean(window.location && /^https?:$/i.test(window.location.protocol));
 const DESKTOP_BACKUP_SUPPORTED=!IS_REMOTE_APP||/Windows/i.test(String(navigator.userAgent||''));
@@ -1174,7 +1138,7 @@ async function ensureSessionAccess(){
 
 boot();
 async function boot(){
-  if(!(await ensureSessionAccess())) return;
+  if(API_BASE && !(await ensureSessionAccess())) return;
   bind();
   renderPrivacyToggle();
   if(!el.hDate.value) el.hDate.value=today();
@@ -1183,11 +1147,13 @@ async function boot(){
   if(GIST_SYNC.hasToken()){
     try{ await GIST_SYNC.pull(true); }catch(e){}
   }
-  await hydrateFromServer();
-  await hydrateShareInfo();
-  await hydrateDesktopCodeBackupStatus();
-  serverSync.initialized=true;
-  startServerPolling();
+  if(API_BASE){
+    await hydrateFromServer();
+    await hydrateShareInfo();
+    await hydrateDesktopCodeBackupStatus();
+    serverSync.initialized=true;
+    startServerPolling();
+  }
 }
 function bind(){
   for(var i=0;i<el.navBtns.length;i++){
@@ -3902,6 +3868,7 @@ function normalizeLoadedState(p){
   });
 }
 async function requestApi(path, options){
+  if(!API_BASE) throw new Error('no_api_base');
   const req=Object.assign({},options||{});
   req.headers=Object.assign({'Content-Type':'application/json'},(options&&options.headers)||{});
   req.credentials='same-origin';
@@ -4214,12 +4181,13 @@ async function hydrateFromServer(){
   }
 }
 function startServerPolling(){
+  if(!API_BASE) return;
   if(serverSync.poller) clearInterval(serverSync.poller);
   const delay=document.visibilityState==='visible'?SERVER_POLL_ACTIVE_MS:SERVER_POLL_BACKGROUND_MS;
   serverSync.poller=setInterval(pullServerState,delay);
 }
 async function pullServerState(){
-  if(serverSync.pushing) return;
+  if(!API_BASE || serverSync.pushing) return;
   try{
     const remote=await requestApi('/api/state');
     const next=JSON.stringify(remote||{});
@@ -4426,16 +4394,16 @@ window.addEventListener('hashchange',function(){
   renderPage();
 });
 window.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='hidden') flushStateOnly();
-  startServerPolling();
+  if(API_BASE && document.visibilityState==='hidden') flushStateOnly();
+  if(API_BASE) startServerPolling();
   if(document.visibilityState==='visible'){
-    pullServerState();
+    if(API_BASE) pullServerState();
     if(typeof GIST_SYNC!=='undefined' && GIST_SYNC.hasToken()) GIST_SYNC.pull(true);
   }
 });
-window.addEventListener('pagehide',function(){flushServerState('close');});
-window.addEventListener('beforeunload',function(){flushServerState('close');});
-window.addEventListener('focus',pullServerState);
+window.addEventListener('pagehide',function(){ if(API_BASE) flushServerState('close'); });
+window.addEventListener('beforeunload',function(){ if(API_BASE) flushServerState('close'); });
+window.addEventListener('focus',function(){ if(API_BASE) pullServerState(); });
 window.addEventListener('online',function(){
   if(typeof GIST_SYNC!=='undefined' && GIST_SYNC.hasToken()){
     GIST_SYNC.updateStatus('🌐 Reconectado! Sincronizando...','running');
@@ -4451,17 +4419,10 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing){
+    if(!swRefreshing && !sessionStorage.getItem('sw_refreshed_v7')){
       swRefreshing=true;
+      sessionStorage.setItem('sw_refreshed_v7','1');
       window.location.reload();
-    }
-  });
-  navigator.serviceWorker.addEventListener('message',function(e){
-    if(e.data && e.data.type==='NEW_VERSION_ACTIVE'){
-      if(!swRefreshing){
-        swRefreshing=true;
-        window.location.reload();
-      }
     }
   });
   window.addEventListener('load',function(){
@@ -4471,18 +4432,13 @@ if('serviceWorker' in navigator){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
       }
     }).catch(function(){});
-    setTimeout(autoCheckRemoteUpdate, 2000);
   });
   document.addEventListener('visibilitychange',function(){
     if(document.visibilityState==='visible'){
-      autoCheckRemoteUpdate();
       navigator.serviceWorker.getRegistration().then(function(reg){
         if(reg) reg.update();
-      });
+      }).catch(function(){});
     }
-  });
-  window.addEventListener('online',function(){
-    autoCheckRemoteUpdate();
   });
 }
 </script>
