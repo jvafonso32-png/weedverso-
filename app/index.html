@@ -188,10 +188,202 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .feedAmount{font-family:var(--font-display);font-size:1.05rem;font-weight:700;text-align:right;white-space:nowrap}
 
   @media(max-width:720px){body{padding:14px 14px calc(170px + env(safe-area-inset-bottom))}.creditAnalytics{grid-template-columns:1fr}.analyticsToolbar{align-items:stretch}.creditAnalyticsInfo{gap:5px}.creditMonthMeta{justify-content:flex-start}.chartMonthField{min-width:0;width:100%}.chartShell{max-width:340px;margin:auto;padding:12px}.ringCanvas{max-width:250px}.chartCenterNote{padding:24px}.chartCenterNote strong{font-size:1.18rem}.chartCenterNote span{font-size:.68rem;letter-spacing:.06em}.legendItem{grid-template-columns:auto minmax(0,1fr);padding:10px 11px}.legendValue{grid-column:2;justify-self:start}.statementRow{grid-template-columns:1fr;gap:8px}.statementAside{grid-template-columns:1fr auto;justify-items:start;align-items:center;width:100%}.statementMeta{white-space:normal}.actionLayout{grid-template-columns:1fr}.actionStack.creditActions{grid-template-columns:repeat(2,minmax(0,1fr));align-self:auto}.actionStack.creditActions button{width:100%;min-height:46px;font-size:.8rem;padding:10px 9px}.actionStack.creditActions .ghost{grid-column:1/-1}.actionStack.reserveActions{grid-template-columns:repeat(2,minmax(0,1fr));align-self:auto}.actionStack.reserveActions button{width:100%;min-height:44px;font-size:.8rem;padding:10px 9px}.cckpi{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.debtSummaryGrid{grid-template-columns:1fr}.debtSectionHead,.debtMonthHead{align-items:start}.debtMonthMeta{justify-content:flex-start}.archiveSummary{flex-direction:column;align-items:flex-start}.archiveBody{padding:0 8px 8px}.debtCard .debtorHead{grid-template-columns:1fr}.debtCard .debtorTools{justify-content:flex-start}.debtorCardBody{grid-template-columns:1fr;gap:12px}.debtStats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.debtStat{padding:9px 8px}.debtStat:last-child{grid-column:1/-1}.debtStat strong{font-size:.95rem}.debtPanel .two{grid-template-columns:1fr}.actionStack.debtorActions{grid-template-columns:repeat(2,minmax(0,1fr));align-self:auto}.actionStack.debtorActions button{width:100%;min-height:46px;font-size:.8rem;padding:10px 9px}.actionStack.debtorActions .btn{grid-column:1/-1}.top{gap:9px}.topMain{gap:7px}.brand h1{font-size:1.26rem}.brandSub{font-size:.61rem}.saveMeta strong{font-size:.9rem}.topActions{display:flex;gap:5px;align-items:center}.topActions .btn,.topActions .ghost{min-height:34px;padding:6px 9px;font-size:.72rem}.topActions .iconBtn{width:34px;height:34px;min-width:34px}.statusRow{gap:5px}.dock{width:calc(100vw - 12px);bottom:max(8px,env(safe-area-inset-bottom))}}
-@media(min-width:920px){body{padding:22px 22px 144px}.top{grid-template-columns:minmax(0,1fr)}.saveStamp{display:block}.quickRow{grid-template-columns:repeat(4,minmax(0,1fr))}.debtorList{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+/* Feedback Tátil & Compressão Mecânica */
+.btn:active, .ghost:active, .iconBtn:active, .fcard:active,
+.sheetTab:active, .sheetPill:active, .navBtn:active, .fabQuickAdd:active,
+.quick:active, .filterChip:active, .tagChip:active, .item:active, .debtor:active, .trophyPill:active {
+  transform: scale(0.96) !important;
+  transition: transform 0.08s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Floating Action Button (FAB) */
+.fabQuickAdd{
+  position: fixed;
+  right: 20px;
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 30% 30%, #5cffaa, #128a4c);
+  color: #06190e;
+  font-size: 1.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 8px 24px rgba(0,0,0,.45), 0 0 20px rgba(57,255,143,.4);
+  cursor: pointer;
+  z-index: 99;
+  transition: transform 0.12s cubic-bezier(0.16,1,0.3,1), box-shadow 0.15s ease;
+}
+
+/* Live Calc Preview Badge */
+.calcPreview{
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  font-weight: 700;
+  color: #39ff8f;
+  background: rgba(57,255,143,.12);
+  border: 1px solid rgba(57,255,143,.35);
+  border-radius: 8px;
+  padding: 3px 8px;
+  margin-top: 4px;
+}
+
+/* Pull-to-refresh Indicator */
+.pullIndicator{
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(15, 24, 19, 0.96);
+  border: 1px solid rgba(57, 255, 143, 0.4);
+  color: #c6f6d8;
+  font: 600 .78rem var(--font-ui);
+  box-shadow: 0 10px 28px rgba(0,0,0,.5);
+  z-index: 99998;
+  pointer-events: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  opacity: 0;
+}
+.pullIndicator.pulling{
+  opacity: 1;
+}
+.pullIndicator.refreshing .pullIcon{
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin{
+  to{ transform: rotate(360deg); }
+}
+
+/* Pomodoro Zen Overlay */
+.zenOverlay{
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+.zenOverlay.open{
+  opacity: 1;
+  pointer-events: auto;
+}
+.zenClockWrap{
+  position: relative;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(57,255,143,.25);
+  box-shadow: 0 0 50px rgba(57,255,143,.15), inset 0 0 30px rgba(57,255,143,.06);
+  animation: zenPulse 3s ease-in-out infinite;
+  margin-bottom: 24px;
+}
+@keyframes zenPulse{
+  0%, 100%{ box-shadow: 0 0 30px rgba(57,255,143,.1); }
+  50%{ box-shadow: 0 0 70px rgba(57,255,143,.28); }
+}
+.zenClock{
+  font-family: var(--font-display);
+  font-size: 3.8rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2px;
+}
+.zenHabitName{
+  font-family: var(--font-ui);
+  font-size: 1.2rem;
+  color: var(--p);
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.zenQuote{
+  font-size: .84rem;
+  color: #7b8e84;
+  text-align: center;
+  max-width: 320px;
+  font-style: italic;
+  margin-bottom: 30px;
+  line-height: 1.4;
+}
+.zenActions{
+  display: flex;
+  gap: 12px;
+}
+
+/* Discipline Badge & Trophy Pills */
+.disciplineBadge{
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255,207,95,.16), rgba(255,207,95,.06));
+  border: 1px solid rgba(255,207,95,.35);
+  color: #ffcf5f;
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.badgesRow{
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.trophyPill{
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 9px;
+  border: 1px solid rgba(151,170,159,.2);
+  background: rgba(255,255,255,.03);
+  font-size: .7rem;
+  color: #9fb3a8;
+  transition: all .2s ease;
+}
+.trophyPill.unlocked{
+  border-color: rgba(57,255,143,.45);
+  background: rgba(57,255,143,.12);
+  color: #d6fbe5;
+  font-weight: 600;
+}
+.trophyPill.locked{
+  opacity: .4;
+  filter: grayscale(1);
+}
+@media(max-width:720px){
+  .fabQuickAdd{
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    font-size: 1.6rem;
+  }
+}
 </style>
 </head>
 <body data-theme="dark">
+<canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;display:none;"></canvas>
+<div id="pullIndicator" class="pullIndicator" style="display:none;">↓ Puxe para sincronizar</div>
 <main class="app">
   <section class="card top">
     <div class="topMain">
@@ -199,9 +391,10 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
         <div class="brand">
           <span class="logo">W</span>
           <div class="brandText">
-            <div style="display:flex;align-items:center;gap:6px;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v8.0</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.0</span>
+              <span id="userLevelBadge" class="disciplineBadge" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
           </div>
@@ -245,6 +438,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       <button class="quick" type="button" data-quick="card">+ Gasto cartão</button>
       <button class="quick" type="button" data-quick="debtor">+ Devedor</button>
     </div>
+    <div id="achievementsRow" class="badgesRow" style="margin-top:10px;"></div>
   </section>
 
   <section class="grid">
@@ -338,6 +532,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
             <button id="focusStartBtn" class="btn" type="button">Iniciar</button>
             <button id="focusPauseBtn" class="ghost" type="button">Pausar</button>
             <button id="focusResetBtn" class="danger" type="button">Resetar</button>
+            <button id="openZenBtn" class="ghost" type="button" title="Modo Zen Blackout em tela cheia">🔲 Modo Zen</button>
           </div>
         </div>
       </article>
@@ -743,6 +938,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
         <span class="sheetCurrency">R$</span>
         <input id="quickAddValue" type="text" inputmode="decimal" placeholder="0,00" class="sheetAmountInput" autocomplete="off" required />
       </div>
+      <div id="quickCalcPreview" class="calcPreview" style="display:none;"></div>
 
       <div id="quickAddAccountField" class="sheetField">
         <label class="mini">Conta de movimentação</label>
@@ -778,6 +974,26 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
   <button type="button" class="navBtn" data-page="goals" onclick="showPage('goals')"><span class="navIcon">🎯</span><span>Objetivos</span></button>
   <button type="button" class="navBtn" data-page="statement" onclick="showPage('statement')"><span class="navIcon">▤</span><span>Extrato</span></button>
 </nav>
+
+<button type="button" class="fabQuickAdd" id="fabQuickAddBtn" title="Lançamento Rápido">+</button>
+
+<!-- Modal Zen Blackout para Foco / Pomodoro -->
+<div id="zenFocusOverlay" class="zenOverlay" aria-hidden="true" style="display:none;">
+  <button type="button" id="closeZenBtn" class="zenCloseBtn" title="Sair do Modo Zen">✕ Sair</button>
+  <div class="zenRingContainer">
+    <div class="zenRingTrack"></div>
+    <div class="zenRingProgress" id="zenRingProgress"></div>
+    <div class="zenContent">
+      <div class="zenHabitTitle" id="zenHabitTitle">Foco Total</div>
+      <div class="zenTimerDisplay" id="zenTimerDisplay">25:00</div>
+      <div class="zenStatusLabel" id="zenStatusLabel">Pronto para focar</div>
+    </div>
+  </div>
+  <div class="zenActions">
+    <button type="button" id="zenPauseBtn" class="btn" style="background:rgba(255,255,255,.15);min-width:110px;">Iniciar</button>
+    <button type="button" id="zenFinishBtn" class="btn" style="background:var(--ok);color:#021509;min-width:110px;">Concluir</button>
+  </div>
+</div>
 
 <script>
 // Higienização de URL: mantém a URL sempre limpa e idêntica
@@ -861,6 +1077,258 @@ function showToast(message, type='ok', duration=3200){
     t.classList.add('toast-out');
     setTimeout(()=>t.remove(),260);
   },duration);
+}
+
+function evaluateMathExpression(str){
+  if(!str) return null;
+  const clean=String(str).trim().replace(/,/g,'.');
+  if(!/^[\d\s\+\-\*\/\.\(\)]+$/.test(clean)) return null;
+  try{
+    const tokens=clean.match(/(\d+(?:\.\d+)?|[\+\-\*\/\(\)])/g);
+    if(!tokens) return null;
+    let pos=0;
+    function parsePrimary(){
+      const t=tokens[pos++];
+      if(t==='('){
+        const val=parseAddSub();
+        if(tokens[pos++]!==')') throw new Error();
+        return val;
+      }
+      if(t==='-') return -parsePrimary();
+      if(t==='+') return parsePrimary();
+      const num=parseFloat(t);
+      if(isNaN(num)) throw new Error();
+      return num;
+    }
+    function parseMulDiv(){
+      let val=parsePrimary();
+      while(pos<tokens.length && (tokens[pos]==='*' || tokens[pos]==='/')){
+        const op=tokens[pos++];
+        const right=parsePrimary();
+        if(op==='*') val *= right;
+        else{
+          if(right===0) throw new Error();
+          val /= right;
+        }
+      }
+      return val;
+    }
+    function parseAddSub(){
+      let val=parseMulDiv();
+      while(pos<tokens.length && (tokens[pos]==='+' || tokens[pos]==='-')){
+        const op=tokens[pos++];
+        const right=parseMulDiv();
+        if(op==='+') val += right;
+        else val -= right;
+      }
+      return val;
+    }
+    const result=parseAddSub();
+    if(pos<tokens.length) return null;
+    return Number.isFinite(result)?result:null;
+  }catch(e){
+    return null;
+  }
+}
+
+function triggerConfetti(){
+  const canvas=document.getElementById('confettiCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  if(!ctx) return;
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  canvas.style.display='block';
+  const colors=['#39ff8f','#00f5ff','#ff3366','#ffd056','#a78bfa','#ffffff'];
+  const particles=[];
+  for(let i=0;i<75;i++){
+    particles.push({
+      x:canvas.width*0.5+(Math.random()-0.5)*120,
+      y:canvas.height*0.35+(Math.random()-0.5)*100,
+      vx:(Math.random()-0.5)*14,
+      vy:(Math.random()-1.2)*15,
+      size:Math.random()*8+4,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      alpha:1,
+      decay:Math.random()*0.015+0.012,
+      rotation:Math.random()*360,
+      rotSpeed:(Math.random()-0.5)*12
+    });
+  }
+  let animId=null;
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive=false;
+    for(let p of particles){
+      if(p.alpha>0){
+        alive=true;
+        p.x+=p.vx;
+        p.y+=p.vy;
+        p.vy+=0.38;
+        p.vx*=0.98;
+        p.rotation+=p.rotSpeed;
+        p.alpha=Math.max(0,p.alpha-p.decay);
+        ctx.save();
+        ctx.globalAlpha=p.alpha;
+        ctx.fillStyle=p.color;
+        ctx.translate(p.x,p.y);
+        ctx.rotate((p.rotation*Math.PI)/180);
+        ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+        ctx.restore();
+      }
+    }
+    if(alive){
+      animId=requestAnimationFrame(animate);
+    }else{
+      cancelAnimationFrame(animId);
+      canvas.style.display='none';
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+  }
+  animate();
+}
+
+function getUserLevelInfo(){
+  const xp=Number(st.xp)||0;
+  const streak=Number(st.streak)||0;
+  if(xp>=700 || streak>=14){
+    return {level:4, name:'Mestre weedverso', icon:'👑'};
+  }else if(xp>=300 || streak>=7){
+    return {level:3, name:'Implacável', icon:'🔥'};
+  }else if(xp>=100 || streak>=3){
+    return {level:2, name:'Focado', icon:'⚡'};
+  }
+  return {level:1, name:'Aspirante', icon:'🌱'};
+}
+
+function renderAchievements(){
+  const lvl=getUserLevelInfo();
+  const badgeEl=document.getElementById('userLevelBadge');
+  if(badgeEl){
+    badgeEl.innerHTML=`${lvl.icon} Nv. ${lvl.level} · ${safe(lvl.name)}`;
+  }
+  const achRow=document.getElementById('achievementsRow');
+  if(!achRow) return;
+  const list=[
+    {id:'first_habit', label:'Primeiro Passo', icon:'🎯', unlocked:(st.habits||[]).some(h=>h.done)},
+    {id:'streak_3', label:'Streak 3d', icon:'🔥', unlocked:(Number(st.streak)||0)>=3},
+    {id:'reserve_ready', label:'Reserva Ativa', icon:'🛡️', unlocked:(st.credit && Number(st.credit.reserved)>0)},
+    {id:'perfect_day', label:'Dia 100%', icon:'👑', unlocked:(st.habits||[]).length>0 && (st.habits||[]).every(h=>h.done)}
+  ];
+  achRow.innerHTML=list.map(a=>`
+    <div class="trophyPill ${a.unlocked?'unlocked':'locked'}" title="${a.unlocked?'Conquista desbloqueada!':'Bloqueado: cumpra o objetivo para liberar'}">
+      <span>${a.icon}</span>
+      <span>${safe(a.label)}</span>
+      <span>${a.unlocked?'✓':'🔒'}</span>
+    </div>
+  `).join('');
+}
+
+function debtorDueTag(d){
+  if(d.paid || !d.payDate) return '';
+  const todayStr=new Date().toISOString().slice(0,10);
+  const d1=new Date(todayStr), d2=new Date(d.payDate);
+  const diff=Math.round((d2 - d1)/(1000*60*60*24));
+  if(diff < 0) return `<span class="tag danger" style="background:rgba(255,95,112,.18);color:#ff7d8d;border-color:rgba(255,95,112,.4);">🚨 Atrasado ${Math.abs(diff)}d</span>`;
+  if(diff === 0) return `<span class="tag warn" style="background:rgba(255,184,0,.18);color:#ffd056;border-color:rgba(255,184,0,.4);">🔔 Vence hoje!</span>`;
+  if(diff <= 3) return `<span class="tag warn" style="background:rgba(255,184,0,.15);color:#ffd056;border-color:rgba(255,184,0,.35);">⚠️ Vence em ${diff}d</span>`;
+  return `<span class="tag month" style="color:#9fb3a8;">⏳ Vence em ${diff}d</span>`;
+}
+
+function openZenMode(){
+  const overlay=document.getElementById('zenFocusOverlay');
+  if(!overlay) return;
+  overlay.style.display='flex';
+  overlay.setAttribute('aria-hidden','false');
+  updateZenDisplay();
+  if(!st.focusSession.running){
+    startFocusSession();
+  }
+}
+function closeZenMode(){
+  const overlay=document.getElementById('zenFocusOverlay');
+  if(!overlay) return;
+  overlay.style.display='none';
+  overlay.setAttribute('aria-hidden','true');
+}
+function updateZenDisplay(){
+  const overlay=document.getElementById('zenFocusOverlay');
+  if(!overlay || overlay.style.display==='none') return;
+  const sec=Math.max(0,parseInt(st.focusSession.secondsLeft||0,10));
+  const mm=String(Math.floor(sec/60)).padStart(2,'0');
+  const ss=String(sec%60).padStart(2,'0');
+  const clock=document.getElementById('zenTimerDisplay');
+  if(clock) clock.textContent=`${mm}:${ss}`;
+  const habit=(st.habits||[]).find(h=>h.id===st.focusSession.habitId);
+  const title=document.getElementById('zenHabitTitle');
+  if(title) title.textContent=habit?habit.name:'Foco Total';
+  const status=document.getElementById('zenStatusLabel');
+  if(status) status.textContent=st.focusSession.running?'⚡ Foco Ativo':'⏸ Pausado';
+  const pauseBtn=document.getElementById('zenPauseBtn');
+  if(pauseBtn) pauseBtn.textContent=st.focusSession.running?'Pausar':'Continuar';
+}
+
+function setupPullToRefresh(){
+  const indicator=document.getElementById('pullIndicator');
+  if(!indicator) return;
+  let startY=0;
+  let pulling=false;
+  let dist=0;
+  const threshold=70;
+  window.addEventListener('touchstart',e=>{
+    if(window.scrollY<=0 && e.touches.length===1){
+      startY=e.touches[0].clientY;
+      pulling=true;
+      dist=0;
+    }else{
+      pulling=false;
+    }
+  },{passive:true});
+  window.addEventListener('touchmove',e=>{
+    if(!pulling) return;
+    const y=e.touches[0].clientY;
+    dist=y-startY;
+    if(dist>15 && window.scrollY<=0){
+      indicator.style.display='flex';
+      const translateY=Math.min(dist*0.42, 55);
+      indicator.style.transform=`translateY(${translateY}px)`;
+      if(dist>=threshold){
+        indicator.textContent='↑ Solte para sincronizar';
+        indicator.classList.add('ready');
+      }else{
+        indicator.textContent='↓ Puxe para sincronizar';
+        indicator.classList.remove('ready');
+      }
+    }else{
+      indicator.style.display='none';
+    }
+  },{passive:true});
+  window.addEventListener('touchend',()=>{
+    if(!pulling) return;
+    pulling=false;
+    if(dist>=threshold){
+      indicator.textContent='🔄 Sincronizando...';
+      indicator.style.transform='translateY(50px)';
+      const doneSync=()=>{
+        setTimeout(()=>{
+          indicator.style.display='none';
+          indicator.style.transform='';
+          showToast('✓ Sincronizado!','ok');
+        },550);
+      };
+      if(typeof GIST_SYNC!=='undefined' && GIST_SYNC.hasToken()){
+        GIST_SYNC.pull(true).finally(doneSync);
+      }else if(API_BASE){
+        pullServerState().finally(doneSync);
+      }else{
+        doneSync();
+      }
+    }else{
+      indicator.style.display='none';
+      indicator.style.transform='';
+    }
+    dist=0;
+  });
 }
 
 const GIST_SYNC={
@@ -1055,11 +1523,36 @@ const quickAddSheet={
         haptic('light');
       });
     }
+    const preview=$('#quickCalcPreview');
+    if(this.valInput){
+      this.valInput.addEventListener('input',()=>{
+        const v=(this.valInput.value||'').trim();
+        if(/[\+\-\*\/]/.test(v)){
+          const res=evaluateMathExpression(v);
+          if(res!==null && res>=0 && preview){
+            preview.style.display='block';
+            preview.textContent='= '+money(res);
+          }else if(preview){
+            preview.style.display='none';
+          }
+        }else if(preview){
+          preview.style.display='none';
+        }
+      });
+    }
+    const fab=$('#fabQuickAddBtn');
+    if(fab && !fab._bound){
+      fab._bound=true;
+      fab.addEventListener('click',()=>this.open('out'));
+    }
     if(this.form){
       this.form.addEventListener('submit',e=>{
         e.preventDefault();
-        const raw=parseFloat((this.valInput.value||'').replace(',','.'));
-        const val=Number.isFinite(raw)?Math.abs(raw):0;
+        let val=evaluateMathExpression(this.valInput.value);
+        if(val===null || !Number.isFinite(val) || val<=0){
+          const raw=parseFloat((this.valInput.value||'').replace(',','.'));
+          val=Number.isFinite(raw)?Math.abs(raw):0;
+        }
         if(val<=0){
           showToast('Informe um valor maior que zero.','warn');
           return;
@@ -1099,6 +1592,8 @@ const quickAddSheet={
   open:function(tab='out'){
     this.currentTab=tab;
     this.updateTabUI();
+    const preview=$('#quickCalcPreview');
+    if(preview) preview.style.display='none';
     if(this.overlay){
       this.overlay.classList.add('open');
       this.overlay.setAttribute('aria-hidden','false');
@@ -1112,6 +1607,8 @@ const quickAddSheet={
     },80);
   },
   close:function(){
+    const preview=$('#quickCalcPreview');
+    if(preview) preview.style.display='none';
     if(this.overlay){
       this.overlay.classList.remove('open');
       this.overlay.setAttribute('aria-hidden','true');
@@ -1156,6 +1653,7 @@ async function boot(){
   if(!el.hDate.value) el.hDate.value=today();
   syncPageFromHash();
   renderAll();
+  setupPullToRefresh();
   try{ await GIST_SYNC.pull(true); }catch(e){}
   if(API_BASE){
     await hydrateFromServer();
@@ -1285,6 +1783,30 @@ function bind(){
     st.focusSession.habitId=el.focusHabitSelect.value||'';
     save(); renderFocusSession();
   });
+
+  const openZenBtn=$('#openZenBtn');
+  if(openZenBtn) openZenBtn.addEventListener('click',openZenMode);
+  const closeZenBtn=$('#closeZenBtn');
+  if(closeZenBtn) closeZenBtn.addEventListener('click',closeZenMode);
+  const zenPauseBtn=$('#zenPauseBtn');
+  if(zenPauseBtn){
+    zenPauseBtn.addEventListener('click',()=>{
+      if(st.focusSession.running){
+        pauseFocusSession();
+      }else{
+        startFocusSession();
+      }
+      updateZenDisplay();
+    });
+  }
+  const zenFinishBtn=$('#zenFinishBtn');
+  if(zenFinishBtn){
+    zenFinishBtn.addEventListener('click',()=>{
+      completeFocusSession();
+      closeZenMode();
+      showToast('✓ Sessão concluída com sucesso!','ok');
+    });
+  }
 
   el.hForm.addEventListener('submit',e=>{
     e.preventDefault();
@@ -1777,7 +2299,7 @@ function bind(){
   });
 }
 
-function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();renderUnifiedStatement();}
+function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderAchievements();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();renderUnifiedStatement();}
 function showPage(page){
   ui.page=['home','credit','debts','goals','statement'].includes(page)?page:'home';
   renderPage();
@@ -1820,6 +2342,7 @@ function renderFocusSession(){
   const habit=st.habits.find(h=>h.id===st.focusSession.habitId);
   const name=habit?habit.name:'hábito';
   el.focusStatus.textContent=st.focusSession.running?`Sessão ativa: ${name}`:`Pronto para focar em: ${name}`;
+  updateZenDisplay();
 }
 
 function startFocusSession(){
@@ -2420,6 +2943,11 @@ function toggleHabit(habitId){
     pushRoutineLog('done',h);
     haptic('success');
     showToast('✓ Hábito cumprido! +'+XP_H+' XP','ok');
+    const allDone=st.habits.length>0 && st.habits.every(x=>x.done);
+    if(allDone){
+      triggerConfetti();
+      showToast('🎉 Parabéns! 100% da rotina diária concluída!','ok');
+    }
   } else {
     adjustSkillXp(h.skillTag||detectSkill(h.name),-25);
     h.skillTag='';
@@ -2491,7 +3019,7 @@ function refreshGame(){
   st.dailyStats=st.dailyStats||{};
   st.dailyStats[today()]={done,total,percent:p};
   pruneDailyStats(90);
-  streakByDay(total,done); motivation(p,done,total); renderSummary();
+  streakByDay(total,done); motivation(p,done,total); renderSummary(); renderAchievements();
 }
 
 // Funções de atualização de XP, nível e streak
@@ -3114,6 +3642,7 @@ function renderDebtorCard(d){
         </div>
         <div class="debtorTools">
           <span class="tag ${d.paid?'ok':'warn'}">${d.paid?'Quitado':'Em aberto'}</span>
+          ${debtorDueTag(d)}
           ${!shouldShowDebtorNow(d)&&!d.paid?'<span class="tag future">Futuro</span>':''}
           <span class="tag month">${safe(monthLabel(d.payDate,d.paidAt||d.at))}</span>
           <button type="button" class="iconBtn ${ui.debtors[d.id]?'active':''}" data-act="deb-edit" title="Editar devedor">✎</button>
@@ -4435,9 +4964,9 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && !sessionStorage.getItem('sw_refreshed_v8')){
+    if(!swRefreshing && !sessionStorage.getItem('sw_refreshed_v9')){
       swRefreshing=true;
-      sessionStorage.setItem('sw_refreshed_v8','1');
+      sessionStorage.setItem('sw_refreshed_v9','1');
       window.location.reload();
     }
   });
