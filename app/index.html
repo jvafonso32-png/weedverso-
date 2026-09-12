@@ -201,7 +201,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v7.0</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v8.0</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
           </div>
@@ -830,8 +830,8 @@ const DEF={
   dailyStats:{'2026-09-09':{done:0,total:0,percent:0},'2026-09-10':{done:0,total:0,percent:0}},
   focusSession:{habitId:'',secondsLeft:1500,running:false}
 };
-let st=load(); rotateDay();
-let focusTick=null;
+var focusTick=null;
+var st=load();
 const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'all',debtsView:'myDebts',statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
 const serverSync={initialized:false,available:false,timer:null,poller:null,pushing:false,lastSnapshot:''};
 const SERVER_POLL_ACTIVE_MS=1000;
@@ -1150,6 +1150,7 @@ async function ensureSessionAccess(){
 boot();
 async function boot(){
   if(API_BASE && !(await ensureSessionAccess())) return;
+  rotateDay();
   bind();
   renderPrivacyToggle();
   if(!el.hDate.value) el.hDate.value=today();
@@ -1183,6 +1184,7 @@ function bind(){
           for(let r of regs){ await r.unregister(); }
         }
       }catch(e){}
+      try{ sessionStorage.clear(); }catch(e){}
       try{
         if(window.location.search && !window.location.search.includes('code=')){
           history.replaceState(null, '', window.location.pathname);
@@ -4433,9 +4435,9 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && !sessionStorage.getItem('sw_refreshed_v7')){
+    if(!swRefreshing && !sessionStorage.getItem('sw_refreshed_v8')){
       swRefreshing=true;
-      sessionStorage.setItem('sw_refreshed_v7','1');
+      sessionStorage.setItem('sw_refreshed_v8','1');
       window.location.reload();
     }
   });
