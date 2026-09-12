@@ -805,17 +805,29 @@ const STORAGE=(function(){
   }
 })();
 const DEF={
-  appName:'weedverso',userName:'',xp:0,streak:0,routineDone:false,lastDate:'',
+  appName:'weedverso',userName:'',xp:0,streak:0,routineDone:false,lastDate:'2026-09-10',
   habits:[],
   balances:{conta:{label:'Saldo em Conta',amount:0},vale1:{label:'VA Mercado',amount:0},vale2:{label:'VA Refeição',amount:0}},
   tx:[],
-  credit:{name:'Cartão weedverso',used:0,reserved:0,tx:[]},
-  debtors:[],
+  credit:{
+    name:'AMEX',
+    used:4383,
+    reserved:160,
+    tx:[
+      {id:'qnrueho6x12ei',type:'reserve-in',value:160,desc:'Reserva cartão',category:'Reserva Cartao',categoryKey:'reserva cartao',at:'2026-09-10T02:36:00.234Z'},
+      {id:'09x2q0i4x0qeh',type:'expense',value:4383,desc:'Gasto no cartão',category:'Sem Categoria',categoryKey:'sem categoria',at:'2026-09-10T02:35:44.681Z'}
+    ]
+  },
+  debtors:[
+    {id:'1glozn8ex2nu3',name:'Lucas',amount:267,note:'',payDate:'',paid:false,paidAt:'',at:'2026-09-10T02:37:14.667Z'},
+    {id:'h0zpcvijx1zkz',name:'Dilson',amount:366,note:'',payDate:'',paid:false,paidAt:'',at:'2026-09-10T02:36:43.235Z'},
+    {id:'lndsa4olx1r0s',name:'Pai',amount:1200,note:'',payDate:'2026-10-01',paid:false,paidAt:'',at:'2026-09-10T02:36:32.140Z'}
+  ],
   myDebts:[],
   routineLog:[],
   skills:{estudar:0,treinar:0,trabalhar:0},
   goals:[],
-  dailyStats:{},
+  dailyStats:{'2026-09-09':{done:0,total:0,percent:0},'2026-09-10':{done:0,total:0,percent:0}},
   focusSession:{habitId:'',secondsLeft:1500,running:false}
 };
 let st=load(); rotateDay();
@@ -871,19 +883,15 @@ const GIST_SYNC={
   },
   pull:async function(quiet){
     const token=this.getToken();
-    if(!token) return false;
     this.busy=true;
-    this.updateStatus('☁️ Sincronizando com GitHub...','running');
+    if(token) this.updateStatus('☁️ Sincronizando com GitHub...','running');
     try{
-      const resp=await fetch('https://api.github.com/gists/'+this.id,{
-        headers:{
-          'Authorization':'token '+token,
-          'Accept':'application/vnd.github+json'
-        }
-      });
+      const headers={'Accept':'application/vnd.github+json'};
+      if(token) headers['Authorization']='token '+token;
+      const resp=await fetch('https://api.github.com/gists/'+this.id,{headers:headers});
       if(!resp.ok){
-        if(resp.status===401) throw new Error('Token inválido');
-        throw new Error('HTTP '+resp.status);
+        if(token && resp.status===401) throw new Error('Token inválido');
+        return false;
       }
       const data=await resp.json();
       const fileInfo=data.files && data.files['weedverso_state.json'];
@@ -896,14 +904,16 @@ const GIST_SYNC={
           renderAll();
           const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
           this.updateStatus('☁️ Git Sincronizado '+hora,'ok');
-          if(!quiet) showToast('☁️ Sincronização concluída! Dados atualizados do GitHub.','ok');
+          if(!quiet && token) showToast('☁️ Sincronização concluída! Dados atualizados do GitHub.','ok');
           return true;
         }
       }
     }catch(err){
       console.warn('Gist pull err:',err);
-      this.updateStatus('☁️ Git: '+(err.message||'Falha ao sincronizar'),'error');
-      if(!quiet) showToast('⚠️ Erro ao sincronizar com GitHub: '+(err.message||'Falha de rede'),'error');
+      if(token){
+        this.updateStatus('☁️ Git: '+(err.message||'Falha ao sincronizar'),'error');
+        if(!quiet) showToast('⚠️ Erro ao sincronizar com GitHub: '+(err.message||'Falha de rede'),'error');
+      }
     }finally{
       this.busy=false;
     }
@@ -1145,9 +1155,7 @@ async function boot(){
   if(!el.hDate.value) el.hDate.value=today();
   syncPageFromHash();
   renderAll();
-  if(GIST_SYNC.hasToken()){
-    try{ await GIST_SYNC.pull(true); }catch(e){}
-  }
+  try{ await GIST_SYNC.pull(true); }catch(e){}
   if(API_BASE){
     await hydrateFromServer();
     await hydrateShareInfo();
@@ -4328,9 +4336,14 @@ async function logout(){
 
 function load(){
   try{
-    const raw=readStoredState(); if(!raw) return normalizeLoadedState({lastDate:today()});
-    return normalizeLoadedState(JSON.parse(raw));
-  }catch(err){return normalizeLoadedState({lastDate:today()});}
+    const raw=readStoredState();
+    if(!raw) return normalizeLoadedState(DEF);
+    const parsed=JSON.parse(raw);
+    if(!hasMeaningfulData(parsed) && hasMeaningfulData(DEF)){
+      return normalizeLoadedState(DEF);
+    }
+    return normalizeLoadedState(parsed);
+  }catch(err){return normalizeLoadedState(DEF);}
 }
 function save(immediate){
   writeStoredState(JSON.stringify(st));
