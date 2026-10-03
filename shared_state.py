@@ -314,7 +314,7 @@ def normalize_goal_name(name):
 
 def normalize_debt_item(item):
     entry = dict(item or {})
-    installments = max(1, min(24, int(safe_float(entry.get("installments"), 1))))
+    installments = max(1, min(999, int(safe_float(entry.get("installments"), 1))))
     paid = bool(entry.get("paid"))
     paid_installments = int(safe_float(entry.get("installmentsPaid"), installments if paid else 0))
     paid_installments = max(0, min(installments, paid_installments))
@@ -938,7 +938,7 @@ def remove_debtor(debtor_name, persist=True):
 def add_my_debt(name, installment_value, installments=1, note="", pay_date="", persist=True):
     debt_name = normalize_spaces(name)[:30]
     unit_value = abs(safe_float(installment_value))
-    total_installments = max(1, min(12, int(safe_float(installments, 1))))
+    total_installments = max(1, min(999, int(safe_float(installments, 1))))
     debt_note = normalize_spaces(note)[:50]
     if not debt_name:
         raise ValueError("O nome da divida e obrigatorio.")
@@ -983,8 +983,8 @@ def adjust_my_debt_installments(debt_name, delta, installment_value=None, note="
 
     def mutate(state):
         debt = _resolve_named_entry(state.setdefault("myDebts", []), debt_name, "divida")
-        current_installments = max(1, min(12, int(safe_float(debt.get("installments"), 1))))
-        next_installments = max(1, min(12, current_installments + change))
+        current_installments = max(1, min(999, int(safe_float(debt.get("installments"), 1))))
+        next_installments = max(1, min(999, current_installments + change))
         if next_installments == current_installments:
             raise ValueError("Nao foi possivel ajustar mais parcelas nessa divida.")
         debt["installments"] = next_installments

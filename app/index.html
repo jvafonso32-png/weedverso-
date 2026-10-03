@@ -143,8 +143,8 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .dvForm{display:grid;gap:8px}
 .dvReasonPills{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
 .dvReasonPills .sheetPill{text-align:center;font-size:.74rem;padding:6px 4px}
-.dvFormRow{display:grid;grid-template-columns:1fr 90px;gap:6px;align-items:center}
-.dvInstSelect{min-height:46px;font-weight:600;font-size:.88rem;text-align:center}
+.dvFormRow{display:grid;grid-template-columns:1fr 96px;gap:6px;align-items:center}
+.dvInstSelect,.dvInstInput{min-height:46px;font-weight:700;font-size:.9rem;text-align:center}
 .dvPreview{font-size:.76rem;color:var(--mut);padding-left:2px}
 .dvHint{font-size:.74rem;color:#ffd056;background:rgba(255,207,95,.1);border:1px dashed rgba(255,207,95,.35);padding:6px 9px;border-radius:8px;line-height:1.25}
 .dvMoreOpts{border:1px solid rgba(151,170,159,.18);border-radius:10px;padding:6px 9px;background:rgba(255,255,255,.02)}
@@ -525,7 +525,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.2</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.3</span>
               <span id="userLevelBadge" class="disciplineBadge" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -1107,24 +1107,26 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <span class="sheetCurrency">R$</span>
           <input id="mdAmount" type="text" inputmode="decimal" placeholder="0,00" class="sheetAmountInput" required />
         </div>
-        <select id="mdInstallments" class="sheetInput dvInstSelect" aria-label="Parcelas">
-          <option value="1">1x (à vista)</option>
-          <option value="2">2x</option>
-          <option value="3">3x</option>
-          <option value="4">4x</option>
-          <option value="5">5x</option>
-          <option value="6">6x</option>
-          <option value="7">7x</option>
-          <option value="8">8x</option>
-          <option value="9">9x</option>
-          <option value="10">10x</option>
-          <option value="11">11x</option>
-          <option value="12">12x</option>
-          <option value="18">18x</option>
-          <option value="24">24x</option>
-        </select>
+        <div class="dvInstWrap" style="position:relative;display:flex;align-items:center;">
+          <input id="mdInstallments" type="number" min="1" max="999" step="1" inputmode="numeric" placeholder="1" value="1" class="sheetInput dvInstInput" aria-label="Número de parcelas (1 a 999)" style="padding-right:24px;text-align:center;font-weight:700;min-height:46px;" />
+          <span style="position:absolute;right:8px;font-size:0.84rem;font-weight:700;color:var(--mut);pointer-events:none;">x</span>
+        </div>
       </div>
       <div id="mdInstallmentPreview" class="mut dvPreview">1x à vista</div>
+      <div class="sheetTagChips" id="mdInstPresets" style="margin-top:2px;">
+        <span class="mut" style="font-size:.72rem;margin-right:2px;align-self:center;">Atalhos:</span>
+        <button type="button" class="sheetTagChip active" data-inst="1">1x</button>
+        <button type="button" class="sheetTagChip" data-inst="2">2x</button>
+        <button type="button" class="sheetTagChip" data-inst="3">3x</button>
+        <button type="button" class="sheetTagChip" data-inst="6">6x</button>
+        <button type="button" class="sheetTagChip" data-inst="10">10x</button>
+        <button type="button" class="sheetTagChip" data-inst="12">12x</button>
+        <button type="button" class="sheetTagChip" data-inst="24">24x</button>
+        <button type="button" class="sheetTagChip" data-inst="36">36x</button>
+        <button type="button" class="sheetTagChip" data-inst="48">48x</button>
+        <button type="button" class="sheetTagChip" data-inst="60">60x</button>
+        <button type="button" class="sheetTagChip" data-inst="120">120x</button>
+      </div>
       <details class="dvMoreOpts">
         <summary>Mais opções (vencimento, observação)</summary>
         <div class="dvMoreBody">
@@ -3143,7 +3145,7 @@ function bind(){
     const instInp = document.getElementById('mdInstallments');
     if(!prev) return;
     const amount = parseFloat(((amtInp && amtInp.value) || '').replace(',', '.'));
-    const inst = parseInt(((instInp && instInp.value) || '1'), 10) || 1;
+    const inst = Math.min(999, Math.max(1, parseInt(((instInp && instInp.value) || '1'), 10) || 1));
     if(Number.isFinite(amount) && amount > 0){
       const val = roundMoneyValue(amount / inst);
       prev.textContent = inst > 1 ? `${inst}x de ${money(val)}` : `1x de ${money(amount)} (à vista)`;
@@ -3155,7 +3157,31 @@ function bind(){
   const mdAmountInp = document.getElementById('mdAmount');
   const mdInstallmentsInp = document.getElementById('mdInstallments');
   if(mdAmountInp) mdAmountInp.addEventListener('input', updateMdInstallmentPreview);
-  if(mdInstallmentsInp) mdInstallmentsInp.addEventListener('change', updateMdInstallmentPreview);
+  if(mdInstallmentsInp){
+    mdInstallmentsInp.addEventListener('input', () => {
+      const val = parseInt(mdInstallmentsInp.value || '1', 10);
+      document.querySelectorAll('#mdInstPresets .sheetTagChip').forEach(chip => {
+        chip.classList.toggle('active', parseInt(chip.dataset.inst, 10) === val);
+      });
+      updateMdInstallmentPreview();
+    });
+    mdInstallmentsInp.addEventListener('change', updateMdInstallmentPreview);
+  }
+
+  const mdInstPresetsWrap = document.getElementById('mdInstPresets');
+  if(mdInstPresetsWrap){
+    mdInstPresetsWrap.addEventListener('click', e => {
+      const chip = e.target.closest('[data-inst]');
+      if(!chip) return;
+      const instVal = chip.dataset.inst;
+      if(mdInstallmentsInp){
+        mdInstallmentsInp.value = instVal;
+        updateMdInstallmentPreview();
+      }
+      mdInstPresetsWrap.querySelectorAll('.sheetTagChip').forEach(c => c.classList.toggle('active', c === chip));
+      haptic('light');
+    });
+  }
 
   const mdFormEl = document.getElementById('mdForm');
   if(mdFormEl){
@@ -3164,7 +3190,7 @@ function bind(){
       const name = txt((document.getElementById('mdName')||{}).value, 30);
       const rawAmt = ((document.getElementById('mdAmount')||{}).value || '').replace(',', '.');
       const amount = parseFloat(rawAmt);
-      const installments = Math.min(24, Math.max(1, parseInt(((document.getElementById('mdInstallments')||{}).value || '1'), 10) || 1));
+      const installments = Math.min(999, Math.max(1, parseInt(((document.getElementById('mdInstallments')||{}).value || '1'), 10) || 1));
       const payDate = ((document.getElementById('mdPayDate')||{}).value || '').trim();
       const note = txt((document.getElementById('mdNote')||{}).value, 50);
       if(!name || !Number.isFinite(amount) || amount <= 0) return;
@@ -3388,11 +3414,14 @@ function bind(){
         <button type="button" class="btn" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="pay">
           <span>✓</span> <span>Registrar pagamento (parcela ou livre)</span>
         </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="change-inst">
+          <span>🔢</span> <span>Alterar parcelas (${debtPaidInstallments(d)}/${debtInstallments(d)}x)</span>
+        </button>
         <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="timeline">
           <span>📜</span> <span>Ver linha do tempo / histórico</span>
         </button>
         <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="edit">
-          <span>✏️</span> <span>Editar dados da dívida</span>
+          <span>✏️</span> <span>Editar dados completos da dívida</span>
         </button>
         <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="toggle">
           <span>🔄</span> <span>${d.paid ? 'Reabrir dívida' : 'Marcar como quitada'}</span>
@@ -3411,6 +3440,7 @@ function bind(){
         const act = btn.dataset.menuAct;
         closeMdSheet();
         if(act === 'pay') openMyDebtPaySheet(d.id);
+        else if(act === 'change-inst') openMyDebtChangeInstallmentsSheet(d.id);
         else if(act === 'timeline') openCreditorTimelineSheet(d.name);
         else if(act === 'edit') openMyDebtEditSheet(d.id);
         else if(act === 'toggle'){
@@ -3533,6 +3563,92 @@ function bind(){
     openMdSheet();
   }
 
+  function openMyDebtChangeInstallmentsSheet(debtId){
+    const d = (st.myDebts || []).find(x => x.id === debtId);
+    if(!d) return;
+
+    const title = document.getElementById('mdSheetTitle');
+    if(title) title.textContent = `Alterar parcelas · ${d.name}`;
+
+    const body = document.getElementById('mdSheetBody');
+    if(!body) return;
+
+    const totalInst = debtInstallments(d);
+    const paidInst = debtPaidInstallments(d);
+    const instVal = debtInstallmentValue(d);
+
+    body.innerHTML = `
+      <form id="mdChangeInstForm" style="display:grid;gap:12px;padding:4px 0">
+        <div style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--ln);font-size:.82rem;line-height:1.4">
+          <div style="font-weight:700;color:#fff">${esc(d.name)}</div>
+          <div class="mut">Atualmente: <strong style="color:var(--txt)">${paidInst}/${totalInst} parcelas</strong> de ${money(instVal)}</div>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Total de parcelas (1 a 999)</label>
+          <div style="position:relative;display:flex;align-items:center;">
+            <input id="mdQuickTotalInst" type="number" min="1" max="999" step="1" inputmode="numeric" class="sheetInput dvInstInput" value="${totalInst}" style="padding-right:26px;text-align:center;font-weight:700;font-size:1.1rem;min-height:46px;" required />
+            <span style="position:absolute;right:12px;font-size:.9rem;font-weight:700;color:var(--mut);pointer-events:none;">x</span>
+          </div>
+          <div class="sheetTagChips" id="mdQuickInstPresets" style="margin-top:6px;">
+            <span class="mut" style="font-size:.72rem;margin-right:2px;align-self:center;">Atalhos:</span>
+            ${[1, 2, 3, 6, 10, 12, 18, 24, 36, 48, 60, 120, 240, 360].map(n => `<button type="button" class="sheetTagChip ${totalInst===n?'active':''}" data-inst="${n}">${n}x</button>`).join('')}
+          </div>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Quantas parcelas já foram pagas?</label>
+          <input id="mdQuickPaidInst" type="number" min="0" max="999" step="1" inputmode="numeric" class="sheetInput" value="${paidInst}" style="text-align:center;font-weight:700;min-height:42px;" required />
+        </div>
+
+        <button type="submit" class="btn sheetSubmitBtn" style="margin-top:4px">Salvar novas parcelas</button>
+      </form>
+    `;
+
+    const presetsWrap = document.getElementById('mdQuickInstPresets');
+    const totalInput = document.getElementById('mdQuickTotalInst');
+    if(presetsWrap && totalInput){
+      presetsWrap.addEventListener('click', e => {
+        const btn = e.target.closest('[data-inst]');
+        if(!btn) return;
+        totalInput.value = btn.dataset.inst;
+        presetsWrap.querySelectorAll('.sheetTagChip').forEach(b => b.classList.toggle('active', b === btn));
+        haptic('light');
+      });
+      totalInput.addEventListener('input', () => {
+        const val = parseInt(totalInput.value || '1', 10);
+        presetsWrap.querySelectorAll('.sheetTagChip').forEach(b => b.classList.toggle('active', parseInt(b.dataset.inst, 10) === val));
+      });
+    }
+
+    const form = document.getElementById('mdChangeInstForm');
+    if(form){
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const newTotal = Math.min(999, Math.max(1, parseInt(((document.getElementById('mdQuickTotalInst')||{}).value || '1'), 10) || 1));
+        const newPaid = Math.min(newTotal, Math.max(0, parseInt(((document.getElementById('mdQuickPaidInst')||{}).value || '0'), 10) || 0));
+
+        d.installments = newTotal;
+        d.installmentsPaid = newPaid;
+        d.paid = newPaid >= newTotal;
+        if(d.paid){
+          if(!d.paidAt) d.paidAt = new Date().toISOString();
+        } else {
+          d.paidAt = '';
+        }
+
+        save(true);
+        renderMyDebts();
+        renderSummary();
+        closeMdSheet();
+        haptic('success');
+        showToast(`✓ Parcelas de ${d.name} alteradas para ${newPaid}/${newTotal}!`, 'ok');
+      });
+    }
+
+    openMdSheet();
+  }
+
   function openMyDebtEditSheet(debtId){
     const d = (st.myDebts || []).find(x => x.id === debtId);
     if(!d) return;
@@ -3571,11 +3687,16 @@ function bind(){
             <input id="mdEditAmount" type="number" step="0.01" inputmode="decimal" class="sheetInput" value="${instVal}" required />
           </div>
           <div class="sheetField">
-            <label class="mini">Parcelas</label>
-            <select id="mdEditInstallments" class="sheetInput dvInstSelect">
-              ${[1,2,3,4,5,6,7,8,9,10,11,12,18,24].map(n => `<option value="${n}" ${inst===n?'selected':''}>${n}x</option>`).join('')}
-            </select>
+            <label class="mini">Parcelas (até 999)</label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <input id="mdEditInstallments" type="number" min="1" max="999" step="1" inputmode="numeric" class="sheetInput dvInstInput" value="${inst}" style="padding-right:24px;text-align:center;font-weight:700;min-height:46px;" required />
+              <span style="position:absolute;right:8px;font-size:0.84rem;font-weight:700;color:var(--mut);pointer-events:none;">x</span>
+            </div>
           </div>
+        </div>
+        <div class="sheetTagChips" id="mdEditInstPresets" style="margin-top:2px;">
+          <span class="mut" style="font-size:.72rem;margin-right:2px;align-self:center;">Atalhos:</span>
+          ${[1,2,3,6,10,12,24,36,48,60,120].map(n => `<button type="button" class="sheetTagChip ${inst===n?'active':''}" data-inst="${n}">${n}x</button>`).join('')}
         </div>
 
         <div class="sheetField">
@@ -3591,6 +3712,22 @@ function bind(){
         <button type="submit" class="btn sheetSubmitBtn" style="margin-top:6px">Salvar alterações</button>
       </form>
     `;
+
+    const editChipsWrap = document.getElementById('mdEditInstPresets');
+    const editInstInput = document.getElementById('mdEditInstallments');
+    if(editChipsWrap && editInstInput){
+      editChipsWrap.addEventListener('click', e => {
+        const chip = e.target.closest('[data-inst]');
+        if(!chip) return;
+        editInstInput.value = chip.dataset.inst;
+        editChipsWrap.querySelectorAll('.sheetTagChip').forEach(c => c.classList.toggle('active', c === chip));
+        haptic('light');
+      });
+      editInstInput.addEventListener('input', () => {
+        const val = parseInt(editInstInput.value || '1', 10);
+        editChipsWrap.querySelectorAll('.sheetTagChip').forEach(c => c.classList.toggle('active', parseInt(c.dataset.inst, 10) === val));
+      });
+    }
 
     let editReason = currentReason;
     const pillsWrap = document.getElementById('mdEditReasonPills');
@@ -3610,7 +3747,7 @@ function bind(){
         e.preventDefault();
         const newName = txt((document.getElementById('mdEditName')||{}).value, 30);
         const newAmt = parseFloat(((document.getElementById('mdEditAmount')||{}).value || '').replace(',', '.'));
-        const newInst = Math.min(24, Math.max(1, parseInt(((document.getElementById('mdEditInstallments')||{}).value || '1'), 10) || 1));
+        const newInst = Math.min(999, Math.max(1, parseInt(((document.getElementById('mdEditInstallments')||{}).value || '1'), 10) || 1));
         const newPayDate = ((document.getElementById('mdEditPayDate')||{}).value || '').trim();
         const newNote = txt((document.getElementById('mdEditNote')||{}).value, 50);
 
@@ -3650,6 +3787,11 @@ function bind(){
     const payBtn = e.target.closest('[data-act="md-open-pay"]');
     if(payBtn){
       openMyDebtPaySheet(payBtn.dataset.mydeb);
+      return;
+    }
+    const changeInstBtn = e.target.closest('[data-act="md-change-inst"]');
+    if(changeInstBtn){
+      openMyDebtChangeInstallmentsSheet(changeInstBtn.dataset.mydeb);
       return;
     }
     const menuBtn = e.target.closest('[data-act="md-menu"]');
@@ -4964,7 +5106,7 @@ function creditReserveStatus(used,reserved){
 }
 
 function debtInstallments(item){
-  return Math.min(12,Math.max(1,parseInt((item&&item.installments)||1,10)||1));
+  return Math.min(999,Math.max(1,parseInt((item&&item.installments)||1,10)||1));
 }
 function debtPaidInstallments(item){
   return Math.min(debtInstallments(item),Math.max(0,parseInt((item&&item.installmentsPaid)||0,10)||0));
@@ -4976,10 +5118,22 @@ function roundMoneyValue(value){
   return Math.round((Number(value)||0)*100)/100;
 }
 function debtRemainingAmount(item){
-  const remaining=Math.max(0,debtInstallments(item)-debtPaidInstallments(item));
-  return roundMoneyValue(debtInstallmentValue(item)*remaining);
+  if(!item || item.paid) return 0;
+  const inst = debtInstallments(item);
+  const instVal = debtInstallmentValue(item);
+  const totalDebt = roundMoneyValue(inst * instVal);
+  if(Array.isArray(item.payments) && item.payments.length > 0){
+    const paidSoFar = item.payments.reduce((s,p) => s + Number(p.value||0), 0);
+    return roundMoneyValue(Math.max(0, totalDebt - paidSoFar));
+  }
+  const remaining = Math.max(0, inst - debtPaidInstallments(item));
+  return roundMoneyValue(instVal * remaining);
 }
 function debtPaidAmount(item){
+  if(!item) return 0;
+  if(Array.isArray(item.payments) && item.payments.length > 0){
+    return roundMoneyValue(item.payments.reduce((s,p) => s + Number(p.value||0), 0));
+  }
   return roundMoneyValue(debtInstallmentValue(item)*debtPaidInstallments(item));
 }
 function debtCompletionPct(item){
@@ -5124,11 +5278,13 @@ function renderMyDebtSingleCard(d, isNested=false){
 
   let dotsHtml = '';
   if(inst > 1){
-    const dots = Array.from({length: Math.min(6, inst)}, (_, i) => {
+    const maxDots = Math.min(6, inst);
+    const dots = Array.from({length: maxDots}, (_, i) => {
       const isDone = i < paidInst;
       return `<span style="color:${isDone ? '#39ff8f' : 'rgba(255,255,255,.2)'}">${isDone ? '●' : '○'}</span>`;
     }).join('');
-    dotsHtml = `<span class="dvDots" title="${paidInst}/${inst} parcelas">${dots} <span style="font-size:.68rem;opacity:.75">${paidInst}/${inst}</span></span>`;
+    const extraLabel = inst > 6 ? `<span style="font-size:.65rem;opacity:.55;margin-left:1px">+${inst-6}</span>` : '';
+    dotsHtml = `<span class="dvDots" data-act="md-change-inst" data-mydeb="${d.id}" title="Toque para alterar parcelas (${paidInst}/${inst})" style="cursor:pointer">${dots}${extraLabel} <span style="font-size:.68rem;opacity:.8;font-weight:700">${paidInst}/${inst}</span></span>`;
   }
 
   return `
@@ -6329,7 +6485,7 @@ function normalizeDebtorEntry(item){
 
 function normalizeDebtEntry(item){
   item=item||{};
-  const installments=Math.min(24,Math.max(1,parseInt(item.installments||'1',10)||1));
+  const installments=Math.min(999,Math.max(1,parseInt(item.installments||'1',10)||1));
   const paid=Boolean(item.paid);
   const installmentsPaid=Math.max(0,Math.min(installments,parseInt(item.installmentsPaid||String(paid?installments:0),10)||0));
   const rawInstallmentValue=Number(item.installmentValue);
@@ -6964,9 +7120,9 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v13'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v14'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v13');
+      sessionStorage.setItem('sw_ctrl_reload','v14');
       window.location.reload();
     }
   });
