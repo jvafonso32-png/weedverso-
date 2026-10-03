@@ -525,7 +525,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.1</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.2</span>
               <span id="userLevelBadge" class="disciplineBadge" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -834,59 +834,13 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       </div>
 
       <div id="debtsMyDebtsView" class="stack" style="display:none;">
-        <article class="fcard">
-          <div class="debtSummaryGrid">
-            <div class="box">
-              <span class="mini">Saldos em aberto</span>
-              <strong id="myDebtTotalBox">R$ 0,00</strong>
-              <p class="mut">Saldo restante das dívidas que ainda estão em aberto.</p>
-            </div>
-            <div class="box">
-              <span class="mini">Contas já pagas</span>
-              <strong id="myDebtPaidBox">R$ 0,00</strong>
-              <p class="mut">Total já quitado nesta aba, incluindo parcelas pagas.</p>
-            </div>
-            <div class="box">
-              <span class="mini">Parcela mensal aberta</span>
-              <strong id="myDebtMonthBox">R$ 0,00</strong>
-              <p class="mut">Soma das parcelas abertas que pesam no mês de controle.</p>
-            </div>
-          </div>
+        <article class="fcard dvTop">
+          <div id="mdSummaryLine" class="dvSummaryLine"></div>
+          <div id="mdProgress" class="dvProgress" hidden style="display:none;"></div>
+          <div id="mdWeek" class="dvWeek" hidden style="display:none;"></div>
+          <button type="button" id="mdOpenFormBtn" class="btn dvCta">+ Adicionar dívida</button>
         </article>
-        <article class="fcard">
-          <h3 class="subtitle">Controle de pagamentos</h3>
-          <p class="mut">O valor inserido aqui representa a parcela unitária. Toda manutenção desta aba é manual.</p>
-          <form id="myDebtForm" class="form">
-            <div class="two">
-              <input id="myDebtName" type="text" maxlength="30" placeholder="Para quem ou qual dívida" required />
-              <input id="myDebtAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor da parcela" required />
-            </div>
-            <div class="two">
-              <select id="myDebtInstallments">
-                <option value="1">1x</option>
-                <option value="2">2x</option>
-                <option value="3">3x</option>
-                <option value="4">4x</option>
-                <option value="5">5x</option>
-                <option value="6">6x</option>
-                <option value="7">7x</option>
-                <option value="8">8x</option>
-                <option value="9">9x</option>
-                <option value="10">10x</option>
-                <option value="11">11x</option>
-                <option value="12">12x</option>
-              </select>
-              <input id="myDebtNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
-            </div>
-            <div class="two">
-              <input id="myDebtPayDate" type="date" />
-              <div></div>
-            </div>
-            <p class="mut">A data de vencimento define o mês em que a dívida aparece nos blocos de acompanhamento.</p>
-            <button class="btn" type="submit">Adicionar dívida</button>
-          </form>
-          <div id="myDebtList" class="list debtorList"></div>
-        </article>
+        <div id="myDebtList" class="list debtBoard"></div>
       </div>
 
     </section>
@@ -1127,6 +1081,70 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       <button type="button" class="sheetClose" data-dv-close aria-label="Fechar">✕</button>
     </div>
     <div id="dvSheetBody" class="dvSheetBody"></div>
+  </div>
+</div>
+<div id="mdFormOverlay" class="sheetOverlay" aria-hidden="true">
+  <div class="sheetCard" role="dialog" aria-modal="true" aria-labelledby="mdFormTitle">
+    <div class="sheetHandle"></div>
+    <div class="sheetHeader">
+      <h3 id="mdFormTitle" class="sheetTitle">Adicionar Dívida</h3>
+      <button type="button" class="sheetClose" data-md-close aria-label="Fechar">✕</button>
+    </div>
+    <form id="mdForm" class="sheetForm dvForm" autocomplete="off">
+      <div class="sheetPills dvReasonPills" id="mdReasonPills">
+        <button type="button" class="sheetPill active" data-reason="house">🏠 Contas da Casa</button>
+        <button type="button" class="sheetPill" data-reason="loan">🏦 Empréstimo</button>
+        <button type="button" class="sheetPill" data-reason="card">💳 Fatura / Cartão</button>
+        <button type="button" class="sheetPill" data-reason="service">📱 Serviços</button>
+        <button type="button" class="sheetPill" data-reason="other">📦 Outro</button>
+      </div>
+      <input id="mdName" type="text" maxlength="30" list="mdNameList" placeholder="Para quem ou qual conta (ex: Aluguel, Luz...)" class="sheetInput" required />
+      <datalist id="mdNameList"></datalist>
+      <div id="mdNameSuggestions" class="sheetTagChips"></div>
+      <div id="mdNameHint" class="dvHint" hidden style="display:none;"></div>
+      <div class="dvFormRow">
+        <div class="sheetAmountWrap">
+          <span class="sheetCurrency">R$</span>
+          <input id="mdAmount" type="text" inputmode="decimal" placeholder="0,00" class="sheetAmountInput" required />
+        </div>
+        <select id="mdInstallments" class="sheetInput dvInstSelect" aria-label="Parcelas">
+          <option value="1">1x (à vista)</option>
+          <option value="2">2x</option>
+          <option value="3">3x</option>
+          <option value="4">4x</option>
+          <option value="5">5x</option>
+          <option value="6">6x</option>
+          <option value="7">7x</option>
+          <option value="8">8x</option>
+          <option value="9">9x</option>
+          <option value="10">10x</option>
+          <option value="11">11x</option>
+          <option value="12">12x</option>
+          <option value="18">18x</option>
+          <option value="24">24x</option>
+        </select>
+      </div>
+      <div id="mdInstallmentPreview" class="mut dvPreview">1x à vista</div>
+      <details class="dvMoreOpts">
+        <summary>Mais opções (vencimento, observação)</summary>
+        <div class="dvMoreBody">
+          <label class="mini" for="mdPayDate">Data de vencimento</label>
+          <input id="mdPayDate" type="date" class="sheetInput" />
+          <input id="mdNote" type="text" maxlength="50" placeholder="Observação (opcional)" class="sheetInput" />
+        </div>
+      </details>
+      <button class="btn sheetSubmitBtn" type="submit">Adicionar dívida</button>
+    </form>
+  </div>
+</div>
+<div id="mdSheetOverlay" class="sheetOverlay" aria-hidden="true">
+  <div class="sheetCard" role="dialog" aria-modal="true" aria-labelledby="mdSheetTitle">
+    <div class="sheetHandle"></div>
+    <div class="sheetHeader">
+      <h3 id="mdSheetTitle" class="sheetTitle"></h3>
+      <button type="button" class="sheetClose" data-md-close aria-label="Fechar">✕</button>
+    </div>
+    <div id="mdSheetBody" class="dvSheetBody"></div>
   </div>
 </div>
 <div id="dvUndoBar" class="dvUndoBar" hidden style="display:none;">
@@ -1643,7 +1661,7 @@ const el={
   ccEditBtn:$('#ccEditBtn'),ccMeta:$('#ccMeta'),ccMetaSummary:$('#ccMetaSummary'),ccMetaHint:$('#ccMetaHint'),ccName:$('#ccName'),ccValue:$('#ccValue'),ccDesc:$('#ccDesc'),
   ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
   debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debInstallments:$('#debInstallments'),debInstallmentPreview:$('#debInstallmentPreview'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
-  myDebtForm:$('#myDebtForm'),myDebtName:$('#myDebtName'),myDebtAmount:$('#myDebtAmount'),myDebtInstallments:$('#myDebtInstallments'),myDebtNote:$('#myDebtNote'),myDebtPayDate:$('#myDebtPayDate'),myDebtList:$('#myDebtList'),myDebtTotalBox:$('#myDebtTotalBox'),myDebtPaidBox:$('#myDebtPaidBox'),myDebtMonthBox:$('#myDebtMonthBox'),
+  mdForm:$('#mdForm'),mdName:$('#mdName'),mdAmount:$('#mdAmount'),mdInstallments:$('#mdInstallments'),mdInstallmentPreview:$('#mdInstallmentPreview'),mdNote:$('#mdNote'),mdPayDate:$('#mdPayDate'),myDebtList:$('#myDebtList'),mdSummaryLine:$('#mdSummaryLine'),mdProgress:$('#mdProgress'),mdWeek:$('#mdWeek'),mdOpenFormBtn:$('#mdOpenFormBtn'),
   goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),goalsTotalSavedBox:$('#goalsTotalSavedBox'),
   sPercent:$('#sPercent'),sHabits:$('#sHabits'),sSpent:$('#sSpent'),sCard:$('#sCard'),sDebt:$('#sDebt'),sGoals:$('#sGoals'),sStatus:$('#sStatus'),sMsg:$('#sMsg'),
   homeMissionsCard:$('#homeMissionsCard'),homeHabitList:$('#homeHabitList'),homeAddHabitBtn:$('#homeAddHabitBtn'),
@@ -2553,7 +2571,7 @@ function bind(){
   let dvUndoInterval=null;
 
   function startDebtorUndo(snapshot){
-    dvUndoState=snapshot;
+    dvUndoState=Object.assign({type:'debtor'}, snapshot);
     dvUndoCountdown=5;
     const bar=document.getElementById('dvUndoBar');
     const text=document.getElementById('dvUndoText');
@@ -2564,6 +2582,37 @@ function bind(){
     if(dvUndoInterval) clearInterval(dvUndoInterval);
 
     text.textContent=`Recebido ${money(snapshot.val)} de ${snapshot.debtorName}`;
+    btn.textContent=`Desfazer (5s)`;
+    bar.hidden=false;
+    bar.style.display='flex';
+    bar.classList.add('active');
+
+    dvUndoInterval=setInterval(()=>{
+      dvUndoCountdown--;
+      if(dvUndoCountdown>0){
+        btn.textContent=`Desfazer (${dvUndoCountdown}s)`;
+      } else {
+        clearInterval(dvUndoInterval);
+      }
+    },1000);
+
+    dvUndoTimer=setTimeout(()=>{
+      hideDebtorUndo();
+    },5000);
+  }
+
+  function startMyDebtUndo(snapshot){
+    dvUndoState=Object.assign({type:'myDebt'}, snapshot);
+    dvUndoCountdown=5;
+    const bar=document.getElementById('dvUndoBar');
+    const text=document.getElementById('dvUndoText');
+    const btn=document.getElementById('dvUndoBtn');
+    if(!bar || !text || !btn) return;
+
+    if(dvUndoTimer) clearTimeout(dvUndoTimer);
+    if(dvUndoInterval) clearInterval(dvUndoInterval);
+
+    text.textContent=`Pago ${money(snapshot.val)} em ${snapshot.debtName}`;
     btn.textContent=`Desfazer (5s)`;
     bar.hidden=false;
     bar.style.display='flex';
@@ -2624,9 +2673,36 @@ function bind(){
     showToast(`Recebimento de ${debtorName} desfeito com sucesso!`,'ok');
   }
 
+  function executeMyDebtUndo(snapshot){
+    const { myDebtId, account, val, txId, prevStatus, debtName }=snapshot;
+    const d=st.myDebts.find(x=>x.id===myDebtId);
+    if(d){
+      d.paid=prevStatus.paid;
+      d.paidAt=prevStatus.paidAt;
+      d.installmentsPaid=prevStatus.installmentsPaid;
+      d.payments=prevStatus.payments;
+    }
+    if(account && account!=='none' && st.balances[account]){
+      st.balances[account].amount=roundMoneyValue((Number(st.balances[account].amount)||0)+val);
+      st.tx=(st.tx||[]).filter(t=>t.id!==txId);
+    }
+    hideDebtorUndo();
+    save(true);
+    renderMyDebts();
+    renderFinance();
+    renderUnifiedStatement();
+    renderSummary();
+    haptic('medium');
+    showToast(`Pagamento de ${debtName} desfeito com sucesso!`,'ok');
+  }
+
   const undoBarBtn=document.getElementById('dvUndoBtn');
   if(undoBarBtn){
-    undoBarBtn.addEventListener('click',executeDebtorUndo);
+    undoBarBtn.addEventListener('click',()=>{
+      if(!dvUndoState) return;
+      if(dvUndoState.type==='myDebt') executeMyDebtUndo(dvUndoState);
+      else executeDebtorUndo();
+    });
   }
 
   function openPersonTimelineSheet(personName){
@@ -2945,99 +3021,670 @@ function bind(){
     el.debList.addEventListener('touchcancel',()=>{ if(dvTouchTimer) clearTimeout(dvTouchTimer); },{passive:true});
   }
 
-  el.myDebtForm.addEventListener('submit',e=>{
-    e.preventDefault();
-    const name=txt(el.myDebtName.value,30);
-    const installmentValue=parseFloat((el.myDebtAmount.value||'').replace(',','.'));
-    const installments=Math.min(12,Math.max(1,parseInt(el.myDebtInstallments.value||'1',10)||1));
-    const note=txt(el.myDebtNote.value,50);
-    const payDate=el.myDebtPayDate.value||'';
-    if(!name||!Number.isFinite(installmentValue)||installmentValue<=0) return;
-    st.myDebts.unshift({id:id(),name,amount:installmentValue,installmentValue,installments,installmentsPaid:0,note,payDate,paid:false,paidAt:'',at:new Date().toISOString()});
-    st.myDebts=st.myDebts.slice(0,100);
-    el.myDebtName.value=''; el.myDebtAmount.value=''; el.myDebtInstallments.value='1'; el.myDebtNote.value=''; el.myDebtPayDate.value='';
-    save(true); renderMyDebts();
+  // Modern Minhas Dívidas System
+  function openMdForm(){
+    const overlay = document.getElementById('mdFormOverlay');
+    if(!overlay) return;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    populateMyDebtNameSuggestions();
+    const nameInput = document.getElementById('mdName');
+    if(nameInput) setTimeout(() => nameInput.focus(), 150);
+  }
+
+  function closeMdForm(){
+    const overlay = document.getElementById('mdFormOverlay');
+    if(!overlay) return;
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  function openMdSheet(){
+    const overlay = document.getElementById('mdSheetOverlay');
+    if(!overlay) return;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeMdSheet(){
+    const overlay = document.getElementById('mdSheetOverlay');
+    if(!overlay) return;
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  const mdOpenBtn = document.getElementById('mdOpenFormBtn');
+  if(mdOpenBtn) mdOpenBtn.addEventListener('click', openMdForm);
+
+  document.querySelectorAll('[data-md-close]').forEach(b => {
+    b.addEventListener('click', () => { closeMdForm(); closeMdSheet(); });
   });
 
-  el.myDebtList.addEventListener('click',e=>{
-    const row=e.target.closest('[data-mydeb]'); if(!row) return;
-    const d=st.myDebts.find(x=>x.id===row.dataset.mydeb); if(!d) return;
-    if(e.target.matches('[data-act="mydeb-edit"]')){
-      ui.myDebts[d.id]=!ui.myDebts[d.id];
-      renderMyDebts();
-      return;
+  const mdFormOverlayEl = document.getElementById('mdFormOverlay');
+  if(mdFormOverlayEl){
+    mdFormOverlayEl.addEventListener('click', e => {
+      if(e.target === mdFormOverlayEl) closeMdForm();
+    });
+  }
+  const mdSheetOverlayEl = document.getElementById('mdSheetOverlay');
+  if(mdSheetOverlayEl){
+    mdSheetOverlayEl.addEventListener('click', e => {
+      if(e.target === mdSheetOverlayEl) closeMdSheet();
+    });
+  }
+
+  let currentMyDebtReason = 'house';
+  const mdReasonPills = document.getElementById('mdReasonPills');
+  if(mdReasonPills){
+    mdReasonPills.addEventListener('click', e => {
+      const pill = e.target.closest('[data-reason]');
+      if(!pill) return;
+      currentMyDebtReason = pill.dataset.reason;
+      mdReasonPills.querySelectorAll('.sheetPill').forEach(p => p.classList.toggle('active', p === pill));
+      haptic('light');
+    });
+  }
+
+  function populateMyDebtNameSuggestions(){
+    const datalist = document.getElementById('mdNameList');
+    const chipsWrap = document.getElementById('mdNameSuggestions');
+    const debts = st.myDebts || [];
+    const uniqueNames = Array.from(new Set(debts.map(d => (d.name || '').trim()).filter(Boolean)));
+    if(datalist){
+      datalist.innerHTML = uniqueNames.map(n => `<option value="${esc(n)}"></option>`).join('');
     }
-    if(e.target.matches('[data-act="mydeb-del"]')){
-      st.myDebts=st.myDebts.filter(x=>x.id!==d.id);
-      st.tx=(st.tx||[]).map(t=>t.myDebtId===d.id?Object.assign({},t,{myDebtId:'',myDebtInstallment:0}):t);
-      delete ui.myDebts[d.id];
-      save(true); renderMyDebts();
-      return;
-    }
-    if(e.target.matches('[data-act="mydeb-toggle"]')){
-      d.paid=!d.paid;
-      if(d.paid){
-        const nowIso=new Date().toISOString();
-        d.paidAt=nowIso;
-        d.installmentsPaid=debtInstallments(d);
-        if(!d.payDate) d.payDate=dateKey(nowIso);
+    if(chipsWrap){
+      if(!uniqueNames.length){
+        chipsWrap.innerHTML = '';
       } else {
-        d.paidAt='';
-        d.installmentsPaid=0;
+        chipsWrap.innerHTML = uniqueNames.slice(0, 6).map(n => 
+          `<button type="button" class="tagChip" data-md-suggest="${esc(n)}">${safe(n)}</button>`
+        ).join('');
       }
-      save(true); renderMyDebts();
+    }
+  }
+
+  const mdNameSuggestionsEl = document.getElementById('mdNameSuggestions');
+  if(mdNameSuggestionsEl){
+    mdNameSuggestionsEl.addEventListener('click', e => {
+      const chip = e.target.closest('[data-md-suggest]');
+      if(!chip) return;
+      const inp = document.getElementById('mdName');
+      if(inp){
+        inp.value = chip.dataset.mdSuggest;
+        inp.dispatchEvent(new Event('input'));
+        haptic('light');
+      }
+    });
+  }
+
+  const mdNameInput = document.getElementById('mdName');
+  const mdNameHint = document.getElementById('mdNameHint');
+  if(mdNameInput){
+    mdNameInput.addEventListener('input', () => {
+      const val = foldText(mdNameInput.value);
+      if(!val || !mdNameHint){ if(mdNameHint) { mdNameHint.hidden = true; mdNameHint.style.display = 'none'; } return; }
+      const existing = (st.myDebts || []).filter(d => !d.paid && foldText(d.name) === val);
+      if(existing.length > 0){
+        const sum = roundMoneyValue(existing.reduce((s,d) => s + debtRemainingAmount(d), 0));
+        mdNameHint.hidden = false;
+        mdNameHint.style.display = 'block';
+        mdNameHint.innerHTML = `💡 <strong>${safe(existing[0].name)}</strong> já tem <strong>${money(sum)}</strong> em aberto. Esta conta será somada ao favorecido.`;
+      } else {
+        mdNameHint.hidden = true;
+        mdNameHint.style.display = 'none';
+      }
+    });
+  }
+
+  function updateMdInstallmentPreview(){
+    const prev = document.getElementById('mdInstallmentPreview');
+    const amtInp = document.getElementById('mdAmount');
+    const instInp = document.getElementById('mdInstallments');
+    if(!prev) return;
+    const amount = parseFloat(((amtInp && amtInp.value) || '').replace(',', '.'));
+    const inst = parseInt(((instInp && instInp.value) || '1'), 10) || 1;
+    if(Number.isFinite(amount) && amount > 0){
+      const val = roundMoneyValue(amount / inst);
+      prev.textContent = inst > 1 ? `${inst}x de ${money(val)}` : `1x de ${money(amount)} (à vista)`;
+    } else {
+      prev.textContent = inst > 1 ? `${inst}x parcelado` : '1x à vista';
+    }
+  }
+
+  const mdAmountInp = document.getElementById('mdAmount');
+  const mdInstallmentsInp = document.getElementById('mdInstallments');
+  if(mdAmountInp) mdAmountInp.addEventListener('input', updateMdInstallmentPreview);
+  if(mdInstallmentsInp) mdInstallmentsInp.addEventListener('change', updateMdInstallmentPreview);
+
+  const mdFormEl = document.getElementById('mdForm');
+  if(mdFormEl){
+    mdFormEl.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = txt((document.getElementById('mdName')||{}).value, 30);
+      const rawAmt = ((document.getElementById('mdAmount')||{}).value || '').replace(',', '.');
+      const amount = parseFloat(rawAmt);
+      const installments = Math.min(24, Math.max(1, parseInt(((document.getElementById('mdInstallments')||{}).value || '1'), 10) || 1));
+      const payDate = ((document.getElementById('mdPayDate')||{}).value || '').trim();
+      const note = txt((document.getElementById('mdNote')||{}).value, 50);
+      if(!name || !Number.isFinite(amount) || amount <= 0) return;
+
+      const unitValue = roundMoneyValue(amount / installments);
+      const newEntry = {
+        id: id(),
+        name,
+        amount: unitValue,
+        installmentValue: unitValue,
+        installments,
+        installmentsPaid: 0,
+        note,
+        payDate,
+        paid: false,
+        paidAt: '',
+        at: new Date().toISOString(),
+        reason: currentMyDebtReason || 'house',
+        payments: []
+      };
+
+      if(!Array.isArray(st.myDebts)) st.myDebts = [];
+      st.myDebts.unshift(newEntry);
+      st.myDebts = st.myDebts.slice(0, 100);
+
+      save(true);
+      renderMyDebts();
+      renderSummary();
+      closeMdForm();
+      haptic('success');
+      showToast(`✓ Dívida "${name}" adicionada com sucesso!`, 'ok');
+
+      mdFormEl.reset();
+      if(mdNameHint) { mdNameHint.hidden = true; mdNameHint.style.display = 'none'; }
+      updateMdInstallmentPreview();
+    });
+  }
+
+  function openMyDebtPaySheet(debtId){
+    const d = (st.myDebts || []).find(x => x.id === debtId);
+    if(!d) return;
+
+    const title = document.getElementById('mdSheetTitle');
+    if(title) title.textContent = `Pagar parcela · ${d.name}`;
+
+    const body = document.getElementById('mdSheetBody');
+    if(!body) return;
+
+    const inst = debtInstallments(d);
+    const paidInst = debtPaidInstallments(d);
+    const instVal = debtInstallmentValue(d);
+    const remaining = debtRemainingAmount(d);
+    const suggestedVal = instVal > 0 && instVal < remaining ? instVal : remaining;
+
+    body.innerHTML = `
+      <div style="display:grid;gap:12px;padding:4px 0">
+        <div style="background:rgba(255,255,255,.03);padding:10px 12px;border-radius:12px;border:1px solid var(--ln);display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong style="font-size:.94rem;color:#fff">${safe(d.name)}</strong>
+            <span style="display:block;font-size:.72rem;color:var(--mut);margin-top:2px">
+              ${inst > 1 ? `Parcela ${paidInst + 1}/${inst} · unitária ${money(instVal)}` : 'À vista'}
+            </span>
+          </div>
+          <div style="text-align:right">
+            <span class="mini">Total pendente</span>
+            <strong style="display:block;font-family:var(--font-display);font-size:1.02rem;color:var(--p)">${money(remaining)}</strong>
+          </div>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Valor a pagar agora</label>
+          <div class="sheetAmountWrap">
+            <span class="sheetCurrency">R$</span>
+            <input id="mdPayVal" type="number" step="0.01" inputmode="decimal" class="sheetAmountInput" value="${suggestedVal}" required />
+          </div>
+          <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+            <button type="button" class="sheetPill active" data-md-quick="${suggestedVal}">Parcela: ${money(suggestedVal)}</button>
+            ${remaining !== suggestedVal ? `<button type="button" class="sheetPill" data-md-quick="${remaining}">Quitar tudo: ${money(remaining)}</button>` : ''}
+          </div>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">De qual conta saiu o dinheiro?</label>
+          <div class="sheetPills" id="mdPayAccPills">
+            <button type="button" class="sheetPill active" data-acc="conta">🏦 Conta (${money(st.balances.conta.amount)})</button>
+            <button type="button" class="sheetPill" data-acc="vale1">🥗 VA Mercado (${money(st.balances.vale1.amount)})</button>
+            <button type="button" class="sheetPill" data-acc="vale2">🍽️ VA Refeição (${money(st.balances.vale2.amount)})</button>
+            <button type="button" class="sheetPill" data-acc="none">⚪ Apenas registrar baixa</button>
+          </div>
+        </div>
+
+        <button type="button" id="mdConfirmPayBtn" class="btn sheetSubmitBtn" style="margin-top:4px">
+          ✓ Confirmar pagamento de ${money(suggestedVal)}
+        </button>
+      </div>
+    `;
+
+    let selectedAcc = 'conta';
+    const payValInp = document.getElementById('mdPayVal');
+    const confirmBtn = document.getElementById('mdConfirmPayBtn');
+    const accPillsWrap = document.getElementById('mdPayAccPills');
+
+    function updateConfirmBtn(){
+      const val = parseFloat((payValInp && payValInp.value) || 0) || 0;
+      if(confirmBtn) confirmBtn.textContent = `✓ Confirmar pagamento de ${money(val)}`;
+    }
+
+    if(payValInp) payValInp.addEventListener('input', updateConfirmBtn);
+
+    body.addEventListener('click', e => {
+      const qBtn = e.target.closest('[data-md-quick]');
+      if(qBtn){
+        const val = parseFloat(qBtn.dataset.mdQuick);
+        if(payValInp) payValInp.value = val;
+        body.querySelectorAll('[data-md-quick]').forEach(b => b.classList.toggle('active', b === qBtn));
+        updateConfirmBtn();
+        haptic('light');
+        return;
+      }
+      const accBtn = e.target.closest('[data-acc]');
+      if(accBtn && accPillsWrap && accPillsWrap.contains(accBtn)){
+        selectedAcc = accBtn.dataset.acc;
+        accPillsWrap.querySelectorAll('.sheetPill').forEach(b => b.classList.toggle('active', b === accBtn));
+        haptic('light');
+      }
+    });
+
+    if(confirmBtn){
+      confirmBtn.addEventListener('click', () => {
+        const val = parseFloat((payValInp && payValInp.value) || 0);
+        if(!Number.isFinite(val) || val <= 0){
+          showToast('Informe um valor de pagamento válido.', 'warn');
+          return;
+        }
+
+        const prevStatus = {
+          paid: d.paid,
+          paidAt: d.paidAt || '',
+          installmentsPaid: debtPaidInstallments(d),
+          payments: [...(d.payments || [])]
+        };
+
+        const paymentEntry = {
+          id: id(),
+          value: val,
+          account: selectedAcc,
+          at: new Date().toISOString()
+        };
+
+        if(!Array.isArray(d.payments)) d.payments = [];
+        d.payments.push(paymentEntry);
+
+        const totalPaid = d.payments.reduce((s,p) => s + Number(p.value || 0), 0);
+        const totalDebt = roundMoneyValue(inst * instVal);
+
+        if(totalPaid >= totalDebt - 0.01){
+          d.paid = true;
+          d.paidAt = new Date().toISOString();
+          d.installmentsPaid = inst;
+        } else {
+          d.paid = false;
+          d.installmentsPaid = instVal > 0 ? Math.min(inst - 1, Math.floor((totalPaid + 0.01) / instVal)) : 0;
+        }
+
+        let txId = null;
+        if(selectedAcc !== 'none' && st.balances[selectedAcc]){
+          st.balances[selectedAcc].amount = roundMoneyValue((Number(st.balances[selectedAcc].amount) || 0) - val);
+          txId = id();
+          const nextInst = Math.min(inst, prevStatus.installmentsPaid + 1);
+          const note = inst > 1 ? `Parcela ${nextInst}/${inst} ${txt(d.name, 30)}` : `Pagamento ${txt(d.name, 30)}`;
+          const meta = categoryMeta(note, 'Parcela divida');
+          st.tx.unshift({
+            id: txId,
+            account: selectedAcc,
+            type: 'out',
+            value: val,
+            note,
+            category: meta.label,
+            categoryKey: meta.key,
+            myDebtId: d.id,
+            myDebtInstallment: nextInst,
+            at: new Date().toISOString()
+          });
+        }
+
+        closeMdSheet();
+        save(true);
+        renderMyDebts();
+        renderFinance();
+        renderUnifiedStatement();
+        renderSummary();
+        haptic('success');
+        showToast(`✓ Pagamento de ${money(val)} em ${d.name} registrado!`, 'ok');
+
+        startMyDebtUndo({
+          myDebtId: d.id,
+          account: selectedAcc,
+          val,
+          txId,
+          prevStatus,
+          debtName: d.name
+        });
+      });
+    }
+
+    openMdSheet();
+  }
+
+  function openMyDebtOptionsMenu(debtId){
+    const d = (st.myDebts || []).find(x => x.id === debtId);
+    if(!d) return;
+
+    const title = document.getElementById('mdSheetTitle');
+    if(title) title.textContent = `Opções · ${d.name}`;
+
+    const body = document.getElementById('mdSheetBody');
+    if(!body) return;
+
+    body.innerHTML = `
+      <div style="display:grid;gap:8px;padding:6px 0" id="mdMenuOptionsWrap">
+        <button type="button" class="btn" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="pay">
+          <span>✓</span> <span>Registrar pagamento (parcela ou livre)</span>
+        </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="timeline">
+          <span>📜</span> <span>Ver linha do tempo / histórico</span>
+        </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="edit">
+          <span>✏️</span> <span>Editar dados da dívida</span>
+        </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="toggle">
+          <span>🔄</span> <span>${d.paid ? 'Reabrir dívida' : 'Marcar como quitada'}</span>
+        </button>
+        <button type="button" class="danger" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px;margin-top:6px" data-menu-act="delete">
+          <span>🗑️</span> <span>Excluir dívida permanentemente</span>
+        </button>
+      </div>
+    `;
+
+    const wrap = document.getElementById('mdMenuOptionsWrap');
+    if(wrap){
+      wrap.addEventListener('click', e => {
+        const btn = e.target.closest('[data-menu-act]');
+        if(!btn) return;
+        const act = btn.dataset.menuAct;
+        closeMdSheet();
+        if(act === 'pay') openMyDebtPaySheet(d.id);
+        else if(act === 'timeline') openCreditorTimelineSheet(d.name);
+        else if(act === 'edit') openMyDebtEditSheet(d.id);
+        else if(act === 'toggle'){
+          d.paid = !d.paid;
+          if(d.paid){
+            d.paidAt = new Date().toISOString();
+            d.installmentsPaid = debtInstallments(d);
+          } else {
+            d.paidAt = '';
+          }
+          save(true);
+          renderMyDebts();
+          renderSummary();
+          showToast(d.paid ? `✓ ${d.name} marcada como quitada!` : 'Dívida reaberta!', 'ok');
+        }
+        else if(act === 'delete'){
+          if(confirm(`Excluir a dívida de ${d.name}?`)){
+            st.myDebts = (st.myDebts || []).filter(x => x.id !== d.id);
+            st.tx = (st.tx || []).map(t => t.myDebtId === d.id ? Object.assign({}, t, { myDebtId: '', myDebtInstallment: 0 }) : t);
+            save(true);
+            renderMyDebts();
+            renderSummary();
+            showToast('Dívida excluída.', 'ok');
+          }
+        }
+      });
+    }
+
+    openMdSheet();
+  }
+
+  function openCreditorTimelineSheet(creditorName){
+    const target = foldText(creditorName);
+    const items = (st.myDebts || []).filter(d => foldText(d.name) === target);
+    if(!items.length) return;
+
+    const title = document.getElementById('mdSheetTitle');
+    const reasonIcon = myDebtReasonIcon(items[0]);
+    if(title) title.innerHTML = `${reasonIcon} ${safe(items[0].name)} <span class="tag ok" style="margin-left:6px">${items.length} ${items.length===1?'conta':'contas'}</span>`;
+
+    const body = document.getElementById('mdSheetBody');
+    if(!body) return;
+
+    let totalContracted = 0;
+    let totalPaid = 0;
+    const events = [];
+
+    items.forEach(d => {
+      const inst = debtInstallments(d);
+      const instVal = debtInstallmentValue(d);
+      const dTotal = roundMoneyValue(inst * instVal);
+      totalContracted += dTotal;
+
+      events.push({
+        type: 'created',
+        date: d.at || new Date().toISOString(),
+        title: `Cadastrou dívida de ${money(dTotal)}`,
+        detail: inst > 1 ? `${inst}x de ${money(instVal)} · ${d.note || 'Sem observação'}` : `${d.note || 'À vista'}`,
+        dotColor: '#39ff8f'
+      });
+
+      (d.payments || []).forEach(p => {
+        const pVal = Number(p.value) || 0;
+        totalPaid += pVal;
+        const accNames = { conta: 'Saldo em Conta', vale1: 'VA Mercado', vale2: 'VA Refeição', none: 'Baixa direta' };
+        events.push({
+          type: 'payment',
+          date: p.at,
+          title: `Pagou ${money(pVal)}`,
+          detail: `Debitado de ${accNames[p.account] || 'Saldo em Conta'}`,
+          dotColor: '#4cff9e'
+        });
+      });
+
+      if(d.paid && (!d.payments || !d.payments.length)){
+        totalPaid += dTotal;
+        events.push({
+          type: 'paid',
+          date: d.paidAt || d.at,
+          title: `Quitou conta de ${money(dTotal)}`,
+          detail: 'Marcado como quitado',
+          dotColor: '#4cff9e'
+        });
+      }
+    });
+
+    events.sort((a,b) => new Date(b.date) - new Date(a.date));
+    const openBalance = Math.max(0, totalContracted - totalPaid);
+
+    body.innerHTML = `
+      <div style="display:grid;gap:12px;padding:4px 0">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:rgba(255,255,255,.03);padding:10px;border-radius:12px;border:1px solid var(--ln);text-align:center">
+          <div>
+            <span class="mini">Total contratado</span>
+            <strong style="font-family:var(--font-display);font-size:.96rem;display:block;margin-top:2px">${money(totalContracted)}</strong>
+          </div>
+          <div>
+            <span class="mini">Total pago</span>
+            <strong style="font-family:var(--font-display);font-size:.96rem;color:#4cff9e;display:block;margin-top:2px">${money(totalPaid)}</strong>
+          </div>
+          <div>
+            <span class="mini">Em aberto</span>
+            <strong style="font-family:var(--font-display);font-size:.96rem;color:${openBalance > 0 ? '#ffcf5f' : 'var(--p)'};display:block;margin-top:2px">${money(openBalance)}</strong>
+          </div>
+        </div>
+
+        <div style="font-size:.76rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.05em">Linha do Tempo</div>
+
+        <div class="dvTimeline">
+          ${events.map(ev => `
+            <div class="dvTimelineItem">
+              <div class="dvTimelineDot" style="background:${ev.dotColor}"></div>
+              <div class="dvTimelineTitle">${ev.title}</div>
+              <div class="dvTimelineMeta">${shortDate(ev.date)} · ${ev.detail}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    openMdSheet();
+  }
+
+  function openMyDebtEditSheet(debtId){
+    const d = (st.myDebts || []).find(x => x.id === debtId);
+    if(!d) return;
+
+    const title = document.getElementById('mdSheetTitle');
+    if(title) title.textContent = `Editar dívida · ${d.name}`;
+
+    const body = document.getElementById('mdSheetBody');
+    if(!body) return;
+
+    const inst = debtInstallments(d);
+    const instVal = debtInstallmentValue(d);
+    const currentReason = myDebtReasonKey(d);
+
+    body.innerHTML = `
+      <form id="mdEditForm" style="display:grid;gap:10px;padding:4px 0">
+        <div class="sheetField">
+          <label class="mini">Categoria</label>
+          <div class="sheetPills" id="mdEditReasonPills">
+            <button type="button" class="sheetPill ${currentReason==='house'?'active':''}" data-reason="house">🏠 Contas da Casa</button>
+            <button type="button" class="sheetPill ${currentReason==='loan'?'active':''}" data-reason="loan">🏦 Empréstimo</button>
+            <button type="button" class="sheetPill ${currentReason==='card'?'active':''}" data-reason="card">💳 Fatura / Cartão</button>
+            <button type="button" class="sheetPill ${currentReason==='service'?'active':''}" data-reason="service">📱 Serviços</button>
+            <button type="button" class="sheetPill ${currentReason==='other'?'active':''}" data-reason="other">📦 Outro</button>
+          </div>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Para quem ou qual conta</label>
+          <input id="mdEditName" type="text" maxlength="30" class="sheetInput" value="${esc(d.name)}" required />
+        </div>
+
+        <div class="dvFormRow">
+          <div class="sheetField">
+            <label class="mini">Valor da parcela (R$)</label>
+            <input id="mdEditAmount" type="number" step="0.01" inputmode="decimal" class="sheetInput" value="${instVal}" required />
+          </div>
+          <div class="sheetField">
+            <label class="mini">Parcelas</label>
+            <select id="mdEditInstallments" class="sheetInput dvInstSelect">
+              ${[1,2,3,4,5,6,7,8,9,10,11,12,18,24].map(n => `<option value="${n}" ${inst===n?'selected':''}>${n}x</option>`).join('')}
+            </select>
+          </div>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Data de vencimento</label>
+          <input id="mdEditPayDate" type="date" class="sheetInput" value="${d.payDate || ''}" />
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Observação</label>
+          <input id="mdEditNote" type="text" maxlength="50" class="sheetInput" value="${esc(d.note || '')}" placeholder="Opcional" />
+        </div>
+
+        <button type="submit" class="btn sheetSubmitBtn" style="margin-top:6px">Salvar alterações</button>
+      </form>
+    `;
+
+    let editReason = currentReason;
+    const pillsWrap = document.getElementById('mdEditReasonPills');
+    if(pillsWrap){
+      pillsWrap.addEventListener('click', e => {
+        const pill = e.target.closest('[data-reason]');
+        if(!pill) return;
+        editReason = pill.dataset.reason;
+        pillsWrap.querySelectorAll('.sheetPill').forEach(p => p.classList.toggle('active', p === pill));
+        haptic('light');
+      });
+    }
+
+    const editForm = document.getElementById('mdEditForm');
+    if(editForm){
+      editForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const newName = txt((document.getElementById('mdEditName')||{}).value, 30);
+        const newAmt = parseFloat(((document.getElementById('mdEditAmount')||{}).value || '').replace(',', '.'));
+        const newInst = Math.min(24, Math.max(1, parseInt(((document.getElementById('mdEditInstallments')||{}).value || '1'), 10) || 1));
+        const newPayDate = ((document.getElementById('mdEditPayDate')||{}).value || '').trim();
+        const newNote = txt((document.getElementById('mdEditNote')||{}).value, 50);
+
+        if(!newName || !Number.isFinite(newAmt) || newAmt <= 0) return;
+
+        d.name = newName;
+        d.amount = newAmt;
+        d.installmentValue = newAmt;
+        d.installments = newInst;
+        d.payDate = newPayDate;
+        d.note = newNote;
+        d.reason = editReason;
+
+        const totalPaid = (d.payments || []).reduce((s,p) => s + Number(p.value || 0), 0);
+        const totalDebt = roundMoneyValue(newInst * newAmt);
+        if(totalPaid >= totalDebt - 0.01){
+          d.paid = true;
+          d.installmentsPaid = newInst;
+        } else {
+          d.paid = false;
+          d.installmentsPaid = newAmt > 0 ? Math.min(newInst - 1, Math.floor((totalPaid + 0.01) / newAmt)) : 0;
+        }
+
+        save(true);
+        renderMyDebts();
+        renderSummary();
+        closeMdSheet();
+        haptic('success');
+        showToast('✓ Dívida atualizada!', 'ok');
+      });
+    }
+
+    openMdSheet();
+  }
+
+  function handleMyDebtBoardClick(e){
+    const payBtn = e.target.closest('[data-act="md-open-pay"]');
+    if(payBtn){
+      openMyDebtPaySheet(payBtn.dataset.mydeb);
       return;
     }
-    if(e.target.matches('[data-act="mydeb-pay"]')){
-      if(d.paid) return;
-      const nextInstallment=debtPaidInstallments(d)+1;
-      const installmentValue=debtInstallmentValue(d);
-      if(installmentValue<=0) return;
-      const nowIso=new Date().toISOString();
-      d.installmentsPaid=nextInstallment;
-      d.paid=d.installmentsPaid>=debtInstallments(d);
-      d.paidAt=d.paid?nowIso:'';
-      if(!d.payDate) d.payDate=dateKey(nowIso);
-      st.balances.conta.amount -= installmentValue;
-      const note=`Parcela ${nextInstallment}/${debtInstallments(d)} ${txt(d.name,30)}`;
-      const meta=categoryMeta(note,'Parcela divida');
-      st.tx.unshift({
-        id:id(),
-        account:'conta',
-        type:'out',
-        value:installmentValue,
-        note,
-        category:meta.label,
-        categoryKey:meta.key,
-        myDebtId:d.id,
-        myDebtInstallment:nextInstallment,
-        at:nowIso
-      });
-      haptic('medium');
-      showToast(`✓ Parcela ${nextInstallment}/${debtInstallments(d)} de ${d.name} paga!`,'ok');
-      save(true); renderMyDebts(); renderFinance(); renderSummary(); flash(document.querySelector('[data-acc="conta"] [data-bal]'),'out');
+    const menuBtn = e.target.closest('[data-act="md-menu"]');
+    if(menuBtn){
+      openMyDebtOptionsMenu(menuBtn.dataset.mydeb);
+      return;
     }
-  });
+    const timelineBtn = e.target.closest('[data-act="md-timeline"]');
+    if(timelineBtn){
+      openCreditorTimelineSheet(timelineBtn.dataset.creditor);
+      return;
+    }
+  }
 
-  el.myDebtList.addEventListener('input',e=>{
-    const row=e.target.closest('[data-mydeb]'); if(!row) return;
-    const d=st.myDebts.find(x=>x.id===row.dataset.mydeb); if(!d) return;
-    if(e.target.matches('[data-f="mydeb-name"]')) d.name=txt(e.target.value,30);
-    if(e.target.matches('[data-f="mydeb-note"]')) d.note=txt(e.target.value,50);
-    if(e.target.matches('[data-f="mydeb-amount"]')){
-      const v=parseFloat((e.target.value||'').replace(',','.'));
-      if(Number.isFinite(v)&&v>=0){ d.amount=v; d.installmentValue=v; }
-    }
-    if(e.target.matches('[data-f="mydeb-installments"]')){
-      d.installments=Math.min(12,Math.max(1,parseInt(e.target.value||'1',10)||1));
-      d.installmentsPaid=Math.min(d.installments,debtPaidInstallments(d));
-      d.paid=d.installmentsPaid>=d.installments;
-      if(!d.paid) d.paidAt='';
-    }
-    if(e.target.matches('[data-f="mydeb-paydate"]')) d.payDate=e.target.value||'';
-    save();
-    renderMyDebts();
-  });
+  const myDebtListEl = document.getElementById('myDebtList');
+  if(myDebtListEl) myDebtListEl.addEventListener('click', handleMyDebtBoardClick);
+
+  let mdTouchTimer = null;
+  let mdTouchMoved = false;
+  if(myDebtListEl){
+    myDebtListEl.addEventListener('touchstart', e => {
+      const card = e.target.closest('.dvCard');
+      if(!card || e.target.closest('button')) return;
+      mdTouchMoved = false;
+      mdTouchTimer = setTimeout(() => {
+        if(!mdTouchMoved && card.dataset.mydeb){
+          haptic('medium');
+          openMyDebtOptionsMenu(card.dataset.mydeb);
+        }
+      }, 520);
+    }, { passive: true });
+    myDebtListEl.addEventListener('touchmove', () => { mdTouchMoved = true; if(mdTouchTimer) clearTimeout(mdTouchTimer); }, { passive: true });
+    myDebtListEl.addEventListener('touchend', () => { if(mdTouchTimer) clearTimeout(mdTouchTimer); }, { passive: true });
+    myDebtListEl.addEventListener('touchcancel', () => { if(mdTouchTimer) clearTimeout(mdTouchTimer); }, { passive: true });
+  }
 
   el.goalForm.addEventListener('submit',e=>{
     e.preventDefault();
@@ -4396,123 +5043,157 @@ function groupMyDebtEntries(items,desc){
   });
   return Object.values(grouped).sort((a,b)=>compareMonthGroupKeys(a.key,b.key,desc));
 }
-function renderMyDebtCard(d){
-  const totalInst = debtInstallments(d);
-  const paidInst = debtPaidInstallments(d);
-  const dots = Array.from({length: Math.min(12, totalInst)}, (_, i) => 
-    `<span class="stepDot ${i < paidInst ? 'done' : ''}"></span>`
-  ).join('');
-  const stepperHtml = totalInst > 1 ? `<div class="installmentStepper">${dots}</div>` : '';
+const MD_REASONS = {
+  house: { label: 'Contas da Casa', icon: '🏠' },
+  loan: { label: 'Empréstimo', icon: '🏦' },
+  card: { label: 'Fatura / Cartão', icon: '💳' },
+  service: { label: 'Serviços', icon: '📱' },
+  other: { label: 'Outro', icon: '📦' }
+};
 
-  let dueBadgeHtml = '';
-  if(!d.paid && d.payDate){
-    const todayStr = new Date().toISOString().slice(0,10);
-    const d1 = new Date(todayStr), d2 = new Date(d.payDate);
-    const diffDays = Math.round((d2 - d1) / (1000*60*60*24));
-    if(diffDays < 0){
-      dueBadgeHtml = `<span class="dueBadge late">🚨 Venceu há ${Math.abs(diffDays)}d</span>`;
-    } else if(diffDays === 0){
-      dueBadgeHtml = `<span class="dueBadge today">⚠️ Vence hoje!</span>`;
-    } else if(diffDays <= 3){
-      dueBadgeHtml = `<span class="dueBadge soon">⏳ Vence em ${diffDays}d</span>`;
+function inferMyDebtReason(name){
+  const n = foldText(name||'');
+  if(/aluguel|luz|agua|água|energia|internet|condominio|condomínio|gas|gás|enel|sabesp|cpfl|claro|vivo|oi/.test(n)) return 'house';
+  if(/emprestimo|empréstimo|banco|financiamento|consignado|parcela carro|carro|moto|veiculo|veículo|caixa/.test(n)) return 'loan';
+  if(/cartao|cartão|fatura|nubank|inter|itau|itaú|bradesco|santander|amex|c6|picpay/.test(n)) return 'card';
+  if(/spotify|netflix|academia|plano|celular|assinatura|curso|faculdade|escola|youtube/.test(n)) return 'service';
+  return 'other';
+}
+
+function myDebtReasonKey(d){
+  return (d && d.reason && MD_REASONS[d.reason]) ? d.reason : inferMyDebtReason(d && d.name);
+}
+
+function myDebtReasonIcon(d){
+  const k = myDebtReasonKey(d);
+  return (MD_REASONS[k] && MD_REASONS[k].icon) || '🏠';
+}
+
+function myDebtUrgencyInfo(d){
+  if(d.paid) return { level: 4, tagHtml: '<span class="tag ok">✓ Quitada</span>', statusText: 'Quitada', delayDays: 0 };
+  if(!d.payDate){
+    return { level: 3, tagHtml: '<span class="tag" style="opacity:.7">Sem pressa</span>', statusText: 'Sem pressa', delayDays: 0 };
+  }
+  const todayStr = today();
+  const diff = days(todayStr, d.payDate); // negative if overdue
+  if(diff < 0){
+    const delay = Math.abs(diff);
+    let tagCls = 'dvTagDelayYellow';
+    let label = `venceu há ${delay}d`;
+    if(delay > 30){
+      tagCls = 'dvTagDelayRed';
+      label = `🔥 venceu há ${delay}d`;
+    } else if(delay > 7){
+      tagCls = 'dvTagDelayOrange';
+      label = `venceu há ${delay}d`;
     }
+    return {
+      level: 1, // 🔴 Vencidas
+      tagHtml: `<span class="${tagCls}">${label}</span>`,
+      statusText: label,
+      delayDays: delay,
+      isOverdue: true
+    };
+  }
+  if(diff <= 7){
+    const label = diff === 0 ? 'vence hoje' : (diff === 1 ? 'vence amanhã' : `vence em ${diff}d`);
+    return {
+      level: 2, // 🟡 Esta semana
+      tagHtml: `<span class="tag warn" style="background:rgba(255,207,95,.15);color:#ffd056;border-color:rgba(255,207,95,.4)">${label}</span>`,
+      statusText: label,
+      delayDays: 0,
+      isWeek: true
+    };
+  }
+  return {
+    level: 3, // ⚪ Sem pressa
+    tagHtml: `<span class="tag month" style="color:#9fb3a8">vence em ${dateBr(d.payDate)}</span>`,
+    statusText: `vence em ${dateBr(d.payDate)}`,
+    delayDays: 0
+  };
+}
+
+function renderMyDebtSingleCard(d, isNested=false){
+  const inst = debtInstallments(d);
+  const paidInst = debtPaidInstallments(d);
+  const instVal = debtInstallmentValue(d);
+  const remaining = debtRemainingAmount(d);
+  const reasonKey = myDebtReasonKey(d);
+  const reasonIcon = (MD_REASONS[reasonKey] && MD_REASONS[reasonKey].icon) || '🏠';
+  const urgency = myDebtUrgencyInfo(d);
+
+  let dotsHtml = '';
+  if(inst > 1){
+    const dots = Array.from({length: Math.min(6, inst)}, (_, i) => {
+      const isDone = i < paidInst;
+      return `<span style="color:${isDone ? '#39ff8f' : 'rgba(255,255,255,.2)'}">${isDone ? '●' : '○'}</span>`;
+    }).join('');
+    dotsHtml = `<span class="dvDots" title="${paidInst}/${inst} parcelas">${dots} <span style="font-size:.68rem;opacity:.75">${paidInst}/${inst}</span></span>`;
   }
 
   return `
-    <article class="debtor debtCard ${d.paid?'paid':''}" data-mydeb="${d.id}">
-      <div class="debtorHead">
-        <div>
-          <div class="debtorName">${safe(d.name)} ${dueBadgeHtml}</div>
-          <div class="debtorAmount">${money(debtInstallmentValue(d))}</div>
+    <article class="dvCard ${d.paid ? 'paid' : ''}" data-mydeb="${d.id}" ${isNested ? 'style="border-color:rgba(57,255,143,.18);background:rgba(255,255,255,.02);margin-top:2px"' : ''}>
+      <div class="dvCardLine1">
+        <div class="dvPersonNameWrap">
+          <span class="dvReasonIcon" title="${MD_REASONS[reasonKey]?MD_REASONS[reasonKey].label:''}">${reasonIcon}</span>
+          <span class="dvPersonName" data-act="md-timeline" data-creditor="${esc(d.name)}" title="Ver histórico">${safe(d.name)}</span>
+          ${dotsHtml}
         </div>
-        <div class="debtorTools">
-          <span class="tag ${d.paid?'ok':'warn'}">${d.paid?'Quitada':'Pendente'}</span>
-          <span class="tag">${debtInstallments(d)}x</span>
-          <span class="tag month">${safe(monthLabel(d.payDate))}</span>
-          <button type="button" class="iconBtn ${ui.myDebts[d.id]?'active':''}" data-act="mydeb-edit" title="Editar dívida">✎</button>
+        <div class="dvCardAmount">${money(remaining > 0 ? remaining : (d.paid ? debtPaidAmount(d) : instVal))}</div>
+      </div>
+      <div class="dvCardLine2">
+        <div class="dvMetaLeft">
+          ${urgency.tagHtml}
+          ${inst > 1 ? `<span>· parcela ${money(instVal)}</span>` : ''}
+          ${d.note ? `<span>· ${safe(d.note)}</span>` : ''}
+        </div>
+        <div class="dvMetaRight">
+          ${!d.paid ? `<button type="button" class="dvActionBtn receive" data-act="md-open-pay" data-mydeb="${d.id}">✓ Paguei</button>` : ''}
+          <button type="button" class="dvActionBtn menu" data-act="md-menu" data-mydeb="${d.id}" title="Mais opções">⋯</button>
         </div>
       </div>
-      <div class="debtorCardBody">
-        <div class="actionMeta">
-          <div class="debtStats">
-            <div class="debtStat">
-              <span class="mini">Parcela</span>
-              <strong>${money(debtInstallmentValue(d))}</strong>
-            </div>
-            <div class="debtStat">
-              <span class="mini">Pago</span>
-              <strong>${debtPaidInstallments(d)}/${debtInstallments(d)}</strong>
-            </div>
-            <div class="debtStat">
-              <span class="mini">${d.paid?'Pago total':'Pendente'}</span>
-              <strong>${money(d.paid?debtPaidAmount(d):debtRemainingAmount(d))}</strong>
-            </div>
-          </div>
-          ${stepperHtml}
-          <div class="debtProgress"><div class="debtProgressFill" style="width:${debtCompletionPct(d)}%"></div></div>
-          <div class="debtorMeta">
-            <span>${d.paidAt?`Quitada em ${shortDate(d.paidAt)}`:(d.payDate?`Vence em: ${dateBr(d.payDate)}`:'Data de vencimento não definida')} · ${safe(monthInfoLabel(d.payDate))}</span>
-            <span>${d.note?safe(d.note):'Sem observação'}</span>
-            <span>${d.paid?'Todas as parcelas pagas.':`Faltam ${debtInstallments(d)-debtPaidInstallments(d)} parcela(s) · total pendente ${money(debtRemainingAmount(d))}`}</span>
-          </div>
-          ${ui.myDebts[d.id]?`<div class="debtorEdit debtPanel">
-            <span class="debtPanelTitle">Ajuste manual de parcelas</span>
-            <div class="two">
-              <input data-f="mydeb-name" type="text" value="${esc(d.name)}" placeholder="Dívida" />
-              <input data-f="mydeb-amount" type="number" step="0.01" inputmode="decimal" value="${Number(debtInstallmentValue(d))||0}" />
-            </div>
-            <div class="two">
-              <select data-f="mydeb-installments">
-                ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${debtInstallments(d)===i+1?'selected':''}>${i+1}x</option>`).join('')}
-              </select>
-              <input data-f="mydeb-paydate" type="date" value="${d.payDate||''}" />
-            </div>
-            <div class="two">
-              <input data-f="mydeb-note" type="text" maxlength="50" value="${esc(d.note||'')}" placeholder="Observação" />
-              <input type="text" value="${debtPaidInstallments(d)} de ${debtInstallments(d)} parcelas pagas" readonly />
-            </div>
-            <span class="debtPanelHint">A data desta dívida define o mês de agrupamento nos blocos em aberto e pagas.</span>
-          </div>`:''}
-        </div>
-        <div class="actionStack debtorActions">
-          <button type="button" class="btn" data-act="mydeb-pay" ${d.paid?'disabled':''}>${d.paid?'Quitada':'Pagar parcela'}</button>
-          <button type="button" class="ghost" data-act="mydeb-toggle">${d.paid?'Reabrir':'Marcar quitada'}</button>
-          <button type="button" class="ghost" data-act="mydeb-del">Remover</button>
-        </div>
-      </div>
-    </article>`;
+    </article>
+  `;
 }
-function renderMyDebtSection(title,sectionClass,items,summaryLabel,emptyMessage,desc){
-  const total=roundMoneyValue((items||[]).reduce((sum,item)=>sum+(summaryLabel==='paid'?debtPaidAmount(item):debtRemainingAmount(item)),0));
-  const groups=groupMyDebtEntries(items,summaryLabel==='paid');
-  const body=groups.length?groups.map(group=>`
-    <div class="debtMonthGroup">
-      <div class="debtMonthHead">
-        <div>
-          <strong>${safe(group.label)}</strong>
-          <p class="mut">${group.key==='sem-mes'?'Defina a data para esse bloco entrar em um mês específico.':'Mês de referência definido pelo usuário.'}</p>
-        </div>
-        <div class="debtMonthMeta">
-          <span class="tag month">${safe(group.label)}</span>
-          <span class="tag ${summaryLabel==='paid'?'ok':'warn'}">${money(summaryLabel==='paid'?group.paid:group.remaining)}</span>
-        </div>
-      </div>
-      <div class="debtorList debtMonthCards">${group.items.map(renderMyDebtCard).join('')}</div>
-    </div>`).join(''):`<p class="empty">${safe(emptyMessage)}</p>`;
+
+function renderMyDebtGroupCard(creditorName, items){
+  if(items.length === 1) return renderMyDebtSingleCard(items[0]);
+  const totalOpen = roundMoneyValue(items.filter(d=>!d.paid).reduce((s,d)=>s+debtRemainingAmount(d), 0));
+  const openCount = items.filter(d=>!d.paid).length;
+  const reasonIcon = myDebtReasonIcon(items[0]);
+
+  const anyOverdue = items.some(d=>myDebtUrgencyInfo(d).isOverdue);
+  const anyWeek = items.some(d=>myDebtUrgencyInfo(d).isWeek);
+  let badgeHtml = '';
+  if(anyOverdue) badgeHtml = '<span class="dvTagDelayRed">🔴 Contém vencidas</span>';
+  else if(anyWeek) badgeHtml = '<span class="tag warn" style="background:rgba(255,207,95,.15);color:#ffd056;border-color:rgba(255,207,95,.4)">🟡 Vence esta semana</span>';
+
   return `
-    <article class="fcard debtSection ${sectionClass}">
-      <div class="debtSectionHead">
-        <div>
-          <h3 class="subtitle">${safe(title)}</h3>
-          <p class="mut">${safe(desc)}</p>
+    <details class="dvGroupCard" data-group="${esc(creditorName)}">
+      <summary class="dvGroupHead">
+        <div class="dvCardLine1">
+          <div class="dvPersonNameWrap">
+            <span class="dvReasonIcon">${reasonIcon}</span>
+            <strong style="font-size:.88rem;color:var(--txt)">${safe(creditorName)}</strong>
+            <span style="font-size:.7rem;color:var(--mut);background:rgba(255,255,255,.05);padding:2px 6px;border-radius:999px;margin-left:4px">${items.length} contas</span>
+          </div>
+          <div class="dvCardAmount">${money(totalOpen)}</div>
         </div>
-        <div class="debtMonthMeta">
-          <span class="tag ${summaryLabel==='paid'?'ok':'warn'}">${items.length} ${items.length===1?'conta':'contas'}</span>
-          <span class="tag month">${money(total)}</span>
+        <div class="dvCardLine2">
+          <div class="dvMetaLeft">
+            ${badgeHtml}
+            <span>${openCount} conta(s) em aberto</span>
+          </div>
+          <div class="dvMetaRight">
+            <span style="font-size:.74rem;color:var(--p)">Ver contas ▾</span>
+          </div>
         </div>
+      </summary>
+      <div class="dvGroupSubItems">
+        ${items.map(d=>renderMyDebtSingleCard(d, true)).join('')}
       </div>
-      ${body}
-    </article>`;
+    </details>
+  `;
 }
 function debtorInstallments(d){
   return Math.min(24,Math.max(1,parseInt(d&&d.installments||'1',10)||1));
@@ -4874,32 +5555,171 @@ function renderDebtors(){
 }
 
 function renderMyDebts(){
-  if(!Array.isArray(st.myDebts)) st.myDebts=[];
-  if(el.myDebtTotalBox) el.myDebtTotalBox.textContent=money(myDebtPortfolioTotal());
-  if(el.myDebtPaidBox) el.myDebtPaidBox.textContent=money(myDebtPaidTotal());
-  if(el.myDebtMonthBox) el.myDebtMonthBox.textContent=money(myDebtMonthlyTotal());
-  if(!st.myDebts.length){el.myDebtList.innerHTML='<p class="empty">Nenhuma dívida cadastrada ainda.</p>';return;}
-  const openItems=sortMyDebtEntries((st.myDebts||[]).filter(d=>!d.paid));
-  const paidItems=sortMyDebtEntries((st.myDebts||[]).filter(d=>d.paid));
-  el.myDebtList.className='list debtBoard';
-  el.myDebtList.innerHTML=[
-    renderMyDebtSection(
-      'Saldos em aberto',
-      'openSection',
-      openItems,
-      'open',
-      'Nenhuma conta em aberto no momento.',
-      'As dívidas abertas aparecem separadas pelo mês que você definiu na data de vencimento.'
-    ),
-    renderMyDebtSection(
-      'Contas já pagas',
-      'paidSection',
-      paidItems,
-      'paid',
-      'Nenhuma conta quitada ainda.',
-      'As dívidas quitadas ficam arquivadas por mês para facilitar conferência do histórico.'
-    )
-  ].join('');
+  if(!Array.isArray(st.myDebts)) st.myDebts = [];
+  const all = st.myDebts;
+  const openItems = all.filter(d => !d.paid);
+  const paidItems = all.filter(d => d.paid);
+
+  const openTotal = roundMoneyValue(openItems.reduce((s,d)=>s+debtRemainingAmount(d), 0));
+  const overdueItems = openItems.filter(d => myDebtUrgencyInfo(d).isOverdue);
+  const overdueTotal = roundMoneyValue(overdueItems.reduce((s,d)=>s+debtRemainingAmount(d), 0));
+
+  // 1. Resumo em 1 linha (#mdSummaryLine)
+  const summaryEl = document.getElementById('mdSummaryLine');
+  if(summaryEl){
+    let overdueHtml = '';
+    if(overdueTotal > 0){
+      overdueHtml = `<span class="dvSummaryDot">·</span> <span class="dvOverdueBadge">🔴 ${money(overdueTotal)} vencido</span>`;
+    }
+    summaryEl.innerHTML = `
+      <span>Devo <strong>${money(openTotal)}</strong></span>
+      <span class="dvSummaryDot">·</span>
+      <span><strong>${openItems.length}</strong> ${openItems.length===1?'conta':'contas'}</span>
+      ${overdueHtml}
+    `;
+  }
+
+  // 2. Barra de quanto já foi pago (#mdProgress)
+  const progressEl = document.getElementById('mdProgress');
+  if(progressEl){
+    const paidTotal = roundMoneyValue(all.reduce((s,d)=>s+debtPaidAmount(d), 0));
+    const totalTracked = roundMoneyValue(openTotal + paidTotal);
+    if(totalTracked > 0){
+      progressEl.hidden = false;
+      progressEl.style.display = 'grid';
+      const pct = Math.min(100, Math.round((paidTotal / totalTracked) * 100));
+      progressEl.innerHTML = `
+        <div class="dvProgressTrack">
+          <div class="dvProgressFill" style="width:${pct}%"></div>
+        </div>
+        <div class="dvProgressMeta">
+          <span><strong>${pct}% pago</strong> — ${money(paidTotal)} de ${money(totalTracked)}</span>
+        </div>
+      `;
+    } else {
+      progressEl.hidden = true;
+      progressEl.style.display = 'none';
+    }
+  }
+
+  // 3. Destaque esta semana (#mdWeek)
+  const weekEl = document.getElementById('mdWeek');
+  if(weekEl){
+    const weekItems = openItems.filter(d => myDebtUrgencyInfo(d).isWeek);
+    const weekTotal = roundMoneyValue(weekItems.reduce((s,d)=>{
+      const instVal = debtInstallmentValue(d);
+      const rem = debtRemainingAmount(d);
+      return s + (instVal > 0 && instVal < rem ? instVal : rem);
+    }, 0));
+    if(weekTotal > 0){
+      weekEl.hidden = false;
+      weekEl.style.display = 'flex';
+      const names = Array.from(new Set(weekItems.map(d=>d.name).filter(Boolean)));
+      weekEl.innerHTML = `<span>📤 Esta semana vencem <strong>${money(weekTotal)}</strong> (${names.map(safe).join(', ')})</span>`;
+    } else {
+      weekEl.hidden = true;
+      weekEl.style.display = 'none';
+    }
+  }
+
+  const listEl = el.myDebtList || document.getElementById('myDebtList');
+  if(!listEl) return;
+
+  if(!all.length){
+    listEl.className = 'list debtBoard';
+    listEl.innerHTML = '<p class="empty" style="text-align:center;padding:24px 12px">Nenhuma dívida a pagar cadastrada.<br>Toque em <strong>+ Adicionar dívida</strong> para registrar suas contas.</p>';
+    return;
+  }
+
+  // 4. Buckets de urgência
+  const v1 = openItems.filter(d => myDebtUrgencyInfo(d).level === 1); // 🔴 Vencidas
+  const v2 = openItems.filter(d => myDebtUrgencyInfo(d).level === 2); // 🟡 Esta semana
+  const v3 = openItems.filter(d => myDebtUrgencyInfo(d).level === 3); // ⚪ Sem pressa
+
+  const sortFn = (a,b) => (a.payDate || '9999-99-99').localeCompare(b.payDate || '9999-99-99');
+  v1.sort(sortFn);
+  v2.sort(sortFn);
+  v3.sort(sortFn);
+  paidItems.sort((a,b) => (b.paidAt || b.at || '').localeCompare(a.paidAt || a.at || ''));
+
+  function groupCreditors(items){
+    const map = new Map();
+    items.forEach(item => {
+      const key = foldText(item.name);
+      if(!map.has(key)) map.set(key, { name: item.name, list: [] });
+      map.get(key).list.push(item);
+    });
+    const rendered = [];
+    map.forEach(val => {
+      rendered.push(renderMyDebtGroupCard(val.name, val.list));
+    });
+    return rendered.join('');
+  }
+
+  let html = '';
+  if(v1.length > 0){
+    const v1Total = roundMoneyValue(v1.reduce((s,d)=>s+debtRemainingAmount(d), 0));
+    html += `
+      <section class="dvSection">
+        <div class="dvSectionHead" style="color:#ff7d8d">
+          <span>🔴 Vencidas (${v1.length})</span>
+          <span style="font-family:var(--font-display);font-size:.9rem">${money(v1Total)}</span>
+        </div>
+        ${groupCreditors(v1)}
+      </section>
+    `;
+  }
+
+  if(v2.length > 0){
+    const v2Total = roundMoneyValue(v2.reduce((s,d)=>s+debtRemainingAmount(d), 0));
+    html += `
+      <section class="dvSection">
+        <div class="dvSectionHead" style="color:#ffd056">
+          <span>🟡 Vencem esta semana (${v2.length})</span>
+          <span style="font-family:var(--font-display);font-size:.9rem">${money(v2Total)}</span>
+        </div>
+        ${groupCreditors(v2)}
+      </section>
+    `;
+  }
+
+  if(v3.length > 0){
+    const v3Total = roundMoneyValue(v3.reduce((s,d)=>s+debtRemainingAmount(d), 0));
+    html += `
+      <section class="dvSection">
+        <div class="dvSectionHead">
+          <span>⚪ Próximos vencimentos (${v3.length})</span>
+          <span style="font-family:var(--font-display);font-size:.9rem">${money(v3Total)}</span>
+        </div>
+        ${groupCreditors(v3)}
+      </section>
+    `;
+  }
+
+  if(paidItems.length > 0){
+    const paidTotal = roundMoneyValue(paidItems.reduce((s,d)=>s+debtPaidAmount(d), 0));
+    html += `
+      <details class="archiveMonth" style="margin-top:10px">
+        <summary class="archiveSummary">
+          <div>
+            <strong style="color:#4cff9e">✅ Contas Quitadas (${paidItems.length})</strong>
+            <span style="font-size:.7rem;color:var(--mut)">Total já pago nestas contas</span>
+          </div>
+          <span style="font-family:var(--font-display);font-size:.92rem;color:#4cff9e">${money(paidTotal)}</span>
+        </summary>
+        <div class="archiveBody" style="display:grid;gap:6px;padding-top:6px">
+          ${paidItems.map(d=>renderMyDebtSingleCard(d)).join('')}
+        </div>
+      </details>
+    `;
+  }
+
+  if(!html){
+    html = '<p class="empty" style="text-align:center;padding:24px 12px">Todas as suas dívidas cadastradas estão quitadas! 🎉</p>';
+  }
+
+  listEl.className = 'list debtBoard';
+  listEl.innerHTML = html;
 }
 
 function goalThemeIcon(name){
@@ -5509,12 +6329,19 @@ function normalizeDebtorEntry(item){
 
 function normalizeDebtEntry(item){
   item=item||{};
-  const installments=Math.min(12,Math.max(1,parseInt(item.installments||'1',10)||1));
+  const installments=Math.min(24,Math.max(1,parseInt(item.installments||'1',10)||1));
   const paid=Boolean(item.paid);
   const installmentsPaid=Math.max(0,Math.min(installments,parseInt(item.installmentsPaid||String(paid?installments:0),10)||0));
   const rawInstallmentValue=Number(item.installmentValue);
   const rawAmount=Math.max(0,Number(item.amount)||0);
   const installmentValue=Math.max(0,Number.isFinite(rawInstallmentValue)&&rawInstallmentValue>0 ? rawInstallmentValue : (installments>1 ? rawAmount/installments : rawAmount));
+  const reason=['house','loan','card','service','other'].includes(item.reason)?item.reason:'house';
+  const payments=Array.isArray(item.payments)?item.payments.map(p=>({
+    id:p.id||id(),
+    value:Math.max(0,Number(p.value)||0),
+    account:['conta','vale1','vale2','none'].includes(p.account)?p.account:'conta',
+    at:p.at||new Date().toISOString()
+  })).filter(p=>p.value>0):[];
   return Object.assign({},item,{
     id:item.id||id(),
     name:txt(item.name||'',30),
@@ -5525,7 +6352,9 @@ function normalizeDebtEntry(item){
     note:txt(item.note||'',50),
     payDate:item.payDate||'',
     paid:paid||installmentsPaid>=installments,
-    paidAt:item.paidAt||''
+    paidAt:item.paidAt||'',
+    reason,
+    payments
   });
 }
 function pageFromHash(){
@@ -6135,9 +6964,9 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v12'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v13'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v12');
+      sessionStorage.setItem('sw_ctrl_reload','v13');
       window.location.reload();
     }
   });

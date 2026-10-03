@@ -314,7 +314,7 @@ def normalize_goal_name(name):
 
 def normalize_debt_item(item):
     entry = dict(item or {})
-    installments = max(1, min(12, int(safe_float(entry.get("installments"), 1))))
+    installments = max(1, min(24, int(safe_float(entry.get("installments"), 1))))
     paid = bool(entry.get("paid"))
     paid_installments = int(safe_float(entry.get("installmentsPaid"), installments if paid else 0))
     paid_installments = max(0, min(installments, paid_installments))
@@ -324,6 +324,21 @@ def normalize_debt_item(item):
     if paid and paid_installments < installments:
         paid_installments = installments
     paid = paid_installments >= installments
+    raw_reason = str(entry.get("reason") or entry.get("category") or "").strip().lower()
+    reason = raw_reason if raw_reason in {"house", "loan", "card", "service", "other"} else "house"
+    payments = []
+    for p in list(entry.get("payments") or []):
+        if not isinstance(p, dict):
+            continue
+        p_val = max(0.0, safe_float(p.get("value"), 0))
+        if p_val <= 0:
+            continue
+        payments.append({
+            "id": str(p.get("id") or make_id()),
+            "value": p_val,
+            "account": str(p.get("account") or "conta"),
+            "at": str(p.get("at") or _now_iso()),
+        })
     return {
         "id": str(entry.get("id") or make_id()),
         "name": normalize_spaces(entry.get("name"))[:30],
@@ -336,6 +351,8 @@ def normalize_debt_item(item):
         "paid": paid,
         "paidAt": str(entry.get("paidAt") or ""),
         "at": str(entry.get("at") or _now_iso()),
+        "reason": reason,
+        "payments": payments,
     }
 
 
