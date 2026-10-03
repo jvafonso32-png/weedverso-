@@ -25,8 +25,8 @@ body[data-privacy="on"] canvas{filter:blur(8px)}
 .btn{background:linear-gradient(135deg,#4cff9e,#22d37d);color:#04150d;border-color:rgba(115,255,186,.6);box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 10px 18px rgba(18,120,71,.2)}
 .ghost{background:linear-gradient(180deg,rgba(24,34,30,.92),rgba(17,25,22,.94));border-color:rgba(120,150,136,.26);box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 8px 14px rgba(0,0,0,.16)}
 .danger{background:linear-gradient(180deg,rgba(73,24,31,.9),rgba(52,16,22,.94));color:#ff7c8c;border-color:rgba(255,95,112,.35);box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 8px 14px rgba(0,0,0,.16)}
-button:hover{transform:translateY(-1px)}
-button:active{transform:translateY(0) scale(.985)}
+button:hover{opacity:.95}
+button:active{opacity:.82}
 button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .iconBtn{appearance:none;-webkit-appearance:none;width:34px;height:34px;border:1px solid rgba(88,135,113,.35);border-radius:10px;background:linear-gradient(180deg,rgba(24,36,31,.95),rgba(13,21,18,.96));display:grid;place-items:center;color:#d8ebe0;font:700 .92rem var(--font-ui);cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 8px 14px rgba(0,0,0,.16)}.iconBtn.active{color:var(--p);border-color:rgba(57,255,143,.55);box-shadow:0 0 0 1px rgba(57,255,143,.14) inset,0 0 14px rgba(57,255,143,.16)}
 label,.mini{font-size:.68rem;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
@@ -150,7 +150,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 /* Quick Action Chips */
 .quickChipsRow{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .quickActionChip{appearance:none;-webkit-appearance:none;border:1px solid rgba(151,170,159,.22);border-radius:8px;padding:5px 9px;background:rgba(255,255,255,.03);color:var(--txt);font:600 .72rem var(--font-ui);cursor:pointer;transition:all .16s ease}
-.quickActionChip:active{transform:scale(.96);background:rgba(57,255,143,.15);border-color:rgba(57,255,143,.45);color:#39ff8f}
+.quickActionChip:active{background:rgba(57,255,143,.15);border-color:rgba(57,255,143,.45);color:#39ff8f}
 .quickActionChip.highlight{border-color:rgba(57,255,143,.38);background:rgba(57,255,143,.08);color:#7effb9}
 .quickActionChip.danger{border-color:rgba(255,95,112,.35);background:rgba(255,95,112,.08);color:#ff9daa}
 
@@ -255,12 +255,14 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
     .heroDesc{font-size:.72rem}
     .fabQuickAdd{bottom:calc(60px + env(safe-area-inset-bottom));right:12px;width:44px;height:44px;font-size:1.45rem;border-radius:14px}
   }
-/* Feedback Tátil & Compressão Mecânica */
-.btn:active, .ghost:active, .iconBtn:active, .fcard:active,
+/* Feedback Visual Estável (Sem afundar tela nem scale) */
+.btn:active, .ghost:active, .iconBtn:active,
 .sheetTab:active, .sheetPill:active, .navBtn:active, .fabQuickAdd:active,
-.quick:active, .filterChip:active, .tagChip:active, .item:active, .debtor:active, .trophyPill:active {
-  transform: scale(0.96) !important;
-  transition: transform 0.08s cubic-bezier(0.16, 1, 0.3, 1) !important;
+.quick:active, .filterChip:active, .tagChip:active {
+  opacity: .82;
+}
+.fcard:active, .card:active, .debtor:active, .item:active {
+  transform: none !important;
 }
 
 /* Floating Action Button (FAB) */
@@ -835,11 +837,28 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <form id="debForm" class="form">
             <div class="two">
               <input id="debName" type="text" maxlength="30" placeholder="Nome da pessoa" required />
-              <input id="debAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor devido" required />
+              <input id="debAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor total devido" required />
+            </div>
+            <div class="two">
+              <select id="debInstallments">
+                <option value="1">1x (À vista)</option>
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+                <option value="6">6x</option>
+                <option value="7">7x</option>
+                <option value="8">8x</option>
+                <option value="9">9x</option>
+                <option value="10">10x</option>
+                <option value="11">11x</option>
+                <option value="12">12x</option>
+              </select>
+              <input id="debPayDate" type="date" title="Data prevista de pagamento" />
             </div>
             <div class="two">
               <input id="debNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
-              <input id="debPayDate" type="date" />
+              <div id="debInstallmentPreview" class="mut" style="font-size:.78rem;align-self:center;padding-left:4px;">1x à vista</div>
             </div>
             <button class="btn" type="submit">Adicionar devedor</button>
           </form>
@@ -1543,13 +1562,13 @@ const el={
   fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
   ccEditBtn:$('#ccEditBtn'),ccMeta:$('#ccMeta'),ccMetaSummary:$('#ccMetaSummary'),ccMetaHint:$('#ccMetaHint'),ccName:$('#ccName'),ccValue:$('#ccValue'),ccDesc:$('#ccDesc'),
   ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
-  debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
+  debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debInstallments:$('#debInstallments'),debInstallmentPreview:$('#debInstallmentPreview'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
   myDebtForm:$('#myDebtForm'),myDebtName:$('#myDebtName'),myDebtAmount:$('#myDebtAmount'),myDebtInstallments:$('#myDebtInstallments'),myDebtNote:$('#myDebtNote'),myDebtPayDate:$('#myDebtPayDate'),myDebtList:$('#myDebtList'),myDebtTotalBox:$('#myDebtTotalBox'),myDebtPaidBox:$('#myDebtPaidBox'),myDebtMonthBox:$('#myDebtMonthBox'),
   goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),goalsTotalSavedBox:$('#goalsTotalSavedBox'),
   sPercent:$('#sPercent'),sHabits:$('#sHabits'),sSpent:$('#sSpent'),sCard:$('#sCard'),sDebt:$('#sDebt'),sGoals:$('#sGoals'),sStatus:$('#sStatus'),sMsg:$('#sMsg'),
   homeMissionsCard:$('#homeMissionsCard'),homeHabitList:$('#homeHabitList'),homeAddHabitBtn:$('#homeAddHabitBtn'),
   virtualCreditCard:$('#virtualCreditCard'),ccCardCoverageStatus:$('#ccCardCoverageStatus'),ccCardUsed:$('#ccUsed'),ccCardName:$('#ccCardName'),ccCardReserved:$('#ccReserved'),ccQuickChips:$('#ccQuickChips'),
-  debtsSegmentBar:$('#debtsSegmentBar'),debtsMyDebtsView:$('#debtsMyDebtsView'),debtsDebtorsView:$('#debtsDebtorsView'),debtsPageTotalBox:$('#debtsPageTotalBox'),debtsPageCountBox:$('#debtsPageCountBox'),debtsPageDebForm:$('#debForm'),debPageName:$('#debName'),debPageAmount:$('#debAmount'),debPageNote:$('#debNote'),debPagePayDate:$('#debPayDate'),debtsPageDebList:$('#debList'),
+  debtsSegmentBar:$('#debtsSegmentBar'),debtsMyDebtsView:$('#debtsMyDebtsView'),debtsDebtorsView:$('#debtsDebtorsView'),debtsPageTotalBox:$('#debtsPageTotalBox'),debtsPageCountBox:$('#debtsPageCountBox'),debtsPageDebForm:$('#debForm'),debPageName:$('#debName'),debPageAmount:$('#debAmount'),debPageInstallments:$('#debInstallments'),debPageNote:$('#debNote'),debPagePayDate:$('#debPayDate'),debtsPageDebList:$('#debList'),
   unifiedStatementCard:$('#unifiedStatementCard'),copyStatementBtn:$('#copyStatementBtn'),statementSearchInput:$('#statementSearchInput'),statementFeedFilters:$('#statementFeedFilters'),unifiedStatementFeed:$('#unifiedStatementFeed')
 };
 
@@ -2039,32 +2058,63 @@ function bind(){
     });
   }
 
-  function handleDebtorFormSubmit(nameVal, amountVal, noteVal, payDateVal){
+  function updateDebInstallmentPreview(){
+    if(!el.debInstallmentPreview) return;
+    const amount=parseFloat(((el.debAmount&&el.debAmount.value)||'').replace(',','.'));
+    const inst=parseInt((el.debInstallments&&el.debInstallments.value)||'1',10)||1;
+    if(Number.isFinite(amount) && amount>0){
+      const val=roundMoneyValue(amount/inst);
+      el.debInstallmentPreview.textContent=inst>1?`${inst}x de ${money(val)}`:`1x de ${money(amount)} (à vista)`;
+    } else {
+      el.debInstallmentPreview.textContent=inst>1?`${inst}x parcelado`:'1x à vista';
+    }
+  }
+  if(el.debAmount) el.debAmount.addEventListener('input',updateDebInstallmentPreview);
+  if(el.debInstallments) el.debInstallments.addEventListener('change',updateDebInstallmentPreview);
+
+  function handleDebtorFormSubmit(nameVal, amountVal, installmentsVal, noteVal, payDateVal){
     const name=txt(nameVal,30);
     const amount=parseFloat((amountVal||'').replace(',','.'));
+    const installments=Math.min(24,Math.max(1,parseInt(installmentsVal||'1',10)||1));
     const note=txt(noteVal,50);
     const payDate=payDateVal||'';
     if(!name||!Number.isFinite(amount)||amount<=0) return;
-    st.debtors.unshift({id:id(),name,amount,note,payDate,paid:false,paidAt:'',at:new Date().toISOString()});
+    const installmentValue=roundMoneyValue(amount/installments);
+    st.debtors.unshift({
+      id:id(),
+      name,
+      amount,
+      installmentValue,
+      installments,
+      installmentsPaid:0,
+      note,
+      payDate,
+      paid:false,
+      paidAt:'',
+      at:new Date().toISOString()
+    });
     st.debtors=st.debtors.slice(0,100);
     save(true); renderDebtors(); renderSummary();
     haptic('medium');
-    showToast(`✓ Cobrança adicionada para ${name} (${money(amount)})!`, 'ok');
+    const instText=installments>1?` em ${installments}x de ${money(installmentValue)}`:'';
+    showToast(`✓ Cobrança adicionada para ${name} (${money(amount)}${instText})!`, 'ok');
   }
 
   if(el.debForm){
     el.debForm.addEventListener('submit',e=>{
       e.preventDefault();
-      handleDebtorFormSubmit(el.debName.value, el.debAmount.value, el.debNote.value, el.debPayDate.value);
-      el.debName.value=''; el.debAmount.value=''; el.debNote.value=''; el.debPayDate.value='';
+      handleDebtorFormSubmit(el.debName.value, el.debAmount.value, (el.debInstallments&&el.debInstallments.value)||'1', el.debNote.value, el.debPayDate.value);
+      el.debName.value=''; el.debAmount.value=''; if(el.debInstallments) el.debInstallments.value='1'; el.debNote.value=''; el.debPayDate.value='';
+      updateDebInstallmentPreview();
     });
   }
 
   if(el.debtsPageDebForm && el.debtsPageDebForm !== el.debForm){
     el.debtsPageDebForm.addEventListener('submit',e=>{
       e.preventDefault();
-      handleDebtorFormSubmit(el.debPageName.value, el.debPageAmount.value, el.debPageNote.value, el.debPagePayDate.value);
-      el.debPageName.value=''; el.debPageAmount.value=''; el.debPageNote.value=''; el.debPagePayDate.value='';
+      handleDebtorFormSubmit(el.debPageName.value, el.debPageAmount.value, (el.debPageInstallments&&el.debPageInstallments.value)||'1', el.debPageNote.value, el.debPagePayDate.value);
+      el.debPageName.value=''; el.debPageAmount.value=''; if(el.debPageInstallments) el.debPageInstallments.value='1'; el.debPageNote.value=''; el.debPagePayDate.value='';
+      updateDebInstallmentPreview();
     });
   }
 
@@ -2090,6 +2140,12 @@ function bind(){
   function handleDebtorClick(e){
     const row=e.target.closest('[data-deb]'); if(!row) return;
     const d=st.debtors.find(x=>x.id===row.dataset.deb); if(!d) return;
+    const inst=Math.min(24,Math.max(1,parseInt(d.installments||'1',10)||1));
+    const instVal=Number(d.installmentValue)>0?Number(d.installmentValue):roundMoneyValue((Number(d.amount)||0)/inst);
+    const paidInst=Math.max(0,parseInt(d.installmentsPaid||'0',10)||0);
+    const remainingInst=Math.max(0,inst-paidInst);
+    const remainingAmount=d.paid?0:roundMoneyValue(remainingInst*instVal);
+
     if(e.target.matches('[data-act="deb-edit"]')){
       ui.debtors[d.id]=!ui.debtors[d.id];
       renderDebtors();
@@ -2097,29 +2153,55 @@ function bind(){
     }
     if(e.target.matches('[data-act="deb-del"]')){
       st.debtors=st.debtors.filter(x=>x.id!==d.id); delete ui.debtors[d.id]; save(true); renderDebtors(); renderSummary();
+      return;
     }
     if(e.target.matches('[data-act="deb-toggle"]')){
       d.paid=!d.paid;
       if(d.paid){
         const nowIso=new Date().toISOString();
         d.paidAt=nowIso;
+        d.installmentsPaid=inst;
         if(!d.payDate) d.payDate=dateKey(nowIso);
       } else {
         d.paidAt='';
+        d.installmentsPaid=0;
       }
       save(true); renderDebtors(); renderSummary();
+      return;
+    }
+    if(e.target.matches('[data-act="deb-receive-part"]')){
+      if(d.paid) return;
+      const nextInst=paidInst+1;
+      const nowIso=new Date().toISOString();
+      d.installmentsPaid=nextInst;
+      d.paid=d.installmentsPaid>=inst;
+      d.paidAt=d.paid?nowIso:'';
+      if(!d.payDate) d.payDate=dateKey(nowIso);
+      st.balances.conta.amount += instVal;
+      const note=`Parcela ${nextInst}/${inst} de ${d.name}`;
+      const meta=categoryMeta(note,'Recebimento');
+      st.tx.unshift({id:id(),account:'conta',type:'in',value:instVal,note,category:meta.label,categoryKey:meta.key,debtorId:d.id,at:nowIso});
+      haptic('success');
+      showToast(`✓ Parcela ${nextInst}/${inst} (${money(instVal)}) recebida de ${d.name}!`, 'ok');
+      save(true); renderDebtors(); renderFinance(); renderSummary(); flash(document.querySelector('[data-acc="conta"] [data-bal]'),'in');
+      return;
     }
     if(e.target.matches('[data-act="deb-receive"]')){
       if(d.paid) return;
+      const receiveVal=remainingAmount>0?remainingAmount:d.amount;
       const nowIso=new Date().toISOString();
-      d.paid=true; d.paidAt=nowIso; if(!d.payDate) d.payDate=dateKey(nowIso);
-      st.balances.conta.amount += d.amount;
-      const note=`Recebido de ${d.name}`;
+      d.paid=true;
+      d.paidAt=nowIso;
+      d.installmentsPaid=inst;
+      if(!d.payDate) d.payDate=dateKey(nowIso);
+      st.balances.conta.amount += receiveVal;
+      const note=inst>1?`Quitação total de ${d.name}`:`Recebido de ${d.name}`;
       const meta=categoryMeta(note,'Recebimento');
-      st.tx.unshift({id:id(),account:'conta',type:'in',value:d.amount,note,category:meta.label,categoryKey:meta.key,debtorId:d.id,at:nowIso});
+      st.tx.unshift({id:id(),account:'conta',type:'in',value:receiveVal,note,category:meta.label,categoryKey:meta.key,debtorId:d.id,at:nowIso});
       haptic('success');
-      showToast(`✓ Recebido ${money(d.amount)} de ${d.name}!`, 'ok');
+      showToast(`✓ Recebido ${money(receiveVal)} de ${d.name}!`, 'ok');
       save(true); renderDebtors(); renderFinance(); renderSummary(); flash(document.querySelector('[data-acc="conta"] [data-bal]'),'in');
+      return;
     }
   }
 
@@ -2133,7 +2215,19 @@ function bind(){
     if(e.target.matches('[data-f="deb-note"]')) d.note=txt(e.target.value,50);
     if(e.target.matches('[data-f="deb-amount"]')){
       const v=parseFloat((e.target.value||'').replace(',','.'));
-      if(Number.isFinite(v)&&v>=0) d.amount=v;
+      if(Number.isFinite(v)&&v>=0){
+        d.amount=v;
+        const inst=Math.min(24,Math.max(1,parseInt(d.installments||'1',10)||1));
+        d.installmentValue=roundMoneyValue(v/inst);
+      }
+    }
+    if(e.target.matches('[data-f="deb-installments"]')){
+      const inst=Math.min(24,Math.max(1,parseInt(e.target.value||'1',10)||1));
+      d.installments=inst;
+      d.installmentValue=roundMoneyValue((Number(d.amount)||0)/inst);
+      d.installmentsPaid=Math.min(inst,parseInt(d.installmentsPaid||'0',10)||0);
+      d.paid=d.installmentsPaid>=inst;
+      renderDebtors();
     }
     if(e.target.matches('[data-f="deb-paydate"]')) d.payDate=e.target.value||'';
     save(); renderSummary();
@@ -3708,16 +3802,57 @@ function renderMyDebtSection(title,sectionClass,items,summaryLabel,emptyMessage,
       ${body}
     </article>`;
 }
+function debtorInstallments(d){
+  return Math.min(24,Math.max(1,parseInt(d&&d.installments||'1',10)||1));
+}
+function debtorPaidInstallments(d){
+  return Math.max(0,parseInt(d&&d.installmentsPaid||'0',10)||0);
+}
+function debtorInstallmentValue(d){
+  if(!d) return 0;
+  const inst=debtorInstallments(d);
+  const raw=Number(d.installmentValue);
+  return Number.isFinite(raw)&&raw>0?raw:roundMoneyValue((Number(d.amount)||0)/inst);
+}
+function debtorRemainingAmount(d){
+  if(!d||d.paid) return 0;
+  const inst=debtorInstallments(d);
+  const paid=debtorPaidInstallments(d);
+  const val=debtorInstallmentValue(d);
+  return roundMoneyValue(Math.max(0,inst-paid)*val);
+}
+function debtorPaidAmount(d){
+  if(!d) return 0;
+  if(d.paid) return roundMoneyValue(Number(d.amount)||0);
+  const paid=debtorPaidInstallments(d);
+  const val=debtorInstallmentValue(d);
+  return roundMoneyValue(paid*val);
+}
+
 function renderDebtorCard(d){
+  const inst=debtorInstallments(d);
+  const paidInst=debtorPaidInstallments(d);
+  const instVal=debtorInstallmentValue(d);
+  const remainingInst=Math.max(0,inst-paidInst);
+  const remainingAmount=debtorRemainingAmount(d);
+  const isMulti=inst>1;
+
+  let stepperHtml='';
+  if(isMulti){
+    const dots=Array.from({length:inst},(_,i)=>`<span class="stepDot ${i<paidInst?'done':''}"></span>`).join('');
+    stepperHtml=`<div class="installmentStepper" title="${paidInst}/${inst} parcelas recebidas">${dots} <span style="font-size:.72rem;color:var(--mut);margin-left:4px">${paidInst}/${inst} parcelas</span></div>`;
+  }
+
   return `
     <article class="debtor ${d.paid?'paid':''}" data-deb="${d.id}">
       <div class="debtorHead">
         <div>
           <div class="debtorName">${safe(d.name)}</div>
-          <div class="debtorAmount">${money(d.amount)}</div>
+          <div class="debtorAmount">${money(isMulti && !d.paid ? remainingAmount : d.amount)}</div>
         </div>
         <div class="debtorTools">
           <span class="tag ${d.paid?'ok':'warn'}">${d.paid?'Quitado':'Em aberto'}</span>
+          ${isMulti?`<span class="tag">${inst}x</span>`:''}
           ${debtorDueTag(d)}
           ${!shouldShowDebtorNow(d)&&!d.paid?'<span class="tag future">Futuro</span>':''}
           <span class="tag month">${safe(monthLabel(d.payDate,d.paidAt||d.at))}</span>
@@ -3726,23 +3861,53 @@ function renderDebtorCard(d){
       </div>
       <div class="debtorCardBody">
         <div class="actionMeta">
+          ${isMulti?`
+          <div class="debtStats" style="margin-bottom:4px;">
+            <div class="debtStat">
+              <span class="mini">Parcela</span>
+              <strong>${money(instVal)}</strong>
+            </div>
+            <div class="debtStat">
+              <span class="mini">Recebido</span>
+              <strong>${paidInst}/${inst}</strong>
+            </div>
+            <div class="debtStat">
+              <span class="mini">${d.paid?'Total recebido':'Falta receber'}</span>
+              <strong>${money(d.paid?d.amount:remainingAmount)}</strong>
+            </div>
+          </div>
+          ${stepperHtml}
+          `:''}
           <div class="debtorMeta">
             <span>${d.paidAt?`Pago em ${shortDate(d.paidAt)}`:(d.payDate?`Previsto: ${dateBr(d.payDate)}`:'Data de pagamento não definida')} · ${safe(monthInfoLabel(d.payDate,d.paidAt||d.at))}</span>
             <span>${!shouldShowDebtorNow(d)&&!d.paid?`Lançamento futuro para a home${d.note?' · ':''}`:''}${d.note?safe(d.note):(!shouldShowDebtorNow(d)&&!d.paid?'':'Sem observação')}</span>
+            ${isMulti?`<span>${d.paid?'Todas as parcelas recebidas.':`Falta(m) ${remainingInst} parcela(s) de ${money(instVal)}`}</span>`:''}
           </div>
-          ${ui.debtors[d.id]?`<div class="debtorEdit">
+          ${ui.debtors[d.id]?`<div class="debtorEdit debtPanel">
+            <span class="debtPanelTitle">Ajuste de cobrança</span>
             <div class="two">
               <input data-f="deb-name" type="text" value="${esc(d.name)}" placeholder="Nome" />
-              <input data-f="deb-amount" type="number" step="0.01" inputmode="decimal" value="${Number(d.amount)||0}" />
+              <input data-f="deb-amount" type="number" step="0.01" inputmode="decimal" value="${Number(d.amount)||0}" placeholder="Valor total" />
             </div>
             <div class="two">
+              <select data-f="deb-installments">
+                ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${inst===i+1?'selected':''}>${i+1}x</option>`).join('')}
+              </select>
               <input data-f="deb-paydate" type="date" value="${d.payDate||''}" />
+            </div>
+            <div class="two">
               <input data-f="deb-note" type="text" maxlength="50" value="${esc(d.note||'')}" placeholder="Observação" />
+              <input type="text" value="${paidInst} de ${inst} parcelas recebidas" readonly />
             </div>
           </div>`:''}
         </div>
         <div class="actionStack debtorActions">
-          <button type="button" class="btn" data-act="deb-receive">Receber + conta</button>
+          ${isMulti && !d.paid ? `
+            <button type="button" class="btn" data-act="deb-receive-part">Receber parcela (${money(instVal)})</button>
+            <button type="button" class="ghost" data-act="deb-receive">Quitar total (${money(remainingAmount)})</button>
+          ` : `
+            <button type="button" class="btn" data-act="deb-receive">${d.paid?'Já quitado':'Receber + conta'}</button>
+          `}
           <button type="button" class="ghost" data-act="deb-toggle">${d.paid?'Reabrir':'Marcar pago'}</button>
           <button type="button" class="danger" data-act="deb-del">Remover</button>
         </div>
@@ -3753,7 +3918,7 @@ function debtorArchiveMonthKey(item){
   return monthKeyFromValue((item&&item.paidAt)||'',(item&&item.payDate)||(item&&item.at)||'');
 }
 function renderDebtorOpenSection(items){
-  const total=roundMoneyValue((items||[]).reduce((sum,item)=>sum+(Number(item.amount)||0),0));
+  const total=roundMoneyValue((items||[]).reduce((sum,item)=>sum+debtorRemainingAmount(item),0));
   return `
     <article class="fcard debtSection openSection">
       <div class="debtSectionHead">
@@ -3789,8 +3954,8 @@ function renderDebtorPaidArchiveMonth(group){
     </details>`;
 }
 function renderDebtorPaidSection(items){
-  const total=roundMoneyValue((items||[]).reduce((sum,item)=>sum+(Number(item.amount)||0),0));
-  const groups=buildArchiveMonthGroupsUsedOnly(items,debtorArchiveMonthKey,item=>Number(item.amount)||0);
+  const total=roundMoneyValue((items||[]).reduce((sum,item)=>sum+debtorPaidAmount(item),0));
+  const groups=buildArchiveMonthGroupsUsedOnly(items,debtorArchiveMonthKey,item=>debtorPaidAmount(item));
   return `
     <article class="fcard debtSection paidSection">
       <div class="debtSectionHead">
@@ -3822,7 +3987,7 @@ function renderDebtors(){
     el.debtsPageDebList.className='list debtBoard';
     el.debtsPageDebList.innerHTML=html;
   }
-  const openTotal=roundMoneyValue(openItems.reduce((sum,d)=>sum+(Number(d.amount)||0),0));
+  const openTotal=roundMoneyValue(openItems.reduce((sum,d)=>sum+debtorRemainingAmount(d),0));
   if(el.debtsPageTotalBox) el.debtsPageTotalBox.textContent=money(openTotal);
   if(el.debtsPageCountBox) el.debtsPageCountBox.textContent=String(openItems.length);
 }
@@ -4041,7 +4206,7 @@ function spentToday(){
   const cardOut=(st.credit.tx||[]).filter(x=>x.type==='expense'&&dateKey(x.at)===t).reduce((a,x)=>a+x.value,0);
   return walletOut+cardOut;
 }
-function debtOpenTotal(){return st.debtors.filter(x=>!x.paid&&shouldShowDebtorNow(x)).reduce((a,x)=>a+(Number(x.amount)||0),0);}
+function debtOpenTotal(){return st.debtors.filter(x=>!x.paid&&shouldShowDebtorNow(x)).reduce((a,x)=>a+debtorRemainingAmount(x),0);}
 function goalsTotalSaved(){return (st.goals||[]).reduce((a,g)=>a+Math.max(0,Number(g.saved)||0),0);}
 function isStatementEditorActive(section,source,txId,goalId){
   return Boolean(
@@ -4412,6 +4577,30 @@ function normalizeCreditTxEntry(item){
   const meta=categoryMeta(item.category||desc,item.type==='expense'?'Sem categoria':fallback);
   return Object.assign({},item,{desc,category:meta.label,categoryKey:meta.key,value:Number(item.value)||0});
 }
+function normalizeDebtorEntry(item){
+  item=item||{};
+  const installments=Math.min(24,Math.max(1,parseInt(item.installments||'1',10)||1));
+  const paid=Boolean(item.paid);
+  let installmentsPaid=Math.max(0,Math.min(installments,parseInt(item.installmentsPaid||String(paid?installments:0),10)||0));
+  if(paid && installmentsPaid<installments) installmentsPaid=installments;
+  const rawAmount=Math.max(0,Number(item.amount)||0);
+  const rawInstVal=Number(item.installmentValue);
+  const installmentValue=Number.isFinite(rawInstVal)&&rawInstVal>0?rawInstVal:roundMoneyValue(installments>1&&rawAmount>0?rawAmount/installments:rawAmount);
+  return Object.assign({},item,{
+    id:item.id||id(),
+    name:txt(item.name||'',30),
+    amount:rawAmount,
+    installmentValue:installmentValue,
+    installments:installments,
+    installmentsPaid:installmentsPaid,
+    note:txt(item.note||'',50),
+    payDate:item.payDate||'',
+    paid:paid||installmentsPaid>=installments,
+    paidAt:item.paidAt||'',
+    at:item.at||new Date().toISOString()
+  });
+}
+
 function normalizeDebtEntry(item){
   item=item||{};
   const installments=Math.min(12,Math.max(1,parseInt(item.installments||'1',10)||1));
@@ -4473,7 +4662,7 @@ function normalizeLoadedState(p){
     balances:Object.assign({},DEF.balances,p.balances||{}),
     tx:Array.isArray(p.tx)?p.tx.map(normalizeWalletTxEntry):[],
     credit:Object.assign({},DEF.credit,parsedCredit,{name:creditName,reserved:Math.max(0,Number(parsedCredit.reserved)||0),tx:Array.isArray(parsedCredit.tx)?parsedCredit.tx.map(normalizeCreditTxEntry):[]}),
-    debtors:Array.isArray(p.debtors)?p.debtors.map(d=>Object.assign({},d,{payDate:d.payDate||'',paidAt:d.paidAt||''})):[],
+    debtors:Array.isArray(p.debtors)?p.debtors.map(normalizeDebtorEntry):[],
     myDebts:Array.isArray(p.myDebts)?p.myDebts.map(normalizeDebtEntry):[],
     routineLog:Array.isArray(p.routineLog)?p.routineLog:[],
     skills:normalizeSkills(p.skills),
