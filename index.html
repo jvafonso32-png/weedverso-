@@ -127,6 +127,67 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .tagChip:active,.tagChip:hover{border-color:rgba(57,255,143,.45);color:#fff;background:rgba(57,255,143,.12)}
 .sheetSubmitBtn{width:100%;min-height:38px;font-size:.84rem;border-radius:10px;margin-top:4px;font-weight:700}
 
+/* Debtor System (17 items) */
+.dvTop{display:grid;gap:8px;padding:10px 12px;border:1px solid rgba(57,255,143,.22);background:linear-gradient(180deg,rgba(16,26,20,.95),rgba(10,18,14,.96));border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.dvSummaryLine{font-size:.86rem;color:var(--txt);display:flex;align-items:center;flex-wrap:wrap;gap:6px;line-height:1.3}
+.dvSummaryLine strong{color:#fff;font-weight:700}
+.dvSummaryDot{color:var(--mut);opacity:.6}
+.dvOverdueBadge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:6px;background:rgba(255,95,112,.18);color:#ff7d8d;font-weight:700;border:1px solid rgba(255,95,112,.35);font-size:.76rem}
+.dvProgress{display:grid;gap:4px}
+.dvProgressTrack{height:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+.dvProgressFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#1ecb72,#39ff8f);transition:width .4s ease}
+.dvProgressMeta{font-size:.74rem;color:var(--mut);display:flex;justify-content:space-between;align-items:center}
+.dvWeek{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;background:rgba(57,255,143,.08);border:1px solid rgba(57,255,143,.26);color:#bdf7d4;font-size:.78rem;line-height:1.25}
+.dvWeek strong{color:#fff;font-weight:700}
+.dvCta{width:100%;min-height:36px;font-size:.82rem;font-weight:700;border-radius:10px}
+.dvForm{display:grid;gap:8px}
+.dvReasonPills{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+.dvReasonPills .sheetPill{text-align:center;font-size:.74rem;padding:6px 4px}
+.dvFormRow{display:grid;grid-template-columns:1fr 90px;gap:6px;align-items:center}
+.dvInstSelect{min-height:46px;font-weight:600;font-size:.88rem;text-align:center}
+.dvPreview{font-size:.76rem;color:var(--mut);padding-left:2px}
+.dvHint{font-size:.74rem;color:#ffd056;background:rgba(255,207,95,.1);border:1px dashed rgba(255,207,95,.35);padding:6px 9px;border-radius:8px;line-height:1.25}
+.dvMoreOpts{border:1px solid rgba(151,170,159,.18);border-radius:10px;padding:6px 9px;background:rgba(255,255,255,.02)}
+.dvMoreOpts summary{font-size:.75rem;color:var(--mut);cursor:pointer;font-weight:600;user-select:none}
+.dvMoreBody{display:grid;gap:6px;margin-top:7px;padding-top:6px;border-top:1px dashed var(--ln)}
+.dvSection{display:grid;gap:6px;margin-bottom:6px}
+.dvSectionHead{display:flex;justify-content:space-between;align-items:center;padding:4px 2px;font-size:.75rem;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.dvCard{border:1px solid var(--ln);border-radius:12px;padding:8px 10px;background:linear-gradient(180deg,rgba(16,24,20,.95),rgba(10,17,14,.97));display:grid;gap:5px;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:all .18s ease}
+.dvCard:hover{border-color:rgba(57,255,143,.35)}
+.dvCardLine1{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.dvPersonNameWrap{display:flex;align-items:center;gap:5px;min-width:0;flex-wrap:wrap}
+.dvReasonIcon{font-size:1rem;line-height:1}
+.dvPersonName{font-weight:700;font-size:.88rem;color:var(--txt);cursor:pointer;text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.25)}
+.dvPersonName:hover{color:var(--p);border-bottom-color:var(--p)}
+.dvTrustBadge{font-size:.66rem;padding:2px 5px;border-radius:999px;font-weight:600;display:inline-flex;align-items:center;gap:2px}
+.dvTrustBadge.ok{color:#4cff9e;background:rgba(57,255,143,.12);border:1px solid rgba(57,255,143,.3)}
+.dvTrustBadge.warn{color:#ffcf5f;background:rgba(255,207,95,.12);border:1px solid rgba(255,207,95,.3)}
+.dvTrustBadge.neutral{color:var(--mut);background:rgba(255,255,255,.05);border:1px solid var(--ln)}
+.dvDots{display:inline-flex;align-items:center;gap:3px;font-size:.7rem;color:var(--mut);margin-left:2px}
+.dvCardAmount{font-family:var(--font-display);font-size:1.06rem;font-weight:800;color:#fff;text-align:right;white-space:nowrap}
+.dvCardLine2{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+.dvMetaLeft{display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:.72rem;color:var(--mut)}
+.dvMetaRight{display:flex;align-items:center;gap:4px;margin-left:auto}
+.dvActionBtn{appearance:none;-webkit-appearance:none;border:1px solid var(--ln);border-radius:8px;padding:4px 8px;font:700 .7rem var(--font-ui);cursor:pointer;display:inline-flex;align-items:center;gap:4px;min-height:28px}
+.dvActionBtn.receive{background:linear-gradient(135deg,#35e386,#1db868);color:#03180c;border-color:rgba(115,255,186,.6)}
+.dvActionBtn.charge{background:linear-gradient(180deg,rgba(18,36,28,.95),rgba(12,25,19,.98));color:#4cff9e;border-color:rgba(57,255,143,.35)}
+.dvActionBtn.menu{background:rgba(255,255,255,.04);color:var(--txt);width:28px;padding:0;justify-content:center;font-size:.9rem}
+.dvTagDelayYellow{background:rgba(255,207,95,.18);color:#ffd056;border:1px solid rgba(255,207,95,.4);padding:2px 6px;border-radius:999px;font-size:.68rem;font-weight:600}
+.dvTagDelayOrange{background:rgba(255,159,67,.2);color:#ffa959;border:1px solid rgba(255,159,67,.45);padding:2px 6px;border-radius:999px;font-size:.68rem;font-weight:600}
+.dvTagDelayRed{background:rgba(255,95,112,.22);color:#ff7d8d;border:1px solid rgba(255,95,112,.5);padding:2px 6px;border-radius:999px;font-size:.68rem;font-weight:700}
+.dvGroupCard{border:1px solid rgba(57,255,143,.26);border-radius:12px;background:linear-gradient(180deg,rgba(16,28,22,.96),rgba(9,17,13,.98));overflow:hidden}
+.dvGroupHead{padding:8px 10px;cursor:pointer;user-select:none;display:grid;gap:4px}
+.dvGroupSubItems{padding:0 8px 8px;display:grid;gap:6px;border-top:1px dashed var(--ln);background:rgba(0,0,0,.2)}
+.dvUndoBar{position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(94vw,440px);background:linear-gradient(180deg,rgba(20,33,26,.98),rgba(12,22,17,.99));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(57,255,143,.45);border-radius:12px;padding:9px 12px;box-shadow:0 12px 30px rgba(0,0,0,.65);display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:99998;animation:toastIn .24s ease}
+.dvUndoBar span{font-size:.78rem;color:var(--txt);font-weight:600}
+.dvUndoBar button{appearance:none;-webkit-appearance:none;background:linear-gradient(135deg,#ffcf5f,#f5b42d);color:#1b1404;border:none;border-radius:8px;padding:5px 10px;font:700 .75rem var(--font-ui);cursor:pointer}
+.dvTimeline{display:grid;gap:10px;position:relative;padding-left:18px;margin:8px 0}
+.dvTimeline:before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:rgba(57,255,143,.25)}
+.dvTimelineItem{position:relative;display:grid;gap:2px}
+.dvTimelineDot{position:absolute;left:-18px;top:3px;width:10px;height:10px;border-radius:50%;background:#39ff8f;border:2px solid #0b1510;box-shadow:0 0 6px rgba(57,255,143,.6)}
+.dvTimelineTitle{font-size:.78rem;color:var(--txt);font-weight:600}
+.dvTimelineMeta{font-size:.7rem;color:var(--mut)}
+
 /* Filter Chips for Charts */
 .chartFilterChips{display:inline-flex;gap:4px;background:rgba(255,255,255,.04);padding:3px;border-radius:10px;border:1px solid var(--ln)}
 .filterChip{appearance:none;-webkit-appearance:none;border:none;background:transparent;color:var(--mut);padding:5px 10px;border-radius:7px;font:600 .72rem var(--font-ui);cursor:pointer;transition:all .18s ease}
@@ -817,53 +878,13 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       </div>
 
       <div id="debtsDebtorsView" class="stack" style="display:none;">
-        <article class="fcard">
-          <div class="debtSummaryGrid">
-            <div class="box">
-              <span class="mini">Total a Receber</span>
-              <strong id="debtsPageTotalBox" style="color:var(--p)">R$ 0,00</strong>
-              <p class="mut">Soma das cobranças em aberto que outras pessoas te devem.</p>
-            </div>
-            <div class="box">
-              <span class="mini">Cobranças Ativas</span>
-              <strong id="debtsPageCountBox">0</strong>
-              <p class="mut">Pessoas com pendências registradas.</p>
-            </div>
-          </div>
+        <article class="fcard dvTop">
+          <div id="dvSummaryLine" class="dvSummaryLine"></div>
+          <div id="dvProgress" class="dvProgress" hidden></div>
+          <div id="dvWeek" class="dvWeek" hidden></div>
+          <button type="button" id="dvOpenFormBtn" class="btn dvCta">+ Cobrar alguém</button>
         </article>
-        <article class="fcard">
-          <h3 class="subtitle">Registrar cobrança a receber</h3>
-          <p class="mut">Cadastre aqui valores que você emprestou ou passou no seu cartão para alguém.</p>
-          <form id="debForm" class="form">
-            <div class="two">
-              <input id="debName" type="text" maxlength="30" placeholder="Nome da pessoa" required />
-              <input id="debAmount" type="number" step="0.01" inputmode="decimal" placeholder="Valor total devido" required />
-            </div>
-            <div class="two">
-              <select id="debInstallments">
-                <option value="1">1x (À vista)</option>
-                <option value="2">2x</option>
-                <option value="3">3x</option>
-                <option value="4">4x</option>
-                <option value="5">5x</option>
-                <option value="6">6x</option>
-                <option value="7">7x</option>
-                <option value="8">8x</option>
-                <option value="9">9x</option>
-                <option value="10">10x</option>
-                <option value="11">11x</option>
-                <option value="12">12x</option>
-              </select>
-              <input id="debPayDate" type="date" title="Data prevista de pagamento" />
-            </div>
-            <div class="two">
-              <input id="debNote" type="text" maxlength="50" placeholder="Observação (opcional)" />
-              <div id="debInstallmentPreview" class="mut" style="font-size:.78rem;align-self:center;padding-left:4px;">1x à vista</div>
-            </div>
-            <button class="btn" type="submit">Adicionar devedor</button>
-          </form>
-          <div id="debList" class="list debtorList"></div>
-        </article>
+        <div id="debList" class="list debtBoard"></div>
       </div>
     </section>
   </section>
@@ -1052,6 +1073,62 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       <button type="submit" id="quickAddSubmitBtn" class="btn sheetSubmitBtn">Confirmar Lançamento</button>
     </form>
   </div>
+</div>
+<div id="dvFormOverlay" class="sheetOverlay" aria-hidden="true">
+  <div class="sheetCard" role="dialog" aria-modal="true" aria-labelledby="dvFormTitle">
+    <div class="sheetHandle"></div>
+    <div class="sheetHeader">
+      <h3 id="dvFormTitle" class="sheetTitle">Cobrar alguém</h3>
+      <button type="button" class="sheetClose" data-dv-close aria-label="Fechar">✕</button>
+    </div>
+    <form id="debForm" class="sheetForm dvForm" autocomplete="off">
+      <div class="sheetPills dvReasonPills" id="dvReasonPills">
+        <button type="button" class="sheetPill active" data-reason="card">💳 Passei no cartão</button>
+        <button type="button" class="sheetPill" data-reason="loan">💵 Emprestei</button>
+        <button type="button" class="sheetPill" data-reason="split">🍕 Racha</button>
+        <button type="button" class="sheetPill" data-reason="other">📦 Outro</button>
+      </div>
+      <input id="debName" type="text" maxlength="30" list="dvNameList" placeholder="Nome" class="sheetInput" required />
+      <datalist id="dvNameList"></datalist>
+      <div id="dvNameHint" class="dvHint" hidden></div>
+      <div class="dvFormRow">
+        <div class="sheetAmountWrap">
+          <span class="sheetCurrency">R$</span>
+          <input id="debAmount" type="text" inputmode="decimal" placeholder="0,00" class="sheetAmountInput" required />
+        </div>
+        <select id="debInstallments" class="sheetInput dvInstSelect" aria-label="Parcelas">
+          <option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option>
+          <option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option>
+          <option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option>
+        </select>
+      </div>
+      <div id="debInstallmentPreview" class="mut dvPreview">1x à vista</div>
+      <details class="dvMoreOpts">
+        <summary>Mais opções</summary>
+        <div class="dvMoreBody">
+          <label class="mini" for="debPayDate">1º vencimento</label>
+          <input id="debPayDate" type="date" class="sheetInput" />
+          <input id="debNote" type="text" maxlength="50" placeholder="Observação" class="sheetInput" />
+          <input id="debPhone" type="tel" inputmode="tel" maxlength="20" placeholder="WhatsApp com DDD (opcional)" class="sheetInput" />
+        </div>
+      </details>
+      <button class="btn sheetSubmitBtn" type="submit">Adicionar cobrança</button>
+    </form>
+  </div>
+</div>
+<div id="dvSheetOverlay" class="sheetOverlay" aria-hidden="true">
+  <div class="sheetCard" role="dialog" aria-modal="true" aria-labelledby="dvSheetTitle">
+    <div class="sheetHandle"></div>
+    <div class="sheetHeader">
+      <h3 id="dvSheetTitle" class="sheetTitle"></h3>
+      <button type="button" class="sheetClose" data-dv-close aria-label="Fechar">✕</button>
+    </div>
+    <div id="dvSheetBody" class="dvSheetBody"></div>
+  </div>
+</div>
+<div id="dvUndoBar" class="dvUndoBar" hidden>
+  <span id="dvUndoText"></span>
+  <button type="button" id="dvUndoBtn">Desfazer</button>
 </div>
 <nav class="dock" aria-label="Navegação principal">
   <button type="button" class="navBtn active" data-page="home" onclick="showPage('home')"><span class="navIcon">⌂</span><span>Início</span></button>
@@ -1855,8 +1932,8 @@ function bind(){
     if(act==='debtor'){
       showPage('debts');
       switchDebtsView('debtors');
-      scrollNodeIntoView(el.debForm);
-      if(el.debName) el.debName.focus();
+      openDvForm();
+      return;
     }
     if(act==='goal'){
       showPage('goals');
@@ -2072,12 +2149,110 @@ function bind(){
   if(el.debAmount) el.debAmount.addEventListener('input',updateDebInstallmentPreview);
   if(el.debInstallments) el.debInstallments.addEventListener('change',updateDebInstallmentPreview);
 
-  function handleDebtorFormSubmit(nameVal, amountVal, installmentsVal, noteVal, payDateVal){
+  function openDvForm(){
+    const overlay=document.getElementById('dvFormOverlay');
+    if(overlay){
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+      populateDebtorNameSuggestions();
+      const nInp=document.getElementById('debName');
+      if(nInp) setTimeout(()=>nInp.focus(), 150);
+    }
+  }
+  function closeDvForm(){
+    const overlay=document.getElementById('dvFormOverlay');
+    if(overlay){
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden','true');
+    }
+  }
+  function openDvSheet(){
+    const overlay=document.getElementById('dvSheetOverlay');
+    if(overlay){
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+    }
+  }
+  function closeDvSheet(){
+    const overlay=document.getElementById('dvSheetOverlay');
+    if(overlay){
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden','true');
+    }
+  }
+
+  function populateDebtorNameSuggestions(){
+    const dl=document.getElementById('dvNameList');
+    if(!dl) return;
+    const names=Array.from(new Set((st.debtors||[]).map(d=>d.name).filter(Boolean)));
+    dl.innerHTML=names.map(n=>`<option value="${esc(n)}"></option>`).join('');
+  }
+
+  const dvOpenBtn=document.getElementById('dvOpenFormBtn');
+  if(dvOpenBtn){
+    dvOpenBtn.addEventListener('click',()=>{
+      openDvForm();
+      haptic('light');
+    });
+  }
+
+  document.querySelectorAll('[data-dv-close]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      closeDvForm();
+      closeDvSheet();
+    });
+  });
+
+  const dvFormOverlayEl=document.getElementById('dvFormOverlay');
+  if(dvFormOverlayEl){
+    dvFormOverlayEl.addEventListener('click',e=>{
+      if(e.target===dvFormOverlayEl) closeDvForm();
+    });
+  }
+  const dvSheetOverlayEl=document.getElementById('dvSheetOverlay');
+  if(dvSheetOverlayEl){
+    dvSheetOverlayEl.addEventListener('click',e=>{
+      if(e.target===dvSheetOverlayEl) closeDvSheet();
+    });
+  }
+
+  let currentDebtorReason='card';
+  const reasonPillsContainer=document.getElementById('dvReasonPills');
+  if(reasonPillsContainer){
+    reasonPillsContainer.addEventListener('click',e=>{
+      const pill=e.target.closest('[data-reason]');
+      if(!pill) return;
+      currentDebtorReason=pill.dataset.reason;
+      reasonPillsContainer.querySelectorAll('.sheetPill').forEach(p=>p.classList.toggle('active',p===pill));
+      haptic('light');
+    });
+  }
+
+  const debNameInput=document.getElementById('debName');
+  const debNameHint=document.getElementById('dvNameHint');
+  if(debNameInput){
+    debNameInput.addEventListener('input',()=>{
+      const val=foldText(debNameInput.value);
+      if(!val || !debNameHint){ if(debNameHint) debNameHint.hidden=true; return; }
+      const existing=(st.debtors||[]).filter(d=>!d.paid && foldText(d.name)===val);
+      if(existing.length>0){
+        const sum=roundMoneyValue(existing.reduce((s,d)=>s+debtorRemainingAmount(d),0));
+        debNameHint.hidden=false;
+        debNameHint.innerHTML=`💡 <strong>${safe(existing[0].name)}</strong> já tem <strong>${money(sum)}</strong> em aberto. Esta cobrança será somada ao total da pessoa.`;
+      } else {
+        debNameHint.hidden=true;
+      }
+    });
+  }
+
+  function handleDebtorFormSubmit(nameVal, amountVal, installmentsVal, noteVal, payDateVal, reasonVal, phoneVal){
     const name=txt(nameVal,30);
     const amount=parseFloat((amountVal||'').replace(',','.'));
     const installments=Math.min(24,Math.max(1,parseInt(installmentsVal||'1',10)||1));
     const note=txt(noteVal,50);
     const payDate=payDateVal||'';
+    const reason=['card','loan','split','other'].includes(reasonVal)?reasonVal:'other';
+    const phone=String(phoneVal||'').replace(/\D/g,'').slice(0,15);
     if(!name||!Number.isFinite(amount)||amount<=0) return;
     const installmentValue=roundMoneyValue(amount/installments);
     st.debtors.unshift({
@@ -2087,6 +2262,11 @@ function bind(){
       installmentValue,
       installments,
       installmentsPaid:0,
+      reason,
+      phone,
+      lastChargedAt:'',
+      charges:[],
+      payments:[],
       note,
       payDate,
       paid:false,
@@ -2103,18 +2283,24 @@ function bind(){
   if(el.debForm){
     el.debForm.addEventListener('submit',e=>{
       e.preventDefault();
-      handleDebtorFormSubmit(el.debName.value, el.debAmount.value, (el.debInstallments&&el.debInstallments.value)||'1', el.debNote.value, el.debPayDate.value);
-      el.debName.value=''; el.debAmount.value=''; if(el.debInstallments) el.debInstallments.value='1'; el.debNote.value=''; el.debPayDate.value='';
+      const phoneInput=document.getElementById('debPhone');
+      const phoneVal=phoneInput?phoneInput.value:'';
+      handleDebtorFormSubmit(
+        el.debName.value,
+        el.debAmount.value,
+        (el.debInstallments&&el.debInstallments.value)||'1',
+        el.debNote.value,
+        el.debPayDate.value,
+        currentDebtorReason,
+        phoneVal
+      );
+      el.debName.value=''; el.debAmount.value='';
+      if(el.debInstallments) el.debInstallments.value='1';
+      el.debNote.value=''; el.debPayDate.value='';
+      if(phoneInput) phoneInput.value='';
+      if(debNameHint) debNameHint.hidden=true;
       updateDebInstallmentPreview();
-    });
-  }
-
-  if(el.debtsPageDebForm && el.debtsPageDebForm !== el.debForm){
-    el.debtsPageDebForm.addEventListener('submit',e=>{
-      e.preventDefault();
-      handleDebtorFormSubmit(el.debPageName.value, el.debPageAmount.value, (el.debPageInstallments&&el.debPageInstallments.value)||'1', el.debPageNote.value, el.debPagePayDate.value);
-      el.debPageName.value=''; el.debPageAmount.value=''; if(el.debPageInstallments) el.debPageInstallments.value='1'; el.debPageNote.value=''; el.debPagePayDate.value='';
-      updateDebInstallmentPreview();
+      closeDvForm();
     });
   }
 
@@ -2137,104 +2323,602 @@ function bind(){
     });
   }
 
-  function handleDebtorClick(e){
-    const row=e.target.closest('[data-deb]'); if(!row) return;
-    const d=st.debtors.find(x=>x.id===row.dataset.deb); if(!d) return;
-    const inst=Math.min(24,Math.max(1,parseInt(d.installments||'1',10)||1));
-    const instVal=Number(d.installmentValue)>0?Number(d.installmentValue):roundMoneyValue((Number(d.amount)||0)/inst);
-    const paidInst=Math.max(0,parseInt(d.installmentsPaid||'0',10)||0);
-    const remainingInst=Math.max(0,inst-paidInst);
-    const remainingAmount=d.paid?0:roundMoneyValue(remainingInst*instVal);
+  function handleDebtorChargeWhatsApp(debtorId){
+    const d=st.debtors.find(x=>x.id===debtorId);
+    if(!d) return;
+    const inst=debtorInstallments(d);
+    const paidInst=debtorPaidInstallments(d);
+    const instVal=debtorInstallmentValue(d);
+    const remaining=debtorRemainingAmount(d);
 
-    if(e.target.matches('[data-act="deb-edit"]')){
-      ui.debtors[d.id]=!ui.debtors[d.id];
-      renderDebtors();
-      return;
+    let msg='';
+    if(inst>1){
+      const nextInst=Math.min(inst, paidInst+1);
+      msg=`Oi ${d.name}! Lembrete da parcela ${nextInst}/${inst} de ${money(instVal)} 😉`;
+    } else {
+      msg=`Oi ${d.name}! Passando pra lembrar do valor de ${money(remaining)} 😉`;
     }
-    if(e.target.matches('[data-act="deb-del"]')){
-      st.debtors=st.debtors.filter(x=>x.id!==d.id); delete ui.debtors[d.id]; save(true); renderDebtors(); renderSummary();
-      return;
+
+    const nowIso=new Date().toISOString();
+    d.lastChargedAt=nowIso;
+    d.charges=d.charges||[];
+    d.charges.push(nowIso);
+    save(true);
+    renderDebtors();
+
+    const encoded=encodeURIComponent(msg);
+    let url='';
+    const cleanPhone=String(d.phone||'').replace(/\D/g,'');
+    if(cleanPhone){
+      const fullPhone=cleanPhone.length<=11?'55'+cleanPhone:cleanPhone;
+      url=`https://wa.me/${fullPhone}?text=${encoded}`;
+    } else {
+      url=`https://api.whatsapp.com/send?text=${encoded}`;
     }
-    if(e.target.matches('[data-act="deb-toggle"]')){
-      d.paid=!d.paid;
-      if(d.paid){
-        const nowIso=new Date().toISOString();
-        d.paidAt=nowIso;
-        d.installmentsPaid=inst;
-        if(!d.payDate) d.payDate=dateKey(nowIso);
-      } else {
-        d.paidAt='';
-        d.installmentsPaid=0;
-      }
-      save(true); renderDebtors(); renderSummary();
-      return;
+    window.open(url,'_blank');
+    showToast(`Cobrança registrada para ${d.name}!`, 'ok');
+  }
+
+  function openDebtorReceiveSheet(debtorId){
+    const d=st.debtors.find(x=>x.id===debtorId);
+    if(!d) return;
+    const remaining=debtorRemainingAmount(d);
+    const instVal=debtorInstallmentValue(d);
+    const inst=debtorInstallments(d);
+    const isMulti=inst>1 && instVal<remaining;
+
+    const defaultAcc=d.reason==='card'?'amex':'conta';
+
+    const sheetTitle=document.getElementById('dvSheetTitle');
+    if(sheetTitle) sheetTitle.textContent=`Receber de ${d.name}`;
+
+    const body=document.getElementById('dvSheetBody');
+    if(!body) return;
+
+    const initialVal=(isMulti?instVal:remaining).toFixed(2).replace('.',',');
+
+    body.innerHTML=`
+      <div style="display:grid;gap:12px;padding:4px 0">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);padding:10px 12px;border-radius:12px;border:1px solid var(--ln)">
+          <span class="mut" style="font-size:.82rem">Saldo total em aberto:</span>
+          <strong style="font-family:var(--font-display);font-size:1.15rem;color:var(--p)">${money(remaining)}</strong>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Valor a receber agora (valor livre)</label>
+          <div class="sheetAmountWrap">
+            <span class="sheetCurrency">R$</span>
+            <input id="dvReceiveAmountInput" type="text" inputmode="decimal" class="sheetAmountInput" value="${initialVal}" />
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+            ${isMulti?`<button type="button" class="sheetPill" data-dv-preset="${instVal}">1 parcela: ${money(instVal)}</button>`:''}
+            <button type="button" class="sheetPill" data-dv-preset="${remaining}">Quitar total: ${money(remaining)}</button>
+          </div>
+        </div>
+
+        <div class="sheetField">
+          <label class="mini">Em qual conta o dinheiro caiu?</label>
+          <div class="sheetPills" id="dvReceiveAccPills">
+            <button type="button" class="sheetPill ${defaultAcc==='conta'?'active':''}" data-acc="conta">🏦 Conta (${money(st.balances.conta.amount)})</button>
+            <button type="button" class="sheetPill ${defaultAcc==='amex'?'active':''}" data-acc="amex">💳 Abater AMEX (Usado: ${money(st.credit.used)})</button>
+            <button type="button" class="sheetPill ${defaultAcc==='vale1'?'active':''}" data-acc="vale1">🥗 Alelo Alimentação</button>
+            <button type="button" class="sheetPill ${defaultAcc==='vale2'?'active':''}" data-acc="vale2">🍽️ Alelo Refeição</button>
+          </div>
+        </div>
+
+        <button type="button" id="dvConfirmReceiveBtn" class="btn sheetSubmitBtn" style="margin-top:6px">Confirmar Recebimento</button>
+      </div>
+    `;
+
+    body.querySelectorAll('[data-dv-preset]').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const val=parseFloat(b.dataset.dvPreset);
+        const inp=document.getElementById('dvReceiveAmountInput');
+        if(inp) inp.value=val.toFixed(2).replace('.',',');
+        haptic('light');
+      });
+    });
+
+    let selectedAcc=defaultAcc;
+    body.querySelectorAll('#dvReceiveAccPills .sheetPill').forEach(b=>{
+      b.addEventListener('click',()=>{
+        selectedAcc=b.dataset.acc;
+        body.querySelectorAll('#dvReceiveAccPills .sheetPill').forEach(x=>x.classList.toggle('active',x===b));
+        haptic('light');
+      });
+    });
+
+    const confirmBtn=document.getElementById('dvConfirmReceiveBtn');
+    if(confirmBtn){
+      confirmBtn.addEventListener('click',()=>{
+        const rawVal=(document.getElementById('dvReceiveAmountInput').value||'').replace(',','.');
+        const val=roundMoneyValue(parseFloat(rawVal));
+        if(!val || val<=0){
+          showToast('Informe um valor válido maior que zero!','warn');
+          return;
+        }
+        executeDebtorPayment(d.id, val, selectedAcc);
+        closeDvSheet();
+      });
     }
-    if(e.target.matches('[data-act="deb-receive-part"]')){
-      if(d.paid) return;
-      const nextInst=paidInst+1;
-      const nowIso=new Date().toISOString();
-      d.installmentsPaid=nextInst;
-      d.paid=d.installmentsPaid>=inst;
-      d.paidAt=d.paid?nowIso:'';
-      if(!d.payDate) d.payDate=dateKey(nowIso);
-      st.balances.conta.amount += instVal;
-      const note=`Parcela ${nextInst}/${inst} de ${d.name}`;
-      const meta=categoryMeta(note,'Recebimento');
-      st.tx.unshift({id:id(),account:'conta',type:'in',value:instVal,note,category:meta.label,categoryKey:meta.key,debtorId:d.id,at:nowIso});
-      haptic('success');
-      showToast(`✓ Parcela ${nextInst}/${inst} (${money(instVal)}) recebida de ${d.name}!`, 'ok');
-      save(true); renderDebtors(); renderFinance(); renderSummary(); flash(document.querySelector('[data-acc="conta"] [data-bal]'),'in');
-      return;
+
+    openDvSheet();
+  }
+
+  function executeDebtorPayment(debtorId, val, account){
+    const d=st.debtors.find(x=>x.id===debtorId);
+    if(!d) return;
+    const nowIso=new Date().toISOString();
+    val=Math.min(val, debtorRemainingAmount(d) || val);
+
+    const prevStatus={
+      paid:d.paid,
+      paidAt:d.paidAt,
+      installmentsPaid:d.installmentsPaid,
+      payments:JSON.parse(JSON.stringify(d.payments||[]))
+    };
+
+    let txId=id();
+    if(account==='amex'){
+      st.credit.used=Math.max(0,(Number(st.credit.used)||0)-val);
+      st.credit.tx=st.credit.tx||[];
+      st.credit.tx.unshift({
+        id:txId,
+        type:'payment',
+        value:val,
+        desc:`Recebido de ${d.name} (abater AMEX)`,
+        category:'Pagamento cartao',
+        categoryKey:'pagamento',
+        at:nowIso
+      });
+    } else {
+      st.balances[account].amount=roundMoneyValue((Number(st.balances[account].amount)||0)+val);
+      st.tx.unshift({
+        id:txId,
+        account:account,
+        type:'in',
+        value:val,
+        note:`Recebido de ${d.name}`,
+        category:'Recebimento',
+        categoryKey:'recebimento',
+        debtorId:d.id,
+        at:nowIso
+      });
+      flash(document.querySelector(`[data-acc="${account}"] [data-bal]`),'in');
     }
-    if(e.target.matches('[data-act="deb-receive"]')){
-      if(d.paid) return;
-      const receiveVal=remainingAmount>0?remainingAmount:d.amount;
-      const nowIso=new Date().toISOString();
+
+    d.payments=d.payments||[];
+    const paymentEntry={
+      id:id(),
+      value:val,
+      at:nowIso,
+      account:account,
+      txId:txId
+    };
+    d.payments.push(paymentEntry);
+
+    const totalPaid=d.payments.reduce((s,p)=>s+Number(p.value||0),0);
+    const totalAmount=roundMoneyValue(Number(d.amount)||0);
+    const instVal=debtorInstallmentValue(d);
+    if(totalPaid>=totalAmount-0.01){
       d.paid=true;
       d.paidAt=nowIso;
-      d.installmentsPaid=inst;
-      if(!d.payDate) d.payDate=dateKey(nowIso);
-      st.balances.conta.amount += receiveVal;
-      const note=inst>1?`Quitação total de ${d.name}`:`Recebido de ${d.name}`;
-      const meta=categoryMeta(note,'Recebimento');
-      st.tx.unshift({id:id(),account:'conta',type:'in',value:receiveVal,note,category:meta.label,categoryKey:meta.key,debtorId:d.id,at:nowIso});
-      haptic('success');
-      showToast(`✓ Recebido ${money(receiveVal)} de ${d.name}!`, 'ok');
-      save(true); renderDebtors(); renderFinance(); renderSummary(); flash(document.querySelector('[data-acc="conta"] [data-bal]'),'in');
+      d.installmentsPaid=d.installments;
+    } else {
+      d.paid=false;
+      d.paidAt='';
+      d.installmentsPaid=Math.min(d.installments-1, instVal>0?Math.floor((totalPaid+0.01)/instVal):0);
+    }
+
+    save(true);
+    renderDebtors();
+    renderFinance();
+    renderCredit();
+    renderSummary();
+    haptic('success');
+    showToast(`✓ Recebido ${money(val)} de ${d.name}!`, 'ok');
+
+    startDebtorUndo({
+      debtorId:d.id,
+      paymentEntry,
+      account,
+      val,
+      txId,
+      prevStatus,
+      debtorName:d.name
+    });
+  }
+
+  let dvUndoState=null;
+  let dvUndoTimer=null;
+  let dvUndoCountdown=5;
+  let dvUndoInterval=null;
+
+  function startDebtorUndo(snapshot){
+    dvUndoState=snapshot;
+    dvUndoCountdown=5;
+    const bar=document.getElementById('dvUndoBar');
+    const text=document.getElementById('dvUndoText');
+    const btn=document.getElementById('dvUndoBtn');
+    if(!bar || !text || !btn) return;
+
+    if(dvUndoTimer) clearTimeout(dvUndoTimer);
+    if(dvUndoInterval) clearInterval(dvUndoInterval);
+
+    text.textContent=`Recebido ${money(snapshot.val)} de ${snapshot.debtorName}`;
+    btn.textContent=`Desfazer (5s)`;
+    bar.hidden=false;
+
+    dvUndoInterval=setInterval(()=>{
+      dvUndoCountdown--;
+      if(dvUndoCountdown>0){
+        btn.textContent=`Desfazer (${dvUndoCountdown}s)`;
+      } else {
+        clearInterval(dvUndoInterval);
+      }
+    },1000);
+
+    dvUndoTimer=setTimeout(()=>{
+      hideDebtorUndo();
+    },5000);
+  }
+
+  function hideDebtorUndo(){
+    if(dvUndoTimer){ clearTimeout(dvUndoTimer); dvUndoTimer=null; }
+    if(dvUndoInterval){ clearInterval(dvUndoInterval); dvUndoInterval=null; }
+    dvUndoState=null;
+    const bar=document.getElementById('dvUndoBar');
+    if(bar) bar.hidden=true;
+  }
+
+  function executeDebtorUndo(){
+    if(!dvUndoState) return;
+    const { debtorId, account, val, txId, prevStatus, debtorName }=dvUndoState;
+    const d=st.debtors.find(x=>x.id===debtorId);
+    if(d){
+      d.paid=prevStatus.paid;
+      d.paidAt=prevStatus.paidAt;
+      d.installmentsPaid=prevStatus.installmentsPaid;
+      d.payments=prevStatus.payments;
+    }
+    if(account==='amex'){
+      st.credit.used=roundMoneyValue((Number(st.credit.used)||0)+val);
+      st.credit.tx=(st.credit.tx||[]).filter(t=>t.id!==txId);
+    } else {
+      st.balances[account].amount=roundMoneyValue((Number(st.balances[account].amount)||0)-val);
+      st.tx=(st.tx||[]).filter(t=>t.id!==txId);
+    }
+
+    hideDebtorUndo();
+    save(true);
+    renderDebtors();
+    renderFinance();
+    renderCredit();
+    renderSummary();
+    haptic('medium');
+    showToast(`Recebimento de ${debtorName} desfeito com sucesso!`,'ok');
+  }
+
+  const undoBarBtn=document.getElementById('dvUndoBtn');
+  if(undoBarBtn){
+    undoBarBtn.addEventListener('click',executeDebtorUndo);
+  }
+
+  function openPersonTimelineSheet(personName){
+    const target=foldText(personName);
+    const items=(st.debtors||[]).filter(d=>foldText(d.name)===target);
+    if(!items.length) return;
+
+    const trust=personTrustBadge(personName);
+    const title=document.getElementById('dvSheetTitle');
+    if(title) title.innerHTML=`👤 ${safe(items[0].name)} <span class="dvTrustBadge ${trust.cls}">${trust.icon} ${trust.label}</span>`;
+
+    const body=document.getElementById('dvSheetBody');
+    if(!body) return;
+
+    const events=[];
+    let totalBorrowed=0;
+    let totalPaid=0;
+
+    items.forEach(d=>{
+      const dAmt=Number(d.amount)||0;
+      totalBorrowed+=dAmt;
+      events.push({
+        type:'created',
+        date:d.at||new Date().toISOString(),
+        title:`Registrou cobrança de ${money(dAmt)}`,
+        detail:`${debtorReasonIcon(d.reason)} ${debtorReasonLabel(d.reason)}${d.installments>1?` em ${d.installments}x`:''}${d.note?` (${d.note})`:''}`,
+        dotColor:'#39ff8f'
+      });
+      (d.charges||[]).forEach(c=>{
+        events.push({
+          type:'charged',
+          date:c,
+          title:`Lembrete de cobrança enviado`,
+          detail:`Via WhatsApp`,
+          dotColor:'#ffcf5f'
+        });
+      });
+      (d.payments||[]).forEach(p=>{
+        const pVal=Number(p.value)||0;
+        totalPaid+=pVal;
+        const accNames={conta:'Saldo em Conta',amex:'Abatido no AMEX',vale1:'Alelo Alimentação',vale2:'Alelo Refeição'};
+        events.push({
+          type:'payment',
+          date:p.at,
+          title:`Pagou ${money(pVal)}`,
+          detail:`Recebido no ${accNames[p.account]||'Saldo em Conta'}`,
+          dotColor:'#4cff9e'
+        });
+      });
+      if(d.paid && (!d.payments || !d.payments.length)){
+        totalPaid+=dAmt;
+        events.push({
+          type:'paid',
+          date:d.paidAt||d.at,
+          title:`Quitou cobrança de ${money(dAmt)}`,
+          detail:`Marcado como quitado`,
+          dotColor:'#4cff9e'
+        });
+      }
+    });
+
+    events.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const openBalance=Math.max(0,totalBorrowed-totalPaid);
+
+    body.innerHTML=`
+      <div style="display:grid;gap:12px;padding:4px 0">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:rgba(255,255,255,.03);padding:10px;border-radius:12px;border:1px solid var(--ln);text-align:center">
+          <div>
+            <span class="mini">Total emprestado</span>
+            <strong style="font-family:var(--font-display);font-size:.96rem;display:block;margin-top:2px">${money(totalBorrowed)}</strong>
+          </div>
+          <div>
+            <span class="mini">Total recebido</span>
+            <strong style="font-family:var(--font-display);font-size:.96rem;color:#4cff9e;display:block;margin-top:2px">${money(totalPaid)}</strong>
+          </div>
+          <div>
+            <span class="mini">Em aberto</span>
+            <strong style="font-family:var(--font-display);font-size:.96rem;color:${openBalance>0?'#ffcf5f':'var(--p)'};display:block;margin-top:2px">${money(openBalance)}</strong>
+          </div>
+        </div>
+
+        <div style="font-size:.76rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.05em">Linha do Tempo</div>
+
+        <div class="dvTimeline">
+          ${events.map(ev=>`
+            <div class="dvTimelineItem">
+              <div class="dvTimelineDot" style="background:${ev.dotColor}"></div>
+              <div class="dvTimelineTitle">${ev.title}</div>
+              <div class="dvTimelineMeta">${shortDate(ev.date)} · ${ev.detail}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    openDvSheet();
+  }
+
+  function openDebtorOptionsMenu(debtorId){
+    const d=st.debtors.find(x=>x.id===debtorId);
+    if(!d) return;
+    const title=document.getElementById('dvSheetTitle');
+    if(title) title.textContent=`Opções · ${d.name}`;
+
+    const body=document.getElementById('dvSheetBody');
+    if(!body) return;
+
+    body.innerHTML=`
+      <div style="display:grid;gap:8px;padding:6px 0" id="dvMenuOptionsWrap">
+        <button type="button" class="btn" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="receive">
+          <span>✓</span> <span>Registrar recebimento (parcial ou total)</span>
+        </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="charge">
+          <span>💬</span> <span>Cobrar no WhatsApp com lembrete</span>
+        </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="timeline">
+          <span>📜</span> <span>Ver linha do tempo / histórico</span>
+        </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="edit">
+          <span>✏️</span> <span>Editar dados da cobrança</span>
+        </button>
+        <button type="button" class="ghost" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px" data-menu-act="toggle">
+          <span>🔄</span> <span>${d.paid?'Reabrir cobrança':'Marcar como quitada'}</span>
+        </button>
+        <button type="button" class="danger" style="text-align:left;display:flex;align-items:center;gap:10px;padding:10px 14px;margin-top:6px" data-menu-act="delete">
+          <span>🗑️</span> <span>Excluir cobrança permanentemente</span>
+        </button>
+      </div>
+    `;
+
+    const wrap=document.getElementById('dvMenuOptionsWrap');
+    if(wrap){
+      wrap.addEventListener('click',e=>{
+        const btn=e.target.closest('[data-menu-act]');
+        if(!btn) return;
+        const act=btn.dataset.menuAct;
+        closeDvSheet();
+        if(act==='receive') openDebtorReceiveSheet(d.id);
+        else if(act==='charge') handleDebtorChargeWhatsApp(d.id);
+        else if(act==='timeline') openPersonTimelineSheet(d.name);
+        else if(act==='edit') openDebtorEditSheet(d.id);
+        else if(act==='toggle'){
+          d.paid=!d.paid;
+          if(d.paid){
+            d.paidAt=new Date().toISOString();
+            d.installmentsPaid=d.installments;
+          } else {
+            d.paidAt='';
+          }
+          save(true); renderDebtors(); renderSummary();
+          showToast(d.paid?`✓ ${d.name} marcado como quitado!`:`Cobrança reaberta!`,'ok');
+        }
+        else if(act==='delete'){
+          if(confirm(`Excluir a cobrança de ${d.name}?`)){
+            st.debtors=st.debtors.filter(x=>x.id!==d.id);
+            save(true); renderDebtors(); renderSummary();
+            showToast('Cobrança excluída.','ok');
+          }
+        }
+      });
+    }
+
+    openDvSheet();
+  }
+
+  function openDebtorEditSheet(debtorId){
+    const d=st.debtors.find(x=>x.id===debtorId);
+    if(!d) return;
+    const title=document.getElementById('dvSheetTitle');
+    if(title) title.textContent=`Editar cobrança · ${d.name}`;
+
+    const body=document.getElementById('dvSheetBody');
+    if(!body) return;
+
+    const inst=debtorInstallments(d);
+    body.innerHTML=`
+      <form id="dvEditForm" style="display:grid;gap:10px;padding:4px 0">
+        <div class="sheetField">
+          <label class="mini">Motivo</label>
+          <div class="sheetPills" id="dvEditReasonPills">
+            <button type="button" class="sheetPill ${d.reason==='card'?'active':''}" data-reason="card">💳 Passei no cartão</button>
+            <button type="button" class="sheetPill ${d.reason==='loan'?'active':''}" data-reason="loan">💵 Emprestei</button>
+            <button type="button" class="sheetPill ${d.reason==='split'?'active':''}" data-reason="split">🍕 Racha</button>
+            <button type="button" class="sheetPill ${d.reason==='other'?'active':''}" data-reason="other">📦 Outro</button>
+          </div>
+        </div>
+        <div class="sheetField">
+          <label class="mini">Nome</label>
+          <input id="dvEditName" type="text" class="sheetInput" value="${esc(d.name)}" maxlength="30" required />
+        </div>
+        <div class="two">
+          <div class="sheetField">
+            <label class="mini">Valor Total (R$)</label>
+            <input id="dvEditAmount" type="number" step="0.01" class="sheetInput" value="${Number(d.amount)||0}" required />
+          </div>
+          <div class="sheetField">
+            <label class="mini">Parcelas</label>
+            <select id="dvEditInstallments" class="sheetInput">
+              ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${inst===i+1?'selected':''}>${i+1}x</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="two">
+          <div class="sheetField">
+            <label class="mini">1º vencimento</label>
+            <input id="dvEditPayDate" type="date" class="sheetInput" value="${d.payDate||''}" />
+          </div>
+          <div class="sheetField">
+            <label class="mini">WhatsApp com DDD</label>
+            <input id="dvEditPhone" type="tel" class="sheetInput" value="${esc(d.phone||'')}" placeholder="(XX) 9XXXX-XXXX" />
+          </div>
+        </div>
+        <div class="sheetField">
+          <label class="mini">Observação</label>
+          <input id="dvEditNote" type="text" class="sheetInput" value="${esc(d.note||'')}" maxlength="50" placeholder="Observação opcional" />
+        </div>
+        <button type="submit" class="btn sheetSubmitBtn" style="margin-top:4px">Salvar Alterações</button>
+      </form>
+    `;
+
+    let editReason=d.reason||'other';
+    body.querySelectorAll('#dvEditReasonPills .sheetPill').forEach(p=>{
+      p.addEventListener('click',()=>{
+        editReason=p.dataset.reason;
+        body.querySelectorAll('#dvEditReasonPills .sheetPill').forEach(x=>x.classList.toggle('active',x===p));
+        haptic('light');
+      });
+    });
+
+    const form=document.getElementById('dvEditForm');
+    if(form){
+      form.addEventListener('submit',e=>{
+        e.preventDefault();
+        const newName=txt(document.getElementById('dvEditName').value, 30);
+        const newAmt=parseFloat(document.getElementById('dvEditAmount').value);
+        const newInst=Math.min(24, Math.max(1, parseInt(document.getElementById('dvEditInstallments').value, 10)||1));
+        if(!newName || !Number.isFinite(newAmt) || newAmt<=0) return;
+
+        d.name=newName;
+        d.amount=roundMoneyValue(newAmt);
+        d.installments=newInst;
+        d.installmentValue=roundMoneyValue(newAmt/newInst);
+        d.payDate=document.getElementById('dvEditPayDate').value||'';
+        d.phone=String(document.getElementById('dvEditPhone').value||'').replace(/\D/g,'').slice(0,15);
+        d.note=txt(document.getElementById('dvEditNote').value, 50);
+        d.reason=editReason;
+
+        const totalPaid=(d.payments||[]).reduce((s,p)=>s+Number(p.value||0), 0);
+        if(totalPaid>=d.amount-0.01){
+          d.paid=true;
+          d.installmentsPaid=d.installments;
+        } else {
+          d.paid=false;
+          d.installmentsPaid=Math.min(d.installments-1, d.installmentValue>0?Math.floor((totalPaid+0.01)/d.installmentValue):0);
+        }
+
+        save(true);
+        renderDebtors();
+        renderSummary();
+        closeDvSheet();
+        showToast('✓ Cobrança atualizada!','ok');
+      });
+    }
+    openDvSheet();
+  }
+
+  function handleDebtorBoardClick(e){
+    const chargeBtn=e.target.closest('[data-act="dv-charge-wa"]');
+    if(chargeBtn){
+      handleDebtorChargeWhatsApp(chargeBtn.dataset.deb);
+      return;
+    }
+    const receiveBtn=e.target.closest('[data-act="dv-open-receive"]');
+    if(receiveBtn){
+      openDebtorReceiveSheet(receiveBtn.dataset.deb);
+      return;
+    }
+    const menuBtn=e.target.closest('[data-act="dv-open-menu"]');
+    if(menuBtn){
+      openDebtorOptionsMenu(menuBtn.dataset.deb);
+      return;
+    }
+    const historyBtn=e.target.closest('[data-act="dv-person-history"]');
+    if(historyBtn){
+      openPersonTimelineSheet(historyBtn.dataset.person);
+      return;
+    }
+    const groupHead=e.target.closest('[data-act="dv-toggle-group"]');
+    if(groupHead){
+      const key=groupHead.dataset.personKey;
+      ui.debtors['grp_'+key]=!ui.debtors['grp_'+key];
+      renderDebtors();
       return;
     }
   }
 
-  if(el.debList) el.debList.addEventListener('click', handleDebtorClick);
-  if(el.debtsPageDebList && el.debtsPageDebList !== el.debList) el.debtsPageDebList.addEventListener('click', handleDebtorClick);
+  if(el.debList) el.debList.addEventListener('click', handleDebtorBoardClick);
+  if(el.debtsPageDebList && el.debtsPageDebList !== el.debList) el.debtsPageDebList.addEventListener('click', handleDebtorBoardClick);
 
-  function handleDebtorInput(e){
-    const row=e.target.closest('[data-deb]'); if(!row) return;
-    const d=st.debtors.find(x=>x.id===row.dataset.deb); if(!d) return;
-    if(e.target.matches('[data-f="deb-name"]')) d.name=txt(e.target.value,30);
-    if(e.target.matches('[data-f="deb-note"]')) d.note=txt(e.target.value,50);
-    if(e.target.matches('[data-f="deb-amount"]')){
-      const v=parseFloat((e.target.value||'').replace(',','.'));
-      if(Number.isFinite(v)&&v>=0){
-        d.amount=v;
-        const inst=Math.min(24,Math.max(1,parseInt(d.installments||'1',10)||1));
-        d.installmentValue=roundMoneyValue(v/inst);
-      }
-    }
-    if(e.target.matches('[data-f="deb-installments"]')){
-      const inst=Math.min(24,Math.max(1,parseInt(e.target.value||'1',10)||1));
-      d.installments=inst;
-      d.installmentValue=roundMoneyValue((Number(d.amount)||0)/inst);
-      d.installmentsPaid=Math.min(inst,parseInt(d.installmentsPaid||'0',10)||0);
-      d.paid=d.installmentsPaid>=inst;
-      renderDebtors();
-    }
-    if(e.target.matches('[data-f="deb-paydate"]')) d.payDate=e.target.value||'';
-    save(); renderSummary();
+  // Long press support on mobile cards
+  let dvTouchTimer=null;
+  let dvTouchMoved=false;
+  if(el.debList){
+    el.debList.addEventListener('touchstart',e=>{
+      const card=e.target.closest('.dvCard');
+      if(!card || e.target.closest('button')) return;
+      dvTouchMoved=false;
+      dvTouchTimer=setTimeout(()=>{
+        if(!dvTouchMoved && card.dataset.deb){
+          haptic('medium');
+          openDebtorOptionsMenu(card.dataset.deb);
+        }
+      },520);
+    },{passive:true});
+    el.debList.addEventListener('touchmove',()=>{ dvTouchMoved=true; if(dvTouchTimer) clearTimeout(dvTouchTimer); },{passive:true});
+    el.debList.addEventListener('touchend',()=>{ if(dvTouchTimer) clearTimeout(dvTouchTimer); },{passive:true});
+    el.debList.addEventListener('touchcancel',()=>{ if(dvTouchTimer) clearTimeout(dvTouchTimer); },{passive:true});
   }
-
-  if(el.debList) el.debList.addEventListener('input', handleDebtorInput);
-  if(el.debtsPageDebList && el.debtsPageDebList !== el.debList) el.debtsPageDebList.addEventListener('input', handleDebtorInput);
 
   el.myDebtForm.addEventListener('submit',e=>{
     e.preventDefault();
@@ -3814,182 +4498,351 @@ function debtorInstallmentValue(d){
   const raw=Number(d.installmentValue);
   return Number.isFinite(raw)&&raw>0?raw:roundMoneyValue((Number(d.amount)||0)/inst);
 }
-function debtorRemainingAmount(d){
-  if(!d||d.paid) return 0;
-  const inst=debtorInstallments(d);
-  const paid=debtorPaidInstallments(d);
-  const val=debtorInstallmentValue(d);
-  return roundMoneyValue(Math.max(0,inst-paid)*val);
-}
 function debtorPaidAmount(d){
   if(!d) return 0;
+  if(Array.isArray(d.payments)&&d.payments.length){
+    return roundMoneyValue(d.payments.reduce((s,p)=>s+Number(p.value||0),0));
+  }
   if(d.paid) return roundMoneyValue(Number(d.amount)||0);
   const paid=debtorPaidInstallments(d);
   const val=debtorInstallmentValue(d);
   return roundMoneyValue(paid*val);
 }
+function debtorRemainingAmount(d){
+  if(!d||d.paid) return 0;
+  const total=roundMoneyValue(Number(d.amount)||0);
+  const paid=debtorPaidAmount(d);
+  return roundMoneyValue(Math.max(0,total-paid));
+}
 
-function renderDebtorCard(d){
-  const inst=debtorInstallments(d);
-  const paidInst=debtorPaidInstallments(d);
-  const instVal=debtorInstallmentValue(d);
-  const remainingInst=Math.max(0,inst-paidInst);
-  const remainingAmount=debtorRemainingAmount(d);
-  const isMulti=inst>1;
+function foldText(s){
+  return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
 
-  let stepperHtml='';
+function debtorReasonIcon(reason){
+  switch(reason){
+    case 'card': return '💳';
+    case 'loan': return '💵';
+    case 'split': return '🍕';
+    default: return '📦';
+  }
+}
+function debtorReasonLabel(reason){
+  switch(reason){
+    case 'card': return 'Passei no cartão';
+    case 'loan': return 'Emprestei';
+    case 'split': return 'Racha';
+    default: return 'Outro';
+  }
+}
+
+function personTrustBadge(personName){
+  if(!personName) return { label: 'Novo', cls: 'neutral', icon: '⚪' };
+  const target = foldText(personName);
+  const items = (st.debtors||[]).filter(d=>foldText(d.name)===target);
+  if(!items.length) return { label: 'Novo', cls: 'neutral', icon: '⚪' };
+
+  const todayStr = today();
+  let hasSevereOverdue = false;
+  let hasPaidHistory = false;
+
+  items.forEach(d=>{
+    if(!d.paid && d.payDate){
+      const diff = days(todayStr, d.payDate);
+      if(diff < -7){
+        hasSevereOverdue = true;
+      }
+    }
+    if(d.paid || (Array.isArray(d.payments)&&d.payments.length>0)){
+      hasPaidHistory = true;
+    }
+  });
+
+  if(hasSevereOverdue){
+    return { label: 'Costuma atrasar', cls: 'warn', icon: '⚠️' };
+  }
+  if(hasPaidHistory){
+    return { label: 'Paga em dia', cls: 'ok', icon: '⭐' };
+  }
+  return { label: 'Novo', cls: 'neutral', icon: '⚪' };
+}
+
+function debtorUrgencyInfo(d){
+  if(d.paid) return { level: 4, tagHtml: '<span class="tag ok">✓ Quitado</span>', statusText: 'Quitado', delayDays: 0 };
+  if(!d.payDate){
+    return { level: 3, tagHtml: '<span class="tag" style="opacity:.7">Sem pressa</span>', statusText: 'Sem pressa', delayDays: 0 };
+  }
+  const todayStr = today();
+  const diff = days(todayStr, d.payDate); // negative if overdue
+  if(diff < 0){
+    const delay = Math.abs(diff);
+    let tagCls = 'dvTagDelayYellow';
+    let label = `venceu há ${delay}d`;
+    if(delay > 30){
+      tagCls = 'dvTagDelayRed';
+      label = `🔥 venceu há ${delay}d`;
+    } else if(delay > 7){
+      tagCls = 'dvTagDelayOrange';
+      label = `venceu há ${delay}d`;
+    }
+    return {
+      level: 1, // 🔴 Vencidas
+      tagHtml: `<span class="${tagCls}">${label}</span>`,
+      statusText: label,
+      delayDays: delay,
+      isOverdue: true
+    };
+  }
+  if(diff <= 7){
+    const label = diff === 0 ? 'vence hoje' : (diff === 1 ? 'vence amanhã' : `vence em ${diff}d`);
+    return {
+      level: 2, // 🟡 Esta semana
+      tagHtml: `<span class="tag warn" style="background:rgba(255,207,95,.15);color:#ffd056;border-color:rgba(255,207,95,.4)">${label}</span>`,
+      statusText: label,
+      delayDays: 0,
+      isWeek: true
+    };
+  }
+  return {
+    level: 3, // ⚪ Sem pressa
+    tagHtml: `<span class="tag month" style="color:#9fb3a8">vence em ${dateBr(d.payDate)}</span>`,
+    statusText: `vence em ${dateBr(d.payDate)}`,
+    delayDays: 0
+  };
+}
+
+function formatChargedTime(iso){
+  if(!iso) return '';
+  const diffDays = Math.round((Date.now() - new Date(iso).getTime()) / 86400000);
+  if(diffDays <= 0) return 'cobrado hoje';
+  return `cobrado há ${diffDays}d`;
+}
+
+function renderDebtorSingleCard(d, isNested=false){
+  const inst = debtorInstallments(d);
+  const paidInst = debtorPaidInstallments(d);
+  const instVal = debtorInstallmentValue(d);
+  const remainingAmount = debtorRemainingAmount(d);
+  const isMulti = inst > 1;
+  const reason = d.reason || 'other';
+  const reasonIcon = debtorReasonIcon(reason);
+  const reasonLabel = debtorReasonLabel(reason);
+  const urgency = debtorUrgencyInfo(d);
+  const trust = personTrustBadge(d.name);
+
+  let dotsHtml = '';
   if(isMulti){
-    const dots=Array.from({length:inst},(_,i)=>`<span class="stepDot ${i<paidInst?'done':''}"></span>`).join('');
-    stepperHtml=`<div class="installmentStepper" title="${paidInst}/${inst} parcelas recebidas">${dots} <span style="font-size:.72rem;color:var(--mut);margin-left:4px">${paidInst}/${inst} parcelas</span></div>`;
+    let dots = '';
+    for(let i=0; i<inst; i++){
+      dots += i < paidInst ? '●' : '○';
+    }
+    dotsHtml = `<span class="dvDots" title="${paidInst}/${inst} parcelas">${dots} ${paidInst}/${inst}</span>`;
+  }
+
+  const chargedText = d.lastChargedAt ? formatChargedTime(d.lastChargedAt) : '';
+
+  return `
+    <article class="dvCard ${d.paid?'paid':''}" data-deb="${d.id}" data-deb-name="${esc(d.name)}">
+      <div class="dvCardLine1">
+        <div class="dvPersonNameWrap">
+          <span class="dvReasonIcon" title="${reasonLabel}">${reasonIcon}</span>
+          <span class="dvPersonName" data-act="dv-person-history" data-person="${esc(d.name)}" title="Ver histórico de ${esc(d.name)}">${safe(d.name)}</span>
+          ${!isNested ? `<span class="dvTrustBadge ${trust.cls}">${trust.icon} ${trust.label}</span>` : ''}
+          ${dotsHtml}
+        </div>
+        <div class="dvCardAmount">${money(d.paid ? d.amount : remainingAmount)}</div>
+      </div>
+      <div class="dvCardLine2">
+        <div class="dvMetaLeft">
+          ${urgency.tagHtml}
+          ${isMulti && !d.paid ? `<span>· parcela ${money(instVal)}</span>` : ''}
+          ${chargedText ? `<span>· ${chargedText}</span>` : ''}
+          ${d.note ? `<span class="mut" title="${esc(d.note)}">· ${safe(d.note)}</span>` : ''}
+        </div>
+        <div class="dvMetaRight">
+          ${!d.paid ? `<button type="button" class="dvActionBtn charge" data-act="dv-charge-wa" data-deb="${d.id}" title="Cobrar no WhatsApp">💬 Cobrar</button>` : ''}
+          ${!d.paid ? `<button type="button" class="dvActionBtn receive" data-act="dv-open-receive" data-deb="${d.id}">✓ Recebi</button>` : ''}
+          <button type="button" class="dvActionBtn menu" data-act="dv-open-menu" data-deb="${d.id}" title="Opções">⋯</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderPersonGroupCard(personName, groupItems){
+  const total = roundMoneyValue(groupItems.reduce((s,d)=>s+debtorRemainingAmount(d),0));
+  const trust = personTrustBadge(personName);
+  const isExpanded = Boolean(ui.debtors['grp_'+foldText(personName)]);
+  return `
+    <article class="dvGroupCard" data-group-person="${esc(personName)}">
+      <div class="dvGroupHead" data-act="dv-toggle-group" data-person-key="${esc(foldText(personName))}">
+        <div class="dvCardLine1">
+          <div class="dvPersonNameWrap">
+            <span class="dvReasonIcon">👥</span>
+            <span class="dvPersonName" data-act="dv-person-history" data-person="${esc(personName)}">${safe(personName)}</span>
+            <span class="dvTrustBadge ${trust.cls}">${trust.icon} ${trust.label}</span>
+            <span class="tag" style="font-size:.68rem">${groupItems.length} cobranças</span>
+          </div>
+          <div class="dvCardAmount">${money(total)}</div>
+        </div>
+        <div class="dvCardLine2">
+          <span class="mut" style="font-size:.72rem">Cobranças agrupadas · toque para ${isExpanded?'recolher ▲':'abrir ▼'}</span>
+          <span style="font-size:.74rem;color:var(--p);font-weight:700">${isExpanded?'▲ Fechar':'▼ Ver todas'}</span>
+        </div>
+      </div>
+      <div class="dvGroupSubItems" style="display:${isExpanded?'grid':'none'}">
+        ${groupItems.map(d=>renderDebtorSingleCard(d, true)).join('')}
+      </div>
+    </article>
+  `;
+}
+
+function renderDebtorItemsWithGrouping(items){
+  const byPerson = {};
+  items.forEach(d=>{
+    const k = foldText(d.name);
+    byPerson[k] = byPerson[k] || [];
+    byPerson[k].push(d);
+  });
+  return Object.keys(byPerson).map(k=>{
+    const pItems = byPerson[k];
+    if(pItems.length === 1){
+      return renderDebtorSingleCard(pItems[0]);
+    }
+    return renderPersonGroupCard(pItems[0].name, pItems);
+  }).join('');
+}
+
+function renderDebtorBucket(title, badgeClass, items, isQuitadas=false){
+  if(!items.length) return '';
+  const total = roundMoneyValue(items.reduce((s,d)=>s+(isQuitadas?debtorPaidAmount(d):debtorRemainingAmount(d)), 0));
+  const content = isQuitadas
+    ? `<div style="display:grid;gap:6px">${items.map(d=>renderDebtorSingleCard(d)).join('')}</div>`
+    : renderDebtorItemsWithGrouping(items);
+
+  if(isQuitadas){
+    return `
+      <details class="dvArchiveDetails" style="margin-top:8px;border:1px solid rgba(57,255,143,.18);border-radius:12px;padding:8px 10px;background:rgba(255,255,255,.015)">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.76rem;color:var(--mut);font-weight:700">
+          <span>${title} (${items.length})</span>
+          <span class="tag ok">${money(total)}</span>
+        </summary>
+        <div style="margin-top:8px;display:grid;gap:6px">
+          ${content}
+        </div>
+      </details>
+    `;
   }
 
   return `
-    <article class="debtor ${d.paid?'paid':''}" data-deb="${d.id}">
-      <div class="debtorHead">
-        <div>
-          <div class="debtorName">${safe(d.name)}</div>
-          <div class="debtorAmount">${money(isMulti && !d.paid ? remainingAmount : d.amount)}</div>
-        </div>
-        <div class="debtorTools">
-          <span class="tag ${d.paid?'ok':'warn'}">${d.paid?'Quitado':'Em aberto'}</span>
-          ${isMulti?`<span class="tag">${inst}x</span>`:''}
-          ${debtorDueTag(d)}
-          ${!shouldShowDebtorNow(d)&&!d.paid?'<span class="tag future">Futuro</span>':''}
-          <span class="tag month">${safe(monthLabel(d.payDate,d.paidAt||d.at))}</span>
-          <button type="button" class="iconBtn ${ui.debtors[d.id]?'active':''}" data-act="deb-edit" title="Editar devedor">✎</button>
-        </div>
+    <div class="dvSection">
+      <div class="dvSectionHead">
+        <span>${title} (${items.length})</span>
+        <span class="tag ${badgeClass}">${money(total)}</span>
       </div>
-      <div class="debtorCardBody">
-        <div class="actionMeta">
-          ${isMulti?`
-          <div class="debtStats" style="margin-bottom:4px;">
-            <div class="debtStat">
-              <span class="mini">Parcela</span>
-              <strong>${money(instVal)}</strong>
-            </div>
-            <div class="debtStat">
-              <span class="mini">Recebido</span>
-              <strong>${paidInst}/${inst}</strong>
-            </div>
-            <div class="debtStat">
-              <span class="mini">${d.paid?'Total recebido':'Falta receber'}</span>
-              <strong>${money(d.paid?d.amount:remainingAmount)}</strong>
-            </div>
-          </div>
-          ${stepperHtml}
-          `:''}
-          <div class="debtorMeta">
-            <span>${d.paidAt?`Pago em ${shortDate(d.paidAt)}`:(d.payDate?`Previsto: ${dateBr(d.payDate)}`:'Data de pagamento não definida')} · ${safe(monthInfoLabel(d.payDate,d.paidAt||d.at))}</span>
-            <span>${!shouldShowDebtorNow(d)&&!d.paid?`Lançamento futuro para a home${d.note?' · ':''}`:''}${d.note?safe(d.note):(!shouldShowDebtorNow(d)&&!d.paid?'':'Sem observação')}</span>
-            ${isMulti?`<span>${d.paid?'Todas as parcelas recebidas.':`Falta(m) ${remainingInst} parcela(s) de ${money(instVal)}`}</span>`:''}
-          </div>
-          ${ui.debtors[d.id]?`<div class="debtorEdit debtPanel">
-            <span class="debtPanelTitle">Ajuste de cobrança</span>
-            <div class="two">
-              <input data-f="deb-name" type="text" value="${esc(d.name)}" placeholder="Nome" />
-              <input data-f="deb-amount" type="number" step="0.01" inputmode="decimal" value="${Number(d.amount)||0}" placeholder="Valor total" />
-            </div>
-            <div class="two">
-              <select data-f="deb-installments">
-                ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${inst===i+1?'selected':''}>${i+1}x</option>`).join('')}
-              </select>
-              <input data-f="deb-paydate" type="date" value="${d.payDate||''}" />
-            </div>
-            <div class="two">
-              <input data-f="deb-note" type="text" maxlength="50" value="${esc(d.note||'')}" placeholder="Observação" />
-              <input type="text" value="${paidInst} de ${inst} parcelas recebidas" readonly />
-            </div>
-          </div>`:''}
-        </div>
-        <div class="actionStack debtorActions">
-          ${isMulti && !d.paid ? `
-            <button type="button" class="btn" data-act="deb-receive-part">Receber parcela (${money(instVal)})</button>
-            <button type="button" class="ghost" data-act="deb-receive">Quitar total (${money(remainingAmount)})</button>
-          ` : `
-            <button type="button" class="btn" data-act="deb-receive">${d.paid?'Já quitado':'Receber + conta'}</button>
-          `}
-          <button type="button" class="ghost" data-act="deb-toggle">${d.paid?'Reabrir':'Marcar pago'}</button>
-          <button type="button" class="danger" data-act="deb-del">Remover</button>
-        </div>
+      <div class="debtorList">
+        ${content}
       </div>
-    </article>`;
-}
-function debtorArchiveMonthKey(item){
-  return monthKeyFromValue((item&&item.paidAt)||'',(item&&item.payDate)||(item&&item.at)||'');
-}
-function renderDebtorOpenSection(items){
-  const total=roundMoneyValue((items||[]).reduce((sum,item)=>sum+debtorRemainingAmount(item),0));
-  return `
-    <article class="fcard debtSection openSection">
-      <div class="debtSectionHead">
-        <div>
-          <h3 class="subtitle">Em aberto no cartão</h3>
-          <p class="mut">Cobranças ainda pendentes e futuras continuam aqui até serem marcadas como pagas.</p>
-        </div>
-        <div class="debtMonthMeta">
-          <span class="tag warn">${items.length} ${items.length===1?'pessoa':'pessoas'}</span>
-          <span class="tag month">${money(total)}</span>
-        </div>
-      </div>
-      ${items.length?`<div class="debtorList">${items.map(renderDebtorCard).join('')}</div>`:'<p class="empty">Nenhuma pessoa devedora em aberto no momento.</p>'}
-    </article>`;
-}
-function renderDebtorPaidArchiveMonth(group){
-  const openAttr=group.items.length&&group.key===currentMonthKey()?' open':'';
-  return `
-    <details class="archiveMonth ${group.items.length?'':'archiveMonthEmpty'}"${openAttr}>
-      <summary class="archiveSummary">
-        <div>
-          <strong>${safe(group.label)}</strong>
-          <p class="mut">${group.items.length?`${group.items.length} quitada(s) neste mês`:'Caixa pronta para futuras quitações'}</p>
-        </div>
-        <div class="debtMonthMeta">
-          <span class="tag month">${safe(group.label)}</span>
-          <span class="tag ok">${money(group.total)}</span>
-        </div>
-      </summary>
-      <div class="archiveBody">
-        ${group.items.length?`<div class="debtorList">${group.items.map(renderDebtorCard).join('')}</div>`:`<p class="empty">Nenhuma quitada em ${safe(group.label)} ainda.</p>`}
-      </div>
-    </details>`;
-}
-function renderDebtorPaidSection(items){
-  const total=roundMoneyValue((items||[]).reduce((sum,item)=>sum+debtorPaidAmount(item),0));
-  const groups=buildArchiveMonthGroupsUsedOnly(items,debtorArchiveMonthKey,item=>debtorPaidAmount(item));
-  return `
-    <article class="fcard debtSection paidSection">
-      <div class="debtSectionHead">
-        <div>
-          <h3 class="subtitle">Quitadas por mês</h3>
-          <p class="mut">Os meses desta área aparecem somente quando já existe ao menos uma quitação registrada neles.</p>
-        </div>
-        <div class="debtMonthMeta">
-          <span class="tag ok">${items.length} ${items.length===1?'quitada':'quitadas'}</span>
-          <span class="tag month">${money(total)}</span>
-        </div>
-      </div>
-      ${groups.length?`<div class="archiveMonths">${groups.map(renderDebtorPaidArchiveMonth).join('')}</div>`:'<p class="empty">Nenhuma quitada registrada no cartão ainda.</p>'}
-    </article>`;
+    </div>
+  `;
 }
 
 function renderDebtors(){
-  const openItems=sortDebtEntries((st.debtors||[]).filter(d=>!d.paid));
-  const paidItems=sortDebtEntries((st.debtors||[]).filter(d=>d.paid));
-  const html=[
-    renderDebtorOpenSection(openItems),
-    renderDebtorPaidSection(paidItems)
-  ].join('');
+  const all = st.debtors || [];
+  const openItems = all.filter(d=>!d.paid);
+  const paidItems = all.filter(d=>d.paid);
+
+  // Item 1: Summary Line
+  const summaryEl = document.getElementById('dvSummaryLine');
+  if(summaryEl){
+    const openTotal = roundMoneyValue(openItems.reduce((s,d)=>s+debtorRemainingAmount(d),0));
+    const uniqueNames = new Set(openItems.map(d=>foldText(d.name)).filter(Boolean));
+    const peopleCount = uniqueNames.size;
+    const overdueTotal = roundMoneyValue(openItems.filter(d=>debtorUrgencyInfo(d).isOverdue).reduce((s,d)=>s+debtorRemainingAmount(d),0));
+
+    summaryEl.innerHTML = `
+      <span>Me devem <strong>${money(openTotal)}</strong></span>
+      <span class="dvSummaryDot">·</span>
+      <span><strong>${peopleCount}</strong> ${peopleCount===1?'pessoa':'pessoas'}</span>
+      ${overdueTotal > 0 ? `<span class="dvSummaryDot">·</span><span class="dvOverdueBadge">${money(overdueTotal)} vencido</span>` : ''}
+    `;
+  }
+
+  // Item 2: Progress Bar
+  const progressEl = document.getElementById('dvProgress');
+  if(progressEl){
+    const openTotal = roundMoneyValue(openItems.reduce((s,d)=>s+debtorRemainingAmount(d),0));
+    const paidTotal = roundMoneyValue(all.reduce((s,d)=>s+debtorPaidAmount(d),0));
+    const totalTracked = roundMoneyValue(openTotal + paidTotal);
+    if(totalTracked > 0){
+      progressEl.hidden = false;
+      const pct = Math.min(100, Math.round((paidTotal / totalTracked) * 100));
+      progressEl.innerHTML = `
+        <div class="dvProgressTrack">
+          <div class="dvProgressFill" style="width:${pct}%"></div>
+        </div>
+        <div class="dvProgressMeta">
+          <span><strong>${pct}% recebido</strong> — ${money(paidTotal)} de ${money(totalTracked)}</span>
+        </div>
+      `;
+    } else {
+      progressEl.hidden = true;
+    }
+  }
+
+  // Item 3: Destaque Esta Semana
+  const weekEl = document.getElementById('dvWeek');
+  if(weekEl){
+    const weekItems = openItems.filter(d=>debtorUrgencyInfo(d).isWeek);
+    const weekTotal = roundMoneyValue(weekItems.reduce((s,d)=>{
+      const instVal = debtorInstallmentValue(d);
+      const rem = debtorRemainingAmount(d);
+      return s + (instVal > 0 && instVal < rem ? instVal : rem);
+    }, 0));
+    if(weekTotal > 0){
+      weekEl.hidden = false;
+      const names = Array.from(new Set(weekItems.map(d=>d.name).filter(Boolean)));
+      weekEl.innerHTML = `<span>📥 Esta semana entram <strong>${money(weekTotal)}</strong> (${names.map(safe).join(', ')})</span>`;
+    } else {
+      weekEl.hidden = true;
+    }
+  }
+
+  // Item 8: Ordem por urgência
+  const v1 = openItems.filter(d=>debtorUrgencyInfo(d).level === 1); // 🔴 Vencidas
+  const v2 = openItems.filter(d=>debtorUrgencyInfo(d).level === 2); // 🟡 Esta semana
+  const v3 = openItems.filter(d=>debtorUrgencyInfo(d).level === 3); // ⚪ Sem pressa
+
+  // Sort within buckets by payDate
+  const sortFn = (a,b)=>(a.payDate||'9999-99-99').localeCompare(b.payDate||'9999-99-99');
+  v1.sort(sortFn);
+  v2.sort(sortFn);
+  v3.sort(sortFn);
+  paidItems.sort((a,b)=>new Date(b.paidAt||b.at||0) - new Date(a.paidAt||a.at||0));
+
+  let html = '';
+  if(!openItems.length && !paidItems.length){
+    html = '<p class="empty">Nenhuma cobrança registrada ainda. Toque em "+ Cobrar alguém" para começar.</p>';
+  } else {
+    html = [
+      renderDebtorBucket('🔴 Vencidas', 'danger', v1),
+      renderDebtorBucket('🟡 Esta semana', 'warn', v2),
+      renderDebtorBucket('⚪ Sem pressa', 'month', v3),
+      renderDebtorBucket('✅ Quitadas', 'ok', paidItems, true)
+    ].filter(Boolean).join('');
+  }
+
   if(el.debList){
-    el.debList.className='list debtBoard';
-    el.debList.innerHTML=html;
+    el.debList.className = 'list debtBoard';
+    el.debList.innerHTML = html;
   }
   if(el.debtsPageDebList && el.debtsPageDebList !== el.debList){
-    el.debtsPageDebList.className='list debtBoard';
-    el.debtsPageDebList.innerHTML=html;
+    el.debtsPageDebList.className = 'list debtBoard';
+    el.debtsPageDebList.innerHTML = html;
   }
-  const openTotal=roundMoneyValue(openItems.reduce((sum,d)=>sum+debtorRemainingAmount(d),0));
-  if(el.debtsPageTotalBox) el.debtsPageTotalBox.textContent=money(openTotal);
-  if(el.debtsPageCountBox) el.debtsPageCountBox.textContent=String(openItems.length);
+  const openTotal = roundMoneyValue(openItems.reduce((sum,d)=>sum+debtorRemainingAmount(d),0));
+  if(el.debtsPageTotalBox) el.debtsPageTotalBox.textContent = money(openTotal);
+  if(el.debtsPageCountBox) el.debtsPageCountBox.textContent = String(openItems.length);
 }
 
 function renderMyDebts(){
@@ -4580,12 +5433,32 @@ function normalizeCreditTxEntry(item){
 function normalizeDebtorEntry(item){
   item=item||{};
   const installments=Math.min(24,Math.max(1,parseInt(item.installments||'1',10)||1));
-  const paid=Boolean(item.paid);
-  let installmentsPaid=Math.max(0,Math.min(installments,parseInt(item.installmentsPaid||String(paid?installments:0),10)||0));
-  if(paid && installmentsPaid<installments) installmentsPaid=installments;
+  let paid=Boolean(item.paid);
   const rawAmount=Math.max(0,Number(item.amount)||0);
   const rawInstVal=Number(item.installmentValue);
   const installmentValue=Number.isFinite(rawInstVal)&&rawInstVal>0?rawInstVal:roundMoneyValue(installments>1&&rawAmount>0?rawAmount/installments:rawAmount);
+  const reason=['card','loan','split','other'].includes(item.reason)?item.reason:'other';
+  const phone=String(item.phone||'').replace(/\D/g,'').slice(0,15);
+  const lastChargedAt=item.lastChargedAt||'';
+  const charges=Array.isArray(item.charges)?item.charges.map(String).slice(-20):[];
+  let payments=[];
+  if(Array.isArray(item.payments)){
+    payments=item.payments.filter(p=>p&&Number(p.value)>0).map(p=>({
+      id:p.id||id(),
+      value:roundMoneyValue(p.value),
+      at:p.at||new Date().toISOString(),
+      account:['conta','vale1','vale2','amex'].includes(p.account)?p.account:'conta',
+      txId:p.txId||''
+    }));
+  }
+  const totalPaid=payments.reduce((s,p)=>s+p.value,0);
+  let installmentsPaid=Math.max(0,Math.min(installments,parseInt(item.installmentsPaid||String(paid?installments:0),10)||0));
+  if(payments.length>0){
+    paid=rawAmount>0 && totalPaid>=(rawAmount-0.01);
+    installmentsPaid=paid?installments:Math.min(installments,installmentValue>0?Math.floor((totalPaid+0.01)/installmentValue):0);
+  } else if(paid && installmentsPaid<installments){
+    installmentsPaid=installments;
+  }
   return Object.assign({},item,{
     id:item.id||id(),
     name:txt(item.name||'',30),
@@ -4593,6 +5466,11 @@ function normalizeDebtorEntry(item){
     installmentValue:installmentValue,
     installments:installments,
     installmentsPaid:installmentsPaid,
+    reason:reason,
+    phone:phone,
+    lastChargedAt:lastChargedAt,
+    charges:charges,
+    payments:payments,
     note:txt(item.note||'',50),
     payDate:item.payDate||'',
     paid:paid||installmentsPaid>=installments,

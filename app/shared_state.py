@@ -339,6 +339,67 @@ def normalize_debt_item(item):
     }
 
 
+DEBTOR_REASONS = {"card", "loan", "split", "other"}
+DEBTOR_PAYMENT_ACCOUNTS = {"conta", "vale1", "vale2", "amex"}
+
+
+def _debtor_total(entry):
+    installments = max(1, int(safe_float(entry.get("installments"), 1)))
+    installment_value = max(0.0, safe_float(entry.get("installmentValue"), 0))
+    amount = max(0.0, safe_float(entry.get("amount"), 0))
+    if installments > 1 and installment_value > 0:
+        return round(installment_value * installments, 2)
+    return amount or installment_value
+
+
+def _debtor_received(entry):
+    return round(sum(max(0.0, safe_float(p.get("value"), 0)) for p in entry.get("payments") or []), 2)
+
+
+def normalize_debtor_item(item):
+    """Normalize a 'quem me deve' entry, keeping amount as the total owed and the payment history."""
+    raw = dict(item or {})
+    base = normalize_debt_item(raw)
+    raw_amount = max(0.0, safe_float(raw.get("amount"), 0))
+    base["amount"] = raw_amount or round(base["installmentValue"] * base["installments"], 2)
+    reason = str(raw.get("reason") or "").strip().lower()
+    base["reason"] = reason if reason in DEBTOR_REASONS else "other"
+    base["phone"] = "".join(ch for ch in str(raw.get("phone") or "") if ch.isdigit())[:15]
+    base["lastChargedAt"] = str(raw.get("lastChargedAt") or "")
+    base["charges"] = [str(c) for c in list(raw.get("charges") or []) if c][-20:]
+    if isinstance(raw.get("payments"), list):
+        payments = []
+        for p in raw.get("payments") or []:
+            if not isinstance(p, dict):
+                continue
+            value = max(0.0, safe_float(p.get("value"), 0))
+            if value <= 0:
+                continue
+            account = str(p.get("account") or "conta")
+            payments.append(
+                {
+                    "id": str(p.get("id") or make_id()),
+                    "value": round(value, 2),
+                    "at": str(p.get("at") or _now_iso()),
+                    "account": account if account in DEBTOR_PAYMENT_ACCOUNTS else "conta",
+                    "txId": str(p.get("txId") or ""),
+                }
+            )
+        base["payments"] = payments
+        total = _debtor_total(base)
+        received = _debtor_received(base)
+        installment_value = base["installmentValue"] or total
+        base["paid"] = total > 0 and received >= total - 0.009
+        base["installmentsPaid"] = (
+            base["installments"]
+            if base["paid"]
+            else max(0, min(base["installments"], int((received + 0.009) // installment_value) if installment_value > 0 else 0))
+        )
+        if not base["paid"]:
+            base["paidAt"] = ""
+    return base
+
+
 def normalize_state(raw_state):
     raw_state = raw_state or {}
     state = copy.deepcopy(DEFAULT_STATE)
@@ -380,7 +441,7 @@ def normalize_state(raw_state):
 
     state["tx"] = [normalize_balance_tx(item) for item in list(raw_state.get("tx") or [])]
     state["habits"] = list(raw_state.get("habits") or [])
-    state["debtors"] = [normalize_debt_item(item) for item in list(raw_state.get("debtors") or [])]
+    state["debtors"] = [normalize_debtor_item(item) for item in list(raw_state.get("debtors") or [])]
     state["myDebts"] = [normalize_debt_item(item) for item in list(raw_state.get("myDebts") or [])]
     state["routineLog"] = list(raw_state.get("routineLog") or [])
     state["goals"] = list(raw_state.get("goals") or [])
@@ -749,7 +810,7 @@ def add_debtor(name, amount, note="", pay_date="", persist=True):
             raise ValueError("Ja existe um devedor com esse nome. Use adicionar mais valor ou renomeie no app.")
         debtors.insert(
             0,
-            normalize_debt_item(
+            normalize_debtor_item(
                 {
                     "id": make_id(),
                     "name": debtor_name,
@@ -758,6 +819,7 @@ def add_debtor(name, amount, note="", pay_date="", persist=True):
                     "payDate": str(pay_date or ""),
                     "paid": False,
                     "paidAt": "",
+                    "payments": [],
                     "at": _now_iso(),
                 }
             ),
@@ -777,14 +839,16 @@ def adjust_debtor_amount(debtor_name, value, mode="add", note="", persist=True):
 
     def mutate(state):
         debtor = _resolve_named_entry(state.setdefault("debtors", []), debtor_name, "devedor")
-        current_amount = max(0.0, safe_float(debtor.get("amount"), 0))
+        current_amount = max(0.0, _debtor_total(debtor))
         if mode == "add":
             debtor["amount"] = current_amount + amount
         elif mode == "remove":
             debtor["amount"] = max(0.0, current_amount - amount)
         else:
             debtor["amount"] = amount
+        debtor["installments"] = 1
         debtor["installmentValue"] = debtor["amount"]
+        debtor["installmentsPaid"] = 0
 
         if debtor_note:
             debtor["note"] = debtor_note
@@ -805,8 +869,15 @@ def receive_debtor_in_account(debtor_name, account_alias="conta", note="", persi
 
     def mutate(state):
         debtor = _resolve_named_entry(state.setdefault("debtors", []), debtor_name, "devedor")
-        amount = max(0.0, safe_float(debtor.get("amount"), 0))
-        if amount <= 0:
+        total = max(0.0, _debtor_total(debtor))
+        if isinstance(debtor.get("payments"), list):
+            received = _debtor_received(debtor)
+        else:
+            installments = max(1, int(safe_float(debtor.get("installments"), 1)))
+            paid_installments = max(0, min(installments, int(safe_float(debtor.get("installmentsPaid"), 0))))
+            received = round(paid_installments * max(0.0, safe_float(debtor.get("installmentValue"), 0)), 2)
+        amount = round(max(0.0, total - received), 2)
+        if amount <= 0 or debtor.get("paid"):
             raise ValueError("Esse devedor nao possui saldo em aberto.")
         now_iso = _now_iso()
         debtor["paid"] = True
@@ -814,7 +885,22 @@ def receive_debtor_in_account(debtor_name, account_alias="conta", note="", persi
         if not debtor.get("payDate"):
             debtor["payDate"] = _today_key()
         payment_note = debtor_note or f"Recebido de {debtor.get('name') or 'Devedor'}"
-        _apply_balance_transaction(state, account_alias, "in", amount, payment_note, debtor_id=debtor.get("id") or "", at=now_iso)
+        account_key, entry = _apply_balance_transaction(
+            state, account_alias, "in", amount, payment_note, debtor_id=debtor.get("id") or "", at=now_iso
+        )
+        payments = debtor.get("payments") if isinstance(debtor.get("payments"), list) else []
+        if not isinstance(debtor.get("payments"), list) and received > 0:
+            payments.append({"id": make_id(), "value": received, "at": debtor.get("at") or now_iso, "account": "conta", "txId": ""})
+        payments.append(
+            {
+                "id": make_id(),
+                "value": amount,
+                "at": now_iso,
+                "account": account_key if account_key in DEBTOR_PAYMENT_ACCOUNTS else "conta",
+                "txId": str(entry.get("id") or ""),
+            }
+        )
+        debtor["payments"] = payments
 
     return update_state(mutate, persist=persist)
 
@@ -978,6 +1064,10 @@ def delete_transaction_entry(source, tx_id, goal_id="", persist=True):
                 if debtor:
                     debtor["paid"] = False
                     debtor["paidAt"] = ""
+                    if isinstance(debtor.get("payments"), list):
+                        kept = [p for p in debtor["payments"] if str((p or {}).get("txId") or "") != tx_id]
+                        debtor["payments"] = kept if len(kept) != len(debtor["payments"]) else []
+                    debtor["installmentsPaid"] = 0
             my_debt_id = str(existing.get("myDebtId") or "")
             if my_debt_id:
                 debt = next((item for item in state.setdefault("myDebts", []) if str(item.get("id") or "") == my_debt_id), None)
@@ -1040,12 +1130,17 @@ def debtors_summary(state=None):
     state = state or read_state()
     debtors = []
     for item in state.get("debtors", []):
-        entry = normalize_debt_item(item)
+        entry = normalize_debtor_item(item)
+        if isinstance(entry.get("payments"), list):
+            received = _debtor_received(entry)
+        else:
+            received = round(entry["installmentsPaid"] * entry["installmentValue"], 2)
+        remaining = 0.0 if entry.get("paid") else max(0.0, _debtor_total(entry) - received)
         debtors.append(
             {
                 "id": str(entry.get("id") or ""),
                 "name": entry["name"] or "Devedor",
-                "amount": max(0.0, safe_float(entry.get("amount"), 0)),
+                "amount": round(remaining if not entry.get("paid") else _debtor_total(entry), 2),
                 "note": normalize_spaces(entry.get("note")),
                 "payDate": str(entry.get("payDate") or ""),
                 "paid": bool(entry.get("paid")),
