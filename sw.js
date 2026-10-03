@@ -1,4 +1,4 @@
-const CACHE_NAME = 'weedverso-v14';
+const CACHE_NAME = 'weedverso-v15';
 const PRECACHE_ASSETS = [
   './',
   'manifest.json',
@@ -53,7 +53,7 @@ self.addEventListener('fetch', (event) => {
   // Navegacao: Rede primeiro, com fallback seguro para cache
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-cache' })
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();

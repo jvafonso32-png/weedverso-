@@ -525,7 +525,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.3</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.4</span>
               <span id="userLevelBadge" class="disciplineBadge" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -1053,13 +1053,26 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <span class="sheetCurrency">R$</span>
           <input id="debAmount" type="text" inputmode="decimal" placeholder="0,00" class="sheetAmountInput" required />
         </div>
-        <select id="debInstallments" class="sheetInput dvInstSelect" aria-label="Parcelas">
-          <option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option>
-          <option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option>
-          <option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option>
-        </select>
+        <div class="dvInstWrap" style="position:relative;display:flex;align-items:center;">
+          <input id="debInstallments" type="number" min="1" max="999" step="1" inputmode="numeric" placeholder="1" value="1" class="sheetInput dvInstInput" aria-label="Número de parcelas (1 a 999)" style="padding-right:24px;text-align:center;font-weight:700;min-height:46px;" />
+          <span style="position:absolute;right:8px;font-size:0.84rem;font-weight:700;color:var(--mut);pointer-events:none;">x</span>
+        </div>
       </div>
       <div id="debInstallmentPreview" class="mut dvPreview">1x à vista</div>
+      <div class="sheetTagChips" id="debInstPresets" style="margin-top:2px;">
+        <span class="mut" style="font-size:.72rem;margin-right:2px;align-self:center;">Atalhos:</span>
+        <button type="button" class="sheetTagChip active" data-inst="1">1x</button>
+        <button type="button" class="sheetTagChip" data-inst="2">2x</button>
+        <button type="button" class="sheetTagChip" data-inst="3">3x</button>
+        <button type="button" class="sheetTagChip" data-inst="6">6x</button>
+        <button type="button" class="sheetTagChip" data-inst="10">10x</button>
+        <button type="button" class="sheetTagChip" data-inst="12">12x</button>
+        <button type="button" class="sheetTagChip" data-inst="24">24x</button>
+        <button type="button" class="sheetTagChip" data-inst="36">36x</button>
+        <button type="button" class="sheetTagChip" data-inst="48">48x</button>
+        <button type="button" class="sheetTagChip" data-inst="60">60x</button>
+        <button type="button" class="sheetTagChip" data-inst="120">120x</button>
+      </div>
       <details class="dvMoreOpts">
         <summary>Mais opções</summary>
         <div class="dvMoreBody">
@@ -1884,7 +1897,7 @@ function bind(){
         }
       }catch(e){}
       setTimeout(function(){
-        window.location.reload();
+        window.location.href = window.location.pathname + '?v=' + Date.now();
       },250);
     });
   }
@@ -2174,7 +2187,7 @@ function bind(){
   function updateDebInstallmentPreview(){
     if(!el.debInstallmentPreview) return;
     const amount=parseFloat(((el.debAmount&&el.debAmount.value)||'').replace(',','.'));
-    const inst=parseInt((el.debInstallments&&el.debInstallments.value)||'1',10)||1;
+    const inst=Math.min(999,Math.max(1,parseInt((el.debInstallments&&el.debInstallments.value)||'1',10)||1));
     if(Number.isFinite(amount) && amount>0){
       const val=roundMoneyValue(amount/inst);
       el.debInstallmentPreview.textContent=inst>1?`${inst}x de ${money(val)}`:`1x de ${money(amount)} (à vista)`;
@@ -2183,7 +2196,29 @@ function bind(){
     }
   }
   if(el.debAmount) el.debAmount.addEventListener('input',updateDebInstallmentPreview);
-  if(el.debInstallments) el.debInstallments.addEventListener('change',updateDebInstallmentPreview);
+  if(el.debInstallments){
+    el.debInstallments.addEventListener('input', () => {
+      const val = parseInt(el.debInstallments.value || '1', 10);
+      document.querySelectorAll('#debInstPresets .sheetTagChip').forEach(chip => {
+        chip.classList.toggle('active', parseInt(chip.dataset.inst, 10) === val);
+      });
+      updateDebInstallmentPreview();
+    });
+    el.debInstallments.addEventListener('change', updateDebInstallmentPreview);
+  }
+  const debInstPresetsWrap = document.getElementById('debInstPresets');
+  if(debInstPresetsWrap){
+    debInstPresetsWrap.addEventListener('click', e => {
+      const chip = e.target.closest('[data-inst]');
+      if(!chip) return;
+      if(el.debInstallments){
+        el.debInstallments.value = chip.dataset.inst;
+        updateDebInstallmentPreview();
+      }
+      debInstPresetsWrap.querySelectorAll('.sheetTagChip').forEach(c => c.classList.toggle('active', c === chip));
+      haptic('light');
+    });
+  }
 
   function openDvForm(){
     const overlay=document.getElementById('dvFormOverlay');
@@ -2284,7 +2319,7 @@ function bind(){
   function handleDebtorFormSubmit(nameVal, amountVal, installmentsVal, noteVal, payDateVal, reasonVal, phoneVal){
     const name=txt(nameVal,30);
     const amount=parseFloat((amountVal||'').replace(',','.'));
-    const installments=Math.min(24,Math.max(1,parseInt(installmentsVal||'1',10)||1));
+    const installments=Math.min(999,Math.max(1,parseInt(installmentsVal||'1',10)||1));
     const note=txt(noteVal,50);
     const payDate=payDateVal||'';
     const reason=['card','loan','split','other'].includes(reasonVal)?reasonVal:'other';
@@ -2900,11 +2935,16 @@ function bind(){
             <input id="dvEditAmount" type="number" step="0.01" class="sheetInput" value="${Number(d.amount)||0}" required />
           </div>
           <div class="sheetField">
-            <label class="mini">Parcelas</label>
-            <select id="dvEditInstallments" class="sheetInput">
-              ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${inst===i+1?'selected':''}>${i+1}x</option>`).join('')}
-            </select>
+            <label class="mini">Parcelas (até 999)</label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <input id="dvEditInstallments" type="number" min="1" max="999" step="1" inputmode="numeric" class="sheetInput dvInstInput" value="${inst}" style="padding-right:24px;text-align:center;font-weight:700;min-height:44px;" required />
+              <span style="position:absolute;right:8px;font-size:0.84rem;font-weight:700;color:var(--mut);pointer-events:none;">x</span>
+            </div>
           </div>
+        </div>
+        <div class="sheetTagChips" id="dvEditInstPresets" style="margin-top:2px;">
+          <span class="mut" style="font-size:.72rem;margin-right:2px;align-self:center;">Atalhos:</span>
+          ${[1,2,3,6,10,12,24,36,48,60,120].map(n => `<button type="button" class="sheetTagChip ${inst===n?'active':''}" data-inst="${n}">${n}x</button>`).join('')}
         </div>
         <div class="two">
           <div class="sheetField">
@@ -2924,6 +2964,22 @@ function bind(){
       </form>
     `;
 
+    const dvEditChips = body.querySelector('#dvEditInstPresets');
+    const dvEditInstInp = document.getElementById('dvEditInstallments');
+    if(dvEditChips && dvEditInstInp){
+      dvEditChips.addEventListener('click', e => {
+        const chip = e.target.closest('[data-inst]');
+        if(!chip) return;
+        dvEditInstInp.value = chip.dataset.inst;
+        dvEditChips.querySelectorAll('.sheetTagChip').forEach(c => c.classList.toggle('active', c === chip));
+        haptic('light');
+      });
+      dvEditInstInp.addEventListener('input', () => {
+        const val = parseInt(dvEditInstInp.value || '1', 10);
+        dvEditChips.querySelectorAll('.sheetTagChip').forEach(c => c.classList.toggle('active', parseInt(c.dataset.inst, 10) === val));
+      });
+    }
+
     let editReason=d.reason||'other';
     body.querySelectorAll('#dvEditReasonPills .sheetPill').forEach(p=>{
       p.addEventListener('click',()=>{
@@ -2939,7 +2995,7 @@ function bind(){
         e.preventDefault();
         const newName=txt(document.getElementById('dvEditName').value, 30);
         const newAmt=parseFloat(document.getElementById('dvEditAmount').value);
-        const newInst=Math.min(24, Math.max(1, parseInt(document.getElementById('dvEditInstallments').value, 10)||1));
+        const newInst=Math.min(999, Math.max(1, parseInt(document.getElementById('dvEditInstallments').value, 10)||1));
         if(!newName || !Number.isFinite(newAmt) || newAmt<=0) return;
 
         d.name=newName;
@@ -5352,7 +5408,7 @@ function renderMyDebtGroupCard(creditorName, items){
   `;
 }
 function debtorInstallments(d){
-  return Math.min(24,Math.max(1,parseInt(d&&d.installments||'1',10)||1));
+  return Math.min(999,Math.max(1,parseInt(d&&d.installments||'1',10)||1));
 }
 function debtorPaidInstallments(d){
   return Math.max(0,parseInt(d&&d.installmentsPaid||'0',10)||0);
@@ -5497,11 +5553,13 @@ function renderDebtorSingleCard(d, isNested=false){
 
   let dotsHtml = '';
   if(isMulti){
-    let dots = '';
-    for(let i=0; i<inst; i++){
-      dots += i < paidInst ? '●' : '○';
-    }
-    dotsHtml = `<span class="dvDots" title="${paidInst}/${inst} parcelas">${dots} ${paidInst}/${inst}</span>`;
+    const maxDots = Math.min(6, inst);
+    const dots = Array.from({length: maxDots}, (_, i) => {
+      const isDone = i < paidInst;
+      return `<span style="color:${isDone ? '#39ff8f' : 'rgba(255,255,255,.2)'}">${isDone ? '●' : '○'}</span>`;
+    }).join('');
+    const extraLabel = inst > 6 ? `<span style="font-size:.65rem;opacity:.55;margin-left:1px">+${inst-6}</span>` : '';
+    dotsHtml = `<span class="dvDots" title="${paidInst}/${inst} parcelas">${dots}${extraLabel} <span style="font-size:.68rem;opacity:.8;font-weight:700">${paidInst}/${inst}</span></span>`;
   }
 
   const chargedText = d.lastChargedAt ? formatChargedTime(d.lastChargedAt) : '';
@@ -6436,7 +6494,7 @@ function normalizeCreditTxEntry(item){
 }
 function normalizeDebtorEntry(item){
   item=item||{};
-  const installments=Math.min(24,Math.max(1,parseInt(item.installments||'1',10)||1));
+  const installments=Math.min(999,Math.max(1,parseInt(item.installments||'1',10)||1));
   let paid=Boolean(item.paid);
   const rawAmount=Math.max(0,Number(item.amount)||0);
   const rawInstVal=Number(item.installmentValue);
@@ -7120,14 +7178,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v14'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v15'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v14');
-      window.location.reload();
+      sessionStorage.setItem('sw_ctrl_reload','v15');
+      window.location.href = window.location.pathname + '?v=' + Date.now();
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=15', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
