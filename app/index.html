@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.json" />
 <style>
 :root{--bg:#060a08;--card:#0f1613;--card2:#121d18;--txt:#e8f4ed;--mut:#99aca0;--p:#39ff8f;--ps:rgba(57,255,143,.15);--d:#ff5f70;--ds:rgba(255,95,112,.14);--ln:rgba(151,170,159,.24);--font-ui:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Bahnschrift','Segoe UI',sans-serif;--font-display:-apple-system,BlinkMacSystemFont,'SF Pro Display','Agency FB','Bahnschrift','Segoe UI',sans-serif}
-*{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth;height:100%;overflow-x:hidden} body{font-family:var(--font-ui);background:radial-gradient(circle at 100% 0,rgba(57,255,143,.12),transparent 35%),radial-gradient(circle at 0 100%,rgba(30,75,55,.22),transparent 40%),var(--bg);color:var(--txt);min-height:100vh;min-height:100dvh;padding:10px 10px calc(115px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:auto;touch-action:pan-y pinch-zoom}
+*{box-sizing:border-box;margin:0;padding:0} [hidden]{display:none !important} html{scroll-behavior:smooth;height:100%;overflow-x:hidden} body{font-family:var(--font-ui);background:radial-gradient(circle at 100% 0,rgba(57,255,143,.12),transparent 35%),radial-gradient(circle at 0 100%,rgba(30,75,55,.22),transparent 40%),var(--bg);color:var(--txt);min-height:100vh;min-height:100dvh;padding:10px 10px calc(115px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:auto;touch-action:pan-y pinch-zoom}
 body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02)1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02)1px,transparent 1px);background-size:22px 22px;pointer-events:none}
 .app{width:100%;max-width:1080px;margin:auto;display:grid;gap:8px}.page{display:grid;gap:8px;min-width:0;min-height:0}.page.hidden{display:none}.card{width:100%;min-width:0;background:linear-gradient(165deg,var(--card),var(--card2));border:1px solid var(--ln);border-radius:14px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 body[data-privacy="on"] canvas{filter:blur(8px)}
@@ -178,7 +178,9 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .dvGroupCard{border:1px solid rgba(57,255,143,.26);border-radius:12px;background:linear-gradient(180deg,rgba(16,28,22,.96),rgba(9,17,13,.98));overflow:hidden}
 .dvGroupHead{padding:8px 10px;cursor:pointer;user-select:none;display:grid;gap:4px}
 .dvGroupSubItems{padding:0 8px 8px;display:grid;gap:6px;border-top:1px dashed var(--ln);background:rgba(0,0,0,.2)}
-.dvUndoBar{position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(94vw,440px);background:linear-gradient(180deg,rgba(20,33,26,.98),rgba(12,22,17,.99));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(57,255,143,.45);border-radius:12px;padding:9px 12px;box-shadow:0 12px 30px rgba(0,0,0,.65);display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:99998;animation:toastIn .24s ease}
+.dvUndoBar{display:none;position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(94vw,440px);background:linear-gradient(180deg,rgba(20,33,26,.98),rgba(12,22,17,.99));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(57,255,143,.45);border-radius:12px;padding:9px 12px;box-shadow:0 12px 30px rgba(0,0,0,.65);justify-content:space-between;align-items:center;gap:10px;z-index:99998}
+.dvUndoBar.active{display:flex;animation:toastIn .24s ease}
+.dvUndoBar[hidden]{display:none !important}
 .dvUndoBar span{font-size:.78rem;color:var(--txt);font-weight:600}
 .dvUndoBar button{appearance:none;-webkit-appearance:none;background:linear-gradient(135deg,#ffcf5f,#f5b42d);color:#1b1404;border:none;border-radius:8px;padding:5px 10px;font:700 .75rem var(--font-ui);cursor:pointer}
 .dvTimeline{display:grid;gap:10px;position:relative;padding-left:18px;margin:8px 0}
@@ -523,7 +525,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.0</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.1</span>
               <span id="userLevelBadge" class="disciplineBadge" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -817,11 +819,21 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       </div>
 
       <div class="segmentBar" id="debtsSegmentBar">
-        <button type="button" class="segmentBtn active" data-debt-view="myDebts">🧾 Minhas Dívidas a Pagar</button>
-        <button type="button" class="segmentBtn" data-debt-view="debtors">👥 Quem me Deve (Cobranças)</button>
+        <button type="button" class="segmentBtn active" data-debt-view="debtors">👥 Quem me Deve (Cobranças)</button>
+        <button type="button" class="segmentBtn" data-debt-view="myDebts">🧾 Minhas Dívidas a Pagar</button>
       </div>
 
-      <div id="debtsMyDebtsView" class="stack">
+      <div id="debtsDebtorsView" class="stack">
+        <article class="fcard dvTop">
+          <div id="dvSummaryLine" class="dvSummaryLine"></div>
+          <div id="dvProgress" class="dvProgress" hidden style="display:none;"></div>
+          <div id="dvWeek" class="dvWeek" hidden style="display:none;"></div>
+          <button type="button" id="dvOpenFormBtn" class="btn dvCta">+ Cobrar alguém</button>
+        </article>
+        <div id="debList" class="list debtBoard"></div>
+      </div>
+
+      <div id="debtsMyDebtsView" class="stack" style="display:none;">
         <article class="fcard">
           <div class="debtSummaryGrid">
             <div class="box">
@@ -877,15 +889,6 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
         </article>
       </div>
 
-      <div id="debtsDebtorsView" class="stack" style="display:none;">
-        <article class="fcard dvTop">
-          <div id="dvSummaryLine" class="dvSummaryLine"></div>
-          <div id="dvProgress" class="dvProgress" hidden></div>
-          <div id="dvWeek" class="dvWeek" hidden></div>
-          <button type="button" id="dvOpenFormBtn" class="btn dvCta">+ Cobrar alguém</button>
-        </article>
-        <div id="debList" class="list debtBoard"></div>
-      </div>
     </section>
   </section>
 
@@ -1126,7 +1129,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
     <div id="dvSheetBody" class="dvSheetBody"></div>
   </div>
 </div>
-<div id="dvUndoBar" class="dvUndoBar" hidden>
+<div id="dvUndoBar" class="dvUndoBar" hidden style="display:none;">
   <span id="dvUndoText"></span>
   <button type="button" id="dvUndoBtn">Desfazer</button>
 </div>
@@ -1220,7 +1223,7 @@ const DEF={
 };
 var focusTick=null;
 var st=load();
-const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'all',debtsView:'myDebts',statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
+const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'all',debtsView:(function(){try{return localStorage.getItem('weedverso_debts_view')||'debtors';}catch(e){return 'debtors';}})(),statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
 const serverSync={initialized:false,available:false,timer:null,poller:null,pushing:false,lastSnapshot:''};
 const SERVER_POLL_ACTIVE_MS=1000;
 const SERVER_POLL_BACKGROUND_MS=3000;
@@ -1942,6 +1945,19 @@ function bind(){
     }
   });
 
+  if(el.heroDebt){
+    const debtBox=el.heroDebt.closest('.heroBox');
+    if(debtBox){
+      debtBox.style.cursor='pointer';
+      debtBox.setAttribute('title','Abrir cobranças a receber');
+      debtBox.addEventListener('click',()=>{
+        showPage('debts');
+        switchDebtsView('debtors');
+        haptic('light');
+      });
+    }
+  }
+
   el.focusStartBtn.addEventListener('click',startFocusSession);
   el.focusPauseBtn.addEventListener('click',pauseFocusSession);
   el.focusResetBtn.addEventListener('click',resetFocusSession);
@@ -2305,15 +2321,17 @@ function bind(){
   }
 
   function switchDebtsView(view){
-    ui.debtsView=view;
-    if(el.debtsMyDebtsView) el.debtsMyDebtsView.style.display=view==='myDebts'?'grid':'none';
-    if(el.debtsDebtorsView) el.debtsDebtorsView.style.display=view==='debtors'?'grid':'none';
+    ui.debtsView=view || 'debtors';
+    try { localStorage.setItem('weedverso_debts_view', ui.debtsView); } catch(e){}
+    if(el.debtsMyDebtsView) el.debtsMyDebtsView.style.display=ui.debtsView==='myDebts'?'grid':'none';
+    if(el.debtsDebtorsView) el.debtsDebtorsView.style.display=ui.debtsView==='debtors'?'grid':'none';
     if(el.debtsSegmentBar){
       el.debtsSegmentBar.querySelectorAll('.segmentBtn').forEach(b=>{
-        b.classList.toggle('active', b.dataset.debtView===view);
+        b.classList.toggle('active', b.dataset.debtView===ui.debtsView);
       });
     }
   }
+  window.switchDebtsView = switchDebtsView;
 
   if(el.debtsSegmentBar){
     el.debtsSegmentBar.addEventListener('click',e=>{
@@ -2548,6 +2566,8 @@ function bind(){
     text.textContent=`Recebido ${money(snapshot.val)} de ${snapshot.debtorName}`;
     btn.textContent=`Desfazer (5s)`;
     bar.hidden=false;
+    bar.style.display='flex';
+    bar.classList.add('active');
 
     dvUndoInterval=setInterval(()=>{
       dvUndoCountdown--;
@@ -2568,8 +2588,13 @@ function bind(){
     if(dvUndoInterval){ clearInterval(dvUndoInterval); dvUndoInterval=null; }
     dvUndoState=null;
     const bar=document.getElementById('dvUndoBar');
-    if(bar) bar.hidden=true;
+    if(bar){
+      bar.hidden=true;
+      bar.style.display='none';
+      bar.classList.remove('active');
+    }
   }
+  hideDebtorUndo();
 
   function executeDebtorUndo(){
     if(!dvUndoState) return;
@@ -3153,10 +3178,13 @@ function bind(){
   });
 }
 
-function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderAchievements();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();renderUnifiedStatement();}
+function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderAchievements();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();renderUnifiedStatement();if(typeof switchDebtsView==='function')switchDebtsView(ui.debtsView||'debtors');}
 function showPage(page){
   ui.page=['home','credit','debts','goals','statement'].includes(page)?page:'home';
   renderPage();
+  if(ui.page==='debts' && typeof switchDebtsView==='function'){
+    switchDebtsView(ui.debtsView || 'debtors');
+  }
   syncHash(ui.page);
   scrollTopSafe();
 }
@@ -6107,9 +6135,9 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && !sessionStorage.getItem('sw_refreshed_v9')){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v12'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_refreshed_v9','1');
+      sessionStorage.setItem('sw_ctrl_reload','v12');
       window.location.reload();
     }
   });
