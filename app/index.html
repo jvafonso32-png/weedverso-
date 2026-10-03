@@ -1088,30 +1088,39 @@ const STORAGE=(function(){
   }
 })();
 const DEF={
-  appName:'weedverso',userName:'',xp:0,streak:0,routineDone:false,lastDate:'2026-09-10',
-  habits:[],
-  balances:{conta:{label:'Saldo em Conta',amount:0},vale1:{label:'VA Mercado',amount:0},vale2:{label:'VA Refeição',amount:0}},
+  appName:'weedverso',userName:'',xp:40,streak:0,routineDone:false,lastDate:'2026-10-03',
+  habits:[
+    {id:'qfp42sybsajcf',name:'Academia',goal:'',done:false,date:'2026-09-11',lastDoneAt:'2026-09-12T02:46:51.164Z',skillTag:'treinar'}
+  ],
+  balances:{
+    conta:{label:'Saldo em Conta',amount:569.06},
+    vale1:{label:'Alelo Alimentação',amount:594.69},
+    vale2:{label:'Alelo Refeição',amount:421.01}
+  },
   tx:[],
   credit:{
     name:'AMEX',
-    used:4383,
-    reserved:160,
+    used:3684,
+    reserved:860,
     tx:[
+      {id:'mia2fr322yblk',type:'expense',value:1400,desc:'',category:'Sem Categoria',categoryKey:'sem categoria',at:'2026-09-18T14:55:03.992Z'},
+      {id:'lyyw631r2xxun',type:'reserve-in',value:700,desc:'Reserva cartão',category:'Reserva Cartao',categoryKey:'reserva cartao',at:'2026-09-18T14:54:46.175Z'},
       {id:'qnrueho6x12ei',type:'reserve-in',value:160,desc:'Reserva cartão',category:'Reserva Cartao',categoryKey:'reserva cartao',at:'2026-09-10T02:36:00.234Z'},
       {id:'09x2q0i4x0qeh',type:'expense',value:4383,desc:'Gasto no cartão',category:'Sem Categoria',categoryKey:'sem categoria',at:'2026-09-10T02:35:44.681Z'}
     ]
   },
   debtors:[
-    {id:'1glozn8ex2nu3',name:'Lucas',amount:267,note:'',payDate:'',paid:false,paidAt:'',at:'2026-09-10T02:37:14.667Z'},
+    {id:'kler0dqobgw3r',name:'André',amount:282,note:'',payDate:'',paid:false,paidAt:'',at:'2026-09-15T23:42:22.599Z'},
+    {id:'1glozn8ex2nu3',name:'Lucas',amount:267,note:'',payDate:'2026-09-29',paid:true,paidAt:'2026-09-29T16:48:02.214Z',at:'2026-09-10T02:37:14.667Z'},
     {id:'h0zpcvijx1zkz',name:'Dilson',amount:366,note:'',payDate:'',paid:false,paidAt:'',at:'2026-09-10T02:36:43.235Z'},
     {id:'lndsa4olx1r0s',name:'Pai',amount:1200,note:'',payDate:'2026-10-01',paid:false,paidAt:'',at:'2026-09-10T02:36:32.140Z'}
   ],
   myDebts:[],
   routineLog:[],
-  skills:{estudar:0,treinar:0,trabalhar:0},
+  skills:{estudar:0,treinar:25,trabalhar:0},
   goals:[],
   dailyStats:{'2026-09-09':{done:0,total:0,percent:0},'2026-09-10':{done:0,total:0,percent:0}},
-  focusSession:{habitId:'',secondsLeft:1500,running:false}
+  focusSession:{habitId:'qfp42sybsajcf',secondsLeft:1500,running:false}
 };
 var focusTick=null;
 var st=load();
