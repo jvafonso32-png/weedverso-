@@ -7843,14 +7843,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v18'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v25'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v18');
+      sessionStorage.setItem('sw_ctrl_reload','v25');
       window.location.href = window.location.pathname + '?v=' + Date.now();
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=18', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=25', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
