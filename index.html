@@ -4793,7 +4793,7 @@ function generateCurveSVG(points, width, height, strokeColor, fillGradientId) {
         </filter>
       </defs>
       <path d="${areaD}" fill="url(#${fillGradientId})" />
-      <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-${fillGradientId})" style="stroke-dasharray: ${pathLength}; stroke-dashoffset: ${pathLength}; animation: svgDraw 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;" />
+      <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"  style="animation: popIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: bottom;" />
     </svg>
   `;
   return { svg, coords };
