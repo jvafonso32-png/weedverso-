@@ -85,6 +85,42 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .chartCenterNote.accountCenter span{color:#8fb7ce}
 .legendItem.accountLegend{border-color:rgba(57,154,255,.18);background:linear-gradient(180deg,rgba(13,20,33,.9),rgba(9,13,23,.95));box-shadow:inset 0 0 0 1px rgba(88,232,255,.04)}
 .legendItem.accountLegend .legendText span{color:#8fb7ce}
+/* Raio-X de gastos */
+.spx{margin-top:10px;padding:12px;border:1px solid rgba(38,200,255,.22);border-radius:16px;background:radial-gradient(120% 80% at 100% 0,rgba(38,200,255,.10),transparent 55%),radial-gradient(90% 70% at 0 100%,rgba(57,255,143,.07),transparent 60%),linear-gradient(180deg,rgba(12,18,24,.96),rgba(8,12,14,.98));box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 12px 28px rgba(0,0,0,.28);display:grid;gap:12px}
+.spxHead{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.spxTitle{display:block;font-family:var(--font-display);font-size:1.08rem;letter-spacing:.02em;margin-top:1px}
+.spxKpis{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px}
+.spxKpi{padding:8px 9px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(120,160,150,.14);min-width:0}
+.spxKpi strong{display:block;font-family:var(--font-display);font-size:1rem;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spxKpi small{display:block;font-size:.64rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.spxMain{border-color:rgba(38,200,255,.32);background:linear-gradient(160deg,rgba(38,200,255,.13),rgba(38,200,255,.02))}
+.spxMain strong{font-size:1.28rem;color:#bff1ff;text-shadow:0 0 18px rgba(38,200,255,.25)}
+.spxTrend{display:block;font-style:normal;font-size:.64rem;color:var(--mut);margin-top:2px}
+.spxTrend .up{color:#ff8a98;font-weight:700}.spxTrend .down{color:#5cffaa;font-weight:700}
+.spxChart{display:grid;gap:4px}
+.spxPlot{position:relative;height:120px;display:flex;align-items:flex-end;gap:3px;padding-top:14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.spxPlot:before{content:"";position:absolute;inset:14px 0 0 0;background:repeating-linear-gradient(to top,rgba(255,255,255,.045) 0 1px,transparent 1px 26px);pointer-events:none}
+.spxBarCol{flex:1;height:100%;display:flex;align-items:flex-end;min-width:0;position:relative;z-index:1}
+.spxBar{width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#4de7ff,rgba(38,140,255,.5));box-shadow:0 0 12px rgba(38,200,255,.22);transform-origin:bottom;animation:spxGrow .6s cubic-bezier(.16,1,.3,1) both}
+.spxBarCol.hot .spxBar{background:linear-gradient(180deg,#ffb15c,rgba(255,95,112,.55));box-shadow:0 0 12px rgba(255,140,90,.26)}
+.spxBarCol.now .spxBar{background:linear-gradient(180deg,#7dffbf,#1fbf6c);box-shadow:0 0 16px rgba(57,255,143,.45)}
+.spxBarCol.empty .spxBar{background:rgba(255,255,255,.07);box-shadow:none}
+.spxAvgLine{position:absolute;left:0;right:0;border-top:1px dashed rgba(255,207,95,.6);pointer-events:none;z-index:2}
+.spxAvgLine span{position:absolute;right:0;top:-13px;font-size:.56rem;color:#ffcf5f;letter-spacing:.06em;text-transform:uppercase}
+.spxAxis{display:flex;gap:3px}.spxAxis span{flex:1;text-align:center;font-size:.6rem;color:var(--mut);min-width:0;white-space:nowrap;overflow:visible}
+.spxAxis span.now{color:#7dffbf;font-weight:700}
+@keyframes spxGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.spxSplitBar{display:flex;height:10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.06);gap:2px}
+.spxSplitBar span{display:block;height:100%}
+.spxInsight{margin:7px 0 0;font-size:.74rem;color:#cfe3da}.spxInsight b{color:#fff}
+.spxList{display:grid;gap:6px}
+.spxItem{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(120,160,150,.12)}
+.spxIcon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:1.05rem}
+.spxItemText{min-width:0;display:grid;gap:4px}
+.spxItemText strong{font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spxItemBar{height:4px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}.spxItemBar span{display:block;height:100%;border-radius:999px}
+.spxItemVal{text-align:right}.spxItemVal strong{display:block;font-family:var(--font-display);font-size:.9rem;white-space:nowrap}.spxItemVal span{font-size:.64rem;color:var(--mut)}
+@media(max-width:420px){.spxKpis{grid-template-columns:1fr 1fr}.spxMain{grid-column:1/-1}}
 .debtorCardBody{display:grid;grid-template-columns:minmax(0,1fr) 115px;gap:7px;align-items:start}.goalActionsWrap{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px;align-items:start}.actionMeta{display:grid;gap:6px}
 .dock{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);width:98vw;max-width:850px;display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom));border:1px solid var(--ln);border-radius:15px;background:rgba(9,14,12,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 26px rgba(0,0,0,.35);z-index:20}
 .navBtn{display:grid;place-items:center;gap:2px;padding:7px 5px;border:1px solid rgba(95,123,110,.18);border-radius:11px;background:linear-gradient(180deg,rgba(18,27,23,.72),rgba(11,17,15,.72));color:var(--mut);font:700 .72rem var(--font-ui);cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.02) inset}
@@ -511,6 +547,39 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
     font-size: 1.6rem;
   }
 }
+
+/* FinTech Chart Styles */
+@keyframes svgDraw { to { stroke-dashoffset: 0; } }
+@keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.ft-panel { border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; background: linear-gradient(180deg, rgba(16,24,20,0.95), rgba(10,16,14,0.98)); box-shadow: 0 12px 32px rgba(0,0,0,0.3); padding: 16px; display: flex; flex-direction: column; gap: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
+.ft-panel::before { content:''; position: absolute; top:0; left:0; right:0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); }
+.ft-header { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
+.ft-title { font-size: 0.8rem; color: var(--mut); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 4px; }
+.ft-amount { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.02em; }
+.ft-amount span { font-size: 1rem; color: var(--mut); font-weight: 600; }
+.ft-badge { padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 4px; }
+.ft-badge.up { background: rgba(255,95,112,0.15); color: #ff7d8d; border: 1px solid rgba(255,95,112,0.3); }
+.ft-badge.down { background: rgba(57,255,143,0.15); color: #39ff8f; border: 1px solid rgba(57,255,143,0.3); }
+.ft-badge.neutral { background: rgba(255,255,255,0.05); color: var(--mut); border: 1px solid rgba(255,255,255,0.1); }
+.ft-chart-container { height: 140px; position: relative; margin: 8px -8px 0 -8px; z-index: 1; }
+.ft-chart-svg { width: 100%; height: 100%; overflow: visible; }
+.ft-chart-tooltip { position: absolute; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 8px; color: #fff; font-size: 0.75rem; font-weight: 600; pointer-events: none; opacity: 0; transition: opacity 0.2s, transform 0.1s; transform: translate(-50%, -100%); margin-top: -10px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.ft-chart-point { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 9; }
+.ft-chart-touch { position: absolute; inset: 0; z-index: 5; }
+.ft-chart-axis { display: flex; justify-content: space-between; padding: 0 16px; margin-top: -10px; z-index: 2; position: relative; }
+.ft-chart-axis span { font-size: 0.65rem; color: rgba(255,255,255,0.4); font-weight: 600; }
+.ft-cats { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; z-index: 2; }
+.ft-cat { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.ft-cat:hover { background: rgba(255,255,255,0.04); }
+.ft-cat-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 1.1rem; }
+.ft-cat-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ft-cat-name { font-size: 0.85rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
+.ft-cat-bar-wrap { height: 4px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+.ft-cat-bar { height: 100%; border-radius: 999px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
+.ft-cat-val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.ft-cat-val strong { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: #fff; line-height: 1; }
+.ft-cat-val span { font-size: 0.65rem; color: var(--mut); font-weight: 600; }
+
 </style>
 </head>
 <body data-theme="dark">
@@ -578,29 +647,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       <h2 class="title">Contas e saldos</h2>
       <p class="mut">Seus saldos principais. Cartão, dívidas e extrato ficam nas abas abaixo.</p>
       <div id="finGrid" class="fgrid"></div>
-      <div class="creditAnalytics accountAnalytics">
-        <div class="analyticsToolbar" style="margin-bottom:8px;">
-          <div class="creditAnalyticsInfo">
-            <span class="mini">Detalhamento</span>
-            <strong style="font-size:1.05rem;">Saídas da Conta</strong>
-          </div>
-          <div class="chartFilterChips" id="accountFlowFilters">
-            <button type="button" class="filterChip active" data-period="all">Geral</button>
-            <button type="button" class="filterChip" data-period="month">Este Mês</button>
-            <button type="button" class="filterChip" data-period="7d">7 dias</button>
-          </div>
-        </div>
-        <div class="chartShell accountShell">
-          <canvas id="accountFlowChart" class="ringCanvas" width="320" height="320"></canvas>
-          <div class="chartCenterNote accountCenter">
-            <div>
-              <strong id="accountFlowTotal">R$ 0,00</strong>
-              <span id="accountFlowPeriodLabel">saídas da conta</span>
-            </div>
-          </div>
-        </div>
-        <div id="accountFlowLegend" class="legendList"></div>
-      </div>
+      <div id="accountFlowLegend"></div>
     </section>
   </section>
 
@@ -1256,7 +1303,7 @@ const DEF={
 };
 var focusTick=null;
 var st=load();
-const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'all',debtsView:(function(){try{return localStorage.getItem('weedverso_debts_view')||'debtors';}catch(e){return 'debtors';}})(),statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
+const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'month',debtsView:(function(){try{return localStorage.getItem('weedverso_debts_view')||'debtors';}catch(e){return 'debtors';}})(),statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
 const serverSync={initialized:false,available:false,timer:null,poller:null,pushing:false,lastSnapshot:''};
 const SERVER_POLL_ACTIVE_MS=1000;
 const SERVER_POLL_BACKGROUND_MS=3000;
@@ -4249,35 +4296,100 @@ function drawDualLineChart(ctx,labels,aVals,bVals){
   });
 }
 
+
 function renderCreditDescChart(){
   syncCreditExpenseMonthPicker();
-  const activeMonthKey=creditExpenseMonthKey();
-  const activeMonthLabel=monthLabelFromKey(activeMonthKey);
-  const data=compressBreakdown(creditExpenseBreakdown(activeMonthKey),5,'Outros gastos');
-  if(el.ccDescTotal) el.ccDescTotal.textContent=money(data.reduce((sum,item)=>sum+item.value,0));
-  const monthText=activeMonthLabel==='Sem mês'?'gastos do cartão':`gastos em ${activeMonthLabel}`;
-  const monthEl=$('#ccDescMonth');
-  if(monthEl) monthEl.textContent=monthText;
-  if(el.ccChartMonthTag) el.ccChartMonthTag.textContent=activeMonthLabel==='Sem mês'?'Mês do gráfico':'Mês '+activeMonthLabel;
-  if(!el.ccDescLegend) return;
-  if(!data.length){
-    el.ccDescLegend.innerHTML=`<p class="empty">Sem gastos com descrição suficiente para classificar em ${safe(activeMonthLabel)}.</p>`;
-    clearCanvas(el.ccDescChart);
+  const activeMonthKey = creditExpenseMonthKey();
+  const activeMonthLabel = monthLabelFromKey(activeMonthKey);
+  const breakdown = creditExpenseBreakdown(activeMonthKey);
+  
+  const catColors = ['#651fff','#d500f9','#f50057','#ff3d00','#ffea00','#00e5ff','#1de9b6'];
+  const cats = compressBreakdown(buildCategoryBreakdown(
+    breakdown.map(r => ({ value: r.value, label: r.label, key: r.label })),
+    catColors, 'Sem categoria'
+  ), 6, 'Outros');
+  
+  const total = cats.reduce((s,c) => s + c.value, 0);
+  const wrap = el.ccDescLegend;
+  if(!wrap) return;
+  
+  if(el.ccDescTotal) el.ccDescTotal.textContent = money(total);
+  if(document.getElementById('ccDescMonth')) document.getElementById('ccDescMonth').textContent = `em ${activeMonthLabel}`;
+  if(el.ccChartMonthTag) el.ccChartMonthTag.textContent = activeMonthLabel;
+  if(el.ccDescChart) el.ccDescChart.style.display = 'none';
+  
+  if(!total) {
+    wrap.innerHTML = `<div class="ft-panel"><div class="empty">Sem gastos classificados em ${safe(activeMonthLabel)}.</div></div>`;
     return;
   }
-  drawDoughnutChart(el.ccDescChart,data);
-  el.ccDescLegend.innerHTML=data.map(item=>`
-    <article class="legendItem">
-      <span class="legendSwatch" style="color:${item.color};background:${item.color}"></span>
-      <div class="legendText">
-        <strong>${safe(item.label)}</strong>
-        <span>${item.pct}% do total</span>
-        <div class="legendBar"><span style="width:${Math.max(8,item.pct)}%;background:${item.color}"></span></div>
+  
+  let buckets = [];
+  const color = '#b388ff';
+  let chartHtml = '';
+  
+  if(activeMonthKey !== 'all' && st.credit && st.credit.tx) {
+    const [y, m] = activeMonthKey.split('-');
+    if(y && m) {
+      const start = new Date(Number(y), Number(m)-1, 1);
+      const end = new Date(Number(y), Number(m), 1);
+      const inRange = st.credit.tx.filter(x => x.type === 'expense' && x.at >= start.toISOString() && x.at < end.toISOString());
+      const daysInMonth = new Date(Number(y), Number(m), 0).getDate();
+      for(let i=1; i<=daysInMonth; i++) {
+        const d = new Date(Number(y), Number(m)-1, i);
+        const dayTotal = inRange.filter(x => new Date(x.at).getDate() === i).reduce((s,x) => s + Number(x.value||0), 0);
+        buckets.push({ val: dayTotal, tip: `${i}/${m}` });
+      }
+      
+      const { svg, coords } = generateCurveSVG(buckets.map(b => b.val), 100, 100, color, 'grad-cc');
+      
+      chartHtml = `
+        <div class="ft-chart-container" id="ccChartTouch">
+          ${svg}
+          <div class="ft-chart-axis">
+            <span>1</span>
+            <span>${daysInMonth}</span>
+          </div>
+          <div class="ft-chart-tooltip"></div>
+          <div class="ft-chart-point" data-color="${color}"></div>
+          <div class="ft-chart-touch"></div>
+        </div>
+      `;
+      setTimeout(() => attachChartInteraction('ccChartTouch', coords, buckets.map(b => b.tip)), 50);
+    }
+  }
+
+  let html = `
+    <div class="ft-panel" style="background: linear-gradient(180deg, rgba(20,16,36,0.95), rgba(14,10,24,0.98)); border-color: rgba(179,136,255,0.15);">
+      <div class="ft-header">
+        <div>
+          <div class="ft-title" style="color:#b388ff">GASTOS DO CARTÃO · ${activeMonthLabel.toUpperCase()}</div>
+          <div class="ft-amount">${money(total).replace(',','<span>,').replace('.','.')}</span></div>
+        </div>
       </div>
-      <span class="legendValue">${money(item.value)}</span>
-    </article>
-  `).join('');
+      
+      ${chartHtml}
+      
+      <div class="ft-cats">
+        ${cats.map((c, i) => `
+          <div class="ft-cat" style="animation-delay: ${i*60}ms">
+            <div class="ft-cat-icon" style="background: ${c.color}22; color: ${c.color}; border: 1px solid ${c.color}44;">${spxEmoji(c.label)}</div>
+            <div class="ft-cat-info">
+              <div class="ft-cat-name">${safe(c.label)}</div>
+              <div class="ft-cat-bar-wrap"><div class="ft-cat-bar" style="width: ${Math.max(4, c.pct)}%; background: ${c.color}; box-shadow: 0 0 8px ${c.color}aa;"></div></div>
+            </div>
+            <div class="ft-cat-val">
+              <strong>${money(c.value)}</strong>
+              <span>${c.pct}%</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  
+  wrap.innerHTML = html;
 }
+
 
 function creditExpenseBreakdown(monthKey){
   return buildCategoryBreakdown(
@@ -4419,33 +4531,148 @@ function buildArchiveMonthGroupsUsedOnly(items,getMonthKey,getValue){
   });
 }
 
+function accountOutRows(){
+  const rows=[];
+  (st.tx||[]).forEach(t=>{
+    if(t.account!=='conta') return;
+    const d=t.at?new Date(t.at):null;
+    if(!d||isNaN(d.getTime())) return;
+    let v=0;
+    if(t.type==='out') v=Number(t.value)||0;
+    else if(t.type==='set'){const diff=(Number(t.value)||0)-(Number(t.prev)||0); if(diff<0) v=Math.abs(diff);}
+    if(v>0) rows.push({value:v,date:d,label:t.category||t.note,key:t.categoryKey,note:t.note||''});
+  });
+  return rows;
+}
+function spxDayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function spxMonthKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function spxEmoji(label){
+  const k=String(label||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const map=[
+    [/mercad|supermerc|feira|atacad|hortifruti|acougue/,'🛒'],
+    [/uber|\b99\b|taxi|transporte|onibus|metro|gasolina|combust|posto|estaciona|pedagio|carro/,'🚗'],
+    [/ifood|lanche|restaur|comida|pizza|burger|hamburg|almoco|janta|delivery|padaria|cafe|acai|sushi/,'🍔'],
+    [/aluguel|condominio|casa|luz|energia|agua|internet|\bgas\b|celular|telefone/,'🏠'],
+    [/farmac|remedio|saude|medic|consulta|academia|dentista/,'💊'],
+    [/assinatura|netflix|spotify|streaming|prime|youtube|icloud|disney/,'📺'],
+    [/roupa|loja|shopping|tenis|presente/,'🛍️'],
+    [/\bbar\b|cerveja|bebida|festa|role|lazer|cinema|show|balada/,'🎉'],
+    [/cartao|fatura|amex|credito/,'💳'],
+    [/divida|emprest|parcela|boleto/,'🧾'],
+    [/tabac|seda|cigarro|erva|weed|head ?shop/,'🌿'],
+    [/pix|transfer|ted|saque/,'💸'],
+    [/pet|racao|veterin/,'🐾'],
+    [/curso|livro|escola|faculdade|estudo/,'📚'],
+    [/outras/,'📦']
+  ];
+  for(const [re,ic] of map){ if(re.test(k)) return ic; }
+  return '💰';
+}
+
 function renderAccountFlowChart(){
-  const period=ui.accountFlowPeriod || 'all';
-  const data=compressBreakdown(accountOutflowBreakdown(period),5,'Outras saídas');
-  if(el.accountFlowTotal) el.accountFlowTotal.textContent=money(data.reduce((sum,item)=>sum+item.value,0));
-  if(el.accountFlowPeriodLabel){
-    el.accountFlowPeriodLabel.textContent=period==='month'?'saídas deste mês':period==='7d'?'saídas em 7 dias':'saídas da conta';
+  const period = ui.accountFlowPeriod || 'month';
+  const all = accountOutRows();
+  const now = new Date(), today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(today0); end.setDate(end.getDate() + 1);
+  const wd = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'], mn = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  
+  let buckets = [], start, prevStart = null, prevEnd = null, label = '', unit = 'day';
+  
+  if(period === '7d'){
+    start = new Date(today0); start.setDate(start.getDate() - 6);
+    prevStart = new Date(start); prevStart.setDate(prevStart.getDate() - 7); prevEnd = start;
+    for(let i=0; i<7; i++){ const d = new Date(start); d.setDate(start.getDate() + i); buckets.push({ key: spxDayKey(d), label: wd[d.getDay()], tip: `${d.getDate()}/${d.getMonth()+1}`, value: 0 }); }
+    label = 'Últimos 7 dias';
+  } else if(period === 'all'){
+    unit = 'month';
+    start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    for(let i=0; i<6; i++){ const d = new Date(start.getFullYear(), start.getMonth() + i, 1); buckets.push({ key: spxMonthKey(d), label: mn[d.getMonth()], tip: `${mn[d.getMonth()]}`, value: 0 }); }
+    label = 'Últimos 6 meses';
+  } else {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    prevEnd = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate() + 1);
+    for(let i=1; i<=now.getDate(); i++){ buckets.push({ key: spxDayKey(new Date(now.getFullYear(), now.getMonth(), i)), label: String(i), tip: `${i}/${now.getMonth()+1}`, value: 0 }); }
+    label = 'Neste mês';
   }
-  if(!el.accountFlowLegend) return;
-  if(!data.length){
-    const msg=period==='month'?'Sem saídas registradas neste mês.':period==='7d'?'Sem saídas nos últimos 7 dias.':'Sem saídas categorizadas na conta ainda.';
-    el.accountFlowLegend.innerHTML=`<p class="empty">${msg}</p>`;
-    clearCanvas(el.accountFlowChart);
+  
+  const inRange = all.filter(r => r.date >= start && r.date < end);
+  const bmap = {}; buckets.forEach(b => bmap[b.key] = b);
+  inRange.forEach(r => { const b = bmap[unit === 'month' ? spxMonthKey(r.date) : spxDayKey(r.date)]; if(b) b.value += r.value; });
+  
+  const total = inRange.reduce((s,r) => s + r.value, 0);
+  let trendHtml = `<div class="ft-badge neutral">Sem dados</div>`;
+  
+  if(prevStart){
+    const prev = all.filter(r => r.date >= prevStart && r.date < prevEnd).reduce((s,r) => s + r.value, 0);
+    if(prev > 0){
+      const diff = Math.round(((total - prev) / prev) * 100);
+      trendHtml = diff > 0 ? `<div class="ft-badge up">▲ ${diff}% vs ant.</div>` : `<div class="ft-badge down">▼ ${Math.abs(diff)}% vs ant.</div>`;
+    }
+  }
+  
+  const catColors = ['#00e676','#18ffff','#b388ff','#ff4081','#ffeb3b','#ff9800','#00b0ff'];
+  const cats = compressBreakdown(buildCategoryBreakdown(
+    inRange.map(r => ({ value: r.value, label: r.label, key: r.key })),
+    catColors, 'Sem categoria'
+  ), 6, 'Outros');
+  
+  const wrap = document.getElementById('accountFlowLegend');
+  if(!wrap) return;
+  if(!total) {
+    wrap.innerHTML = `<div class="ft-panel"><div class="empty">Nenhuma saída no período (${label}).</div></div>`;
     return;
   }
-  drawAccountHudChart(el.accountFlowChart,data);
-  el.accountFlowLegend.innerHTML=data.map(item=>`
-    <article class="legendItem accountLegend">
-      <span class="legendSwatch" style="color:${item.color};background:${item.color}"></span>
-      <div class="legendText">
-        <strong>${safe(item.label)}</strong>
-        <span>${item.pct}% das saídas</span>
-        <div class="legendBar"><span style="width:${Math.max(8,item.pct)}%;background:${item.color}"></span></div>
+  
+  const color = '#00e676';
+  const { svg, coords } = generateCurveSVG(buckets.map(b => b.value), 100, 100, color, 'grad-acc');
+  
+  let html = `
+    <div class="ft-panel">
+      <div class="ft-header">
+        <div>
+          <div class="ft-title">SAÍDAS DA CONTA · ${label.toUpperCase()}</div>
+          <div class="ft-amount">${money(total).replace(',','<span>,').replace('.','.')}</span></div>
+        </div>
+        ${trendHtml}
       </div>
-      <span class="legendValue">${money(item.value)}</span>
-    </article>
-  `).join('');
+      
+      <div class="ft-chart-container" id="accChartTouch">
+        ${svg}
+        <div class="ft-chart-axis">
+          <span>${buckets[0].label}</span>
+          <span>${buckets[buckets.length-1].label}</span>
+        </div>
+        <div class="ft-chart-tooltip"></div>
+        <div class="ft-chart-point" data-color="${color}"></div>
+        <div class="ft-chart-touch"></div>
+      </div>
+      
+      <div class="ft-cats">
+        ${cats.map((c, i) => `
+          <div class="ft-cat" style="animation-delay: ${i*60}ms">
+            <div class="ft-cat-icon" style="background: ${c.color}22; color: ${c.color}; border: 1px solid ${c.color}44;">${spxEmoji(c.label)}</div>
+            <div class="ft-cat-info">
+              <div class="ft-cat-name">${safe(c.label)}</div>
+              <div class="ft-cat-bar-wrap"><div class="ft-cat-bar" style="width: ${Math.max(4, c.pct)}%; background: ${c.color}; box-shadow: 0 0 8px ${c.color}aa;"></div></div>
+            </div>
+            <div class="ft-cat-val">
+              <strong>${money(c.value)}</strong>
+              <span>${c.pct}%</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  
+  wrap.innerHTML = html;
+  if(el.accountFlowTotal) el.accountFlowTotal.textContent = money(total);
+  if(el.accountFlowPeriodLabel) el.accountFlowPeriodLabel.textContent = label;
+  
+  setTimeout(() => attachChartInteraction('accChartTouch', coords, buckets.map(b => b.tip)), 50);
 }
+
 
 function accountOutflowBreakdown(period){
   const targetPeriod=period || ui.accountFlowPeriod || 'all';
@@ -4525,6 +4752,86 @@ function canvasViewport(canvas,minSize){
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,displayWidth,displayHeight);
   return {ctx,w:displayWidth,h:displayHeight};
+}
+
+
+function generateCurveSVG(points, width, height, strokeColor, fillGradientId) {
+  if (!points || points.length === 0) return { svg: '', coords: [] };
+  const pData = points.length === 1 ? [points[0], points[0]] : points;
+  const max = Math.max(...pData) || 1;
+  const min = Math.min(...pData);
+  const padTop = 15, padBot = 15;
+  const innerW = width;
+  const innerH = height - padTop - padBot;
+  
+  const coords = pData.map((val, i) => {
+    const x = (i / (pData.length - 1)) * innerW;
+    const y = padTop + innerH - (val / max) * innerH;
+    return { x, y, val };
+  });
+  
+  let d = `M ${coords[0].x},${coords[0].y}`;
+  for (let i = 0; i < coords.length - 1; i++) {
+    const cp1x = coords[i].x + (coords[i+1].x - coords[i].x) / 2;
+    const cp2x = cp1x;
+    d += ` C ${cp1x},${coords[i].y} ${cp2x},${coords[i+1].y} ${coords[i+1].x},${coords[i+1].y}`;
+  }
+  
+  const areaD = `${d} L ${width},${height} L 0,${height} Z`;
+  const pathLength = width * 2;
+  
+  const svg = `
+    <svg class="ft-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="${fillGradientId}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.4" />
+          <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0" />
+        </linearGradient>
+        <filter id="glow-${fillGradientId}" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      <path d="${areaD}" fill="url(#${fillGradientId})" />
+      <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-${fillGradientId})" style="stroke-dasharray: ${pathLength}; stroke-dashoffset: ${pathLength}; animation: svgDraw 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;" />
+    </svg>
+  `;
+  return { svg, coords };
+}
+
+function attachChartInteraction(containerId, coords, labels) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const touchArea = container.querySelector('.ft-chart-touch');
+  const tooltip = container.querySelector('.ft-chart-tooltip');
+  const point = container.querySelector('.ft-chart-point');
+  if(!touchArea || !tooltip || !point) return;
+  
+  const update = (e) => {
+    const rect = touchArea.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    let closest = coords[0], minDist = Infinity, bestIdx = 0;
+    coords.forEach((c, i) => {
+      const dist = Math.abs((c.x / 100 * rect.width) - x);
+      if(dist < minDist) { minDist = dist; closest = c; bestIdx = i; }
+    });
+    const px = (closest.x / 100) * rect.width;
+    const py = (closest.y / 100) * rect.height;
+    point.style.transform = `translate(-50%, -50%) translate(${px}px, ${py}px)`;
+    point.style.opacity = '1';
+    point.style.boxShadow = `0 0 12px ${point.dataset.color}`;
+    tooltip.innerHTML = `<span>${labels[bestIdx]}</span><br/><strong>${money(closest.val)}</strong>`;
+    tooltip.style.left = `${px}px`;
+    tooltip.style.top = `${py}px`;
+    tooltip.style.opacity = '1';
+  };
+  
+  const leave = () => { point.style.opacity = '0'; tooltip.style.opacity = '0'; };
+  
+  touchArea.addEventListener('mousemove', update);
+  touchArea.addEventListener('touchmove', (e)=>{ e.preventDefault(); update(e); }, {passive:false});
+  touchArea.addEventListener('mouseleave', leave);
+  touchArea.addEventListener('touchend', leave);
 }
 
 function drawDoughnutChart(canvas,data){
