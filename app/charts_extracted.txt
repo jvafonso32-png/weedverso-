@@ -1,0 +1,127 @@
+--- renderCreditDescChart ---
+function renderCreditDescChart(){
+  syncCreditExpenseMonthPicker();
+  const activeMonthKey=creditExpenseMonthKey();
+  const activeMonthLabel=monthLabelFromKey(activeMonthKey);
+  const data=compressBreakdown(creditExpenseBreakdown(activeMonthKey),5,'Outros gastos');
+  if(el.ccDescTotal) el.ccDescTotal.textContent=money(data.reduce((sum,item)=>sum+item.value,0));
+  const monthText=activeMonthLabel==='Sem mês'?'gastos do cartão':`gastos em ${activeMonthLabel}`;
+  const monthEl=$('#ccDescMonth');
+  if(monthEl) monthEl.textContent=monthText;
+  if(el.ccChartMonthTag) el.ccChartMonthTag.textContent=activeMonthLabel==='Sem mês'?'Mês do gráfico':'Mês '+activeMonthLabel;
+  if(!el.ccDescLegend) return;
+  if(!data.length){
+    el.ccDescLegend.innerHTML=`<p class="empty">Sem gastos com descrição suficiente para classificar em ${safe(activeMonthLabel)}.</p>`;
+    clearCanvas(el.ccDescChart);
+    return;
+  }
+  drawDoughnutChart(el.ccDescChart,data);
+  el.ccDescLegend.innerHTML=data.map(item=>`
+    <article class="legendItem">
+      <span class="legendSwatch" style="color:${item.color};background:${item.color}"></span>
+      <div class="legendText">
+        <strong>${safe(item.label)}</strong>
+        <span>${item.pct}% do total</span>
+        <div class="legendBar"><span style="width:${Math.max(8,item.pct)}%;background:${item.color}"></span></div>
+      </div>
+      <span class="legendValue">${money(item.value)}</span>
+    </article>
+  `).join('');
+}
+--- renderAccountFlowChart ---
+function renderAccountFlowChart(){
+  const period=ui.accountFlowPeriod||'month';
+  const plot=document.getElementById('spxPlot'), axis=document.getElementById('spxAxis'), split=document.getElementById('spxSplit');
+  const all=accountOutRows();
+  const now=new Date(), today0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const end=new Date(today0); end.setDate(end.getDate()+1);
+  const wd=['D','S','T','Q','Q','S','S'], mn=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  let buckets=[], start, prevStart=null, prevEnd=null, avgLabel='Média/dia', label, unit='day';
+  if(period==='7d'){
+    start=new Date(today0); start.setDate(start.getDate()-6);
+    prevStart=new Date(start); prevStart.setDate(prevStart.getDate()-7); prevEnd=start;
+    for(let i=0;i<7;i++){const d=new Date(start); d.setDate(start.getDate()+i); buckets.push({key:spxDayKey(d),label:wd[d.getDay()],tip:`${d.getDate()}/${d.getMonth()+1}`,value:0,isNow:i===6});}
+    label='saídas em 7 dias';
+  }else if(period==='all'){
+    unit='month';
+    start=new Date(now.getFullYear(),now.getMonth()-5,1);
+    for(let i=0;i<6;i++){const d=new Date(start.getFullYear(),start.getMonth()+i,1); buckets.push({key:spxMonthKey(d),label:mn[d.getMonth()],tip:`${mn[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`,value:0,isNow:i===5});}
+    avgLabel='Média/mês'; label='saídas em 6 meses';
+  }else{
+    start=new Date(now.getFullYear(),now.getMonth(),1);
+    prevStart=new Date(now.getFullYear(),now.getMonth()-1,1);
+    prevEnd=new Date(now.getFullYear(),now.getMonth()-1,now.getDate()+1);
+    for(let i=1;i<=now.getDate();i++){buckets.push({key:spxDayKey(new Date(now.getFullYear(),now.getMonth(),i)),label:String(i),tip:`${i}/${now.getMonth()+1}`,value:0,isNow:i===now.getDate()});}
+    label='saídas deste mês';
+  }
+  const inRange=all.filter(r=>r.date>=start&&r.date<end);
+  const bmap={}; buckets.forEach(b=>bmap[b.key]=b);
+  inRange.forEach(r=>{const b=bmap[unit==='month'?spxMonthKey(r.date):spxDayKey(r.date)]; if(b) b.value+=r.value;});
+  const total=inRange.reduce((s,r)=>s+r.value,0);
+  const avg=buckets.length?total/buckets.length:0;
+  const maxTx=inRange.reduce((m,r)=>(!m||r.value>m.value)?r:m,null);
+  const activeDays=buckets.filter(b=>b.value>0).length;
+
+  let trend='';
+  if(prevStart){
+    const prev=all.filter(r=>r.date>=prevStart&&r.date<prevEnd).reduce((s,r)=>s+r.value,0);
+    if(prev>0){
+      const diff=Math.round((total-prev)/prev*100);
+      trend=diff>0?`<span class="up">▲ ${diff}%</span> vs período anterior`:diff<0?`<span class="down">▼ ${Math.abs(diff)}%</span> vs período anterior`:'igual ao período anterior';
+    }else if(total>0) trend='sem saídas no período anterior';
+  }else if(buckets.length){
+    const cur=buckets[buckets.length-1].value;
+    trend=cur>avg&&avg>0?`<span class="up">mês atual acima da média</span>`:avg>0?`<span class="down">mês atual abaixo da média</span>`:'';
+  }
+
+  if(el.accountFlowTotal) el.accountFlowTotal.textContent=money(total);
+  if(el.accountFlowPeriodLabel) el.accountFlowPeriodLabel.textContent=label;
+  const setTxt=(id,v,html)=>{const n=document.getElementById(id); if(n){ if(html) n.innerHTML=v; else n.textContent=v; }};
+  setTxt('spxTrend',trend,true);
+  setTxt('spxAvgLabel',avgLabel);
+  setTxt('spxAvg',money(avg));
+  setTxt('spxAvgSub',unit==='month'?`${activeDays} de 6 meses com gasto`:`${activeDays} de ${buckets.length} dias com gasto`);
+  setTxt('spxMax',maxTx?money(maxTx.value):money(0));
+  setTxt('spxMaxLabel',maxTx?`${spxEmoji(maxTx.label||maxTx.note)} ${maxTx.label||maxTx.note||'Sem categoria'}`:'—');
+
+  if(plot&&axis){
+    const maxB=Math.max(0,...buckets.map(b=>b.value));
+    const every=buckets.length>16?5:1;
+    const avgPct=maxB>0?Math.min(100,avg/maxB*100):0;
+    plot.innerHTML=(avg>0?`<div class="spxAvgLine" style="bottom:${(avgPct*1.2).toFixed(1)}px"><span>média ${money(avg)}</span></div>`:'')+
+      buckets.map((b,i)=>{
+        const h=maxB>0?Math.max(b.value>0?5:2,b.value/maxB*100):2;
+        const cls=b.value<=0?' empty':(b.isNow?' now':(avg>0&&b.value>avg*1.25?' hot':''));
+        return `<div class="spxBarCol${cls}" title="${safe(b.tip)}: ${money(b.value)}"><div class="spxBar" style="height:${h}%;animation-delay:${Math.min(i*22,500)}ms"></div></div>`;
+      }).join('');
+    axis.innerHTML=buckets.map((b,i)=>`<span class="${b.isNow?'now':''}">${(i%every===0||b.isNow)&&!(every>1&&!b.isNow&&buckets.length-1-i<3)?safe(b.label):''}</span>`).join('');
+  }
+
+  const data=compressBreakdown(buildCategoryBreakdown(
+    inRange.map(r=>({value:r.value,label:r.label,key:r.key})),
+    ['#26c8ff','#39ff8f','#ffd447','#ff9a3c','#d96cff','#2f89ff','#ff6f4e','#8f7cff','#5cf2ff','#9dff5c'],
+    'Sem categoria'
+  ),5,'Outras saídas');
+
+  if(split){
+    split.innerHTML=data.length?`
+      <div class="spxSplitBar">${data.map(d=>`<span style="width:${Math.max(2,d.pct)}%;background:${d.color}" title="${safe(d.label)} ${d.pct}%"></span>`).join('')}</div>
+      <p class="spxInsight">💡 <b>${safe(data[0].label)}</b> levou <b>${data[0].pct}%</b> das saídas${period==='month'?' do mês':period==='7d'?' da semana':''}${activeDays&&unit==='day'?` · gasto médio de <b>${money(total/Math.max(1,activeDays))}</b> nos dias com saída`:''}.</p>`:'';
+  }
+  if(!el.accountFlowLegend) return;
+  if(!data.length){
+    const msg=period==='month'?'Nenhuma saída da conta neste mês ainda. 🎉':period==='7d'?'Nenhuma saída nos últimos 7 dias. 🎉':'Sem saídas registradas nos últimos 6 meses.';
+    el.accountFlowLegend.innerHTML=`<p class="empty">${msg}</p>`;
+    return;
+  }
+  el.accountFlowLegend.innerHTML=data.map(item=>`
+    <article class="spxItem">
+      <span class="spxIcon" style="background:${item.color}1f;box-shadow:inset 0 0 0 1px ${item.color}55">${spxEmoji(item.label)}</span>
+      <div class="spxItemText">
+        <strong>${safe(item.label)}</strong>
+        <div class="spxItemBar"><span style="width:${Math.max(6,item.pct)}%;background:${item.color};box-shadow:0 0 8px ${item.color}88"></span></div>
+      </div>
+      <div class="spxItemVal"><strong>${money(item.value)}</strong><span>${item.pct}%</span></div>
+    </article>
+  `).join('');
+}
