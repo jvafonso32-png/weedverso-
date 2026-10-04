@@ -529,6 +529,11 @@ class WeedversoHandler(BaseHTTPRequestHandler):
             if payload is None:
                 return
             state = write_state(normalize_state(payload))
+            try:
+                import sync_github_gist
+                sync_github_gist.trigger_push_async(reason="state-sync")
+            except Exception:
+                pass
             self._send_json({"ok": True, "updatedAt": time.time(), "appName": state.get("appName", "weedverso")})
             return
 

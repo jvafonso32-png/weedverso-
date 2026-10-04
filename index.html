@@ -86,7 +86,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 .legendItem.accountLegend{border-color:rgba(57,154,255,.18);background:linear-gradient(180deg,rgba(13,20,33,.9),rgba(9,13,23,.95));box-shadow:inset 0 0 0 1px rgba(88,232,255,.04)}
 .legendItem.accountLegend .legendText span{color:#8fb7ce}
 .debtorCardBody{display:grid;grid-template-columns:minmax(0,1fr) 115px;gap:7px;align-items:start}.goalActionsWrap{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px;align-items:start}.actionMeta{display:grid;gap:6px}
-.dock{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);width:98vw;max-width:850px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom));border:1px solid var(--ln);border-radius:15px;background:rgba(9,14,12,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 26px rgba(0,0,0,.35);z-index:20}
+.dock{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);width:98vw;max-width:850px;display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom));border:1px solid var(--ln);border-radius:15px;background:rgba(9,14,12,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 26px rgba(0,0,0,.35);z-index:20}
 .navBtn{display:grid;place-items:center;gap:2px;padding:7px 5px;border:1px solid rgba(95,123,110,.18);border-radius:11px;background:linear-gradient(180deg,rgba(18,27,23,.72),rgba(11,17,15,.72));color:var(--mut);font:700 .72rem var(--font-ui);cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.02) inset}
 .navBtn.active{background:linear-gradient(180deg,rgba(16,47,31,.96),rgba(9,31,20,.96));color:var(--txt);border-color:rgba(57,255,143,.45);box-shadow:0 0 0 1px rgba(57,255,143,.16) inset,0 0 16px rgba(57,255,143,.12)}
 .navIcon{font-size:.96rem;line-height:1}
@@ -525,7 +525,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.4</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.5</span>
               <span id="userLevelBadge" class="disciplineBadge" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -623,7 +623,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       <div class="box"><span class="mini">Total gasto hoje</span><strong id="sSpent">R$ 0,00</strong></div>
       <div class="box"><span class="mini">Fatura cartão</span><strong id="sCard">R$ 0,00</strong></div>
       <div class="box"><span class="mini">A receber</span><strong id="sDebt">R$ 0,00</strong></div>
-      <div class="box"><span class="mini">Em objetivos</span><strong id="sGoals">R$ 0,00</strong></div>
+      <div class="box" style="display:none;" aria-hidden="true"><span class="mini">Em objetivos</span><strong id="sGoals">R$ 0,00</strong></div>
       <div class="box"><span class="mini">Status</span><strong id="sStatus">Dia em construção</strong></div>
     </div>
     <p id="sMsg" class="mut">A constância pesa mais do que a intensidade. Continue.</p>
@@ -1170,7 +1170,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
   <button type="button" class="navBtn active" data-page="home" onclick="showPage('home')"><span class="navIcon">⌂</span><span>Início</span></button>
   <button type="button" class="navBtn" data-page="credit" onclick="showPage('credit')"><span class="navIcon">💳</span><span>Cartão</span></button>
   <button type="button" class="navBtn" data-page="debts" onclick="showPage('debts')"><span class="navIcon">🧾</span><span>Dívidas</span></button>
-  <button type="button" class="navBtn" data-page="goals" onclick="showPage('goals')"><span class="navIcon">🎯</span><span>Objetivos</span></button>
+  <button type="button" class="navBtn" data-page="goals" onclick="showPage('goals')" style="display:none;" aria-hidden="true"><span class="navIcon">🎯</span><span>Objetivos</span></button>
   <button type="button" class="navBtn" data-page="statement" onclick="showPage('statement')"><span class="navIcon">▤</span><span>Extrato</span></button>
 </nav>
 
@@ -4045,7 +4045,8 @@ function bind(){
 
 function renderAll(){renderPrivacyToggle();renderPage();renderProfile();renderHabits();renderAchievements();renderFocusSession();refreshGame();renderFinance();renderCredit();renderDebtors();renderMyDebts();renderGoals();renderGoalStatement();renderStatementControls();renderRoutineTimeline();renderSummary();renderPublishStatus();renderDesktopCodeBackupStatus();renderUnifiedStatement();if(typeof switchDebtsView==='function')switchDebtsView(ui.debtsView||'debtors');}
 function showPage(page){
-  ui.page=['home','credit','debts','goals','statement'].includes(page)?page:'home';
+  if(page==='goals') page='home';
+  ui.page=['home','credit','debts','statement'].includes(page)?page:'home';
   renderPage();
   if(ui.page==='debts' && typeof switchDebtsView==='function'){
     switchDebtsView(ui.debtsView || 'debtors');
@@ -4058,7 +4059,7 @@ function renderPage(){
   setVisible(el.routinePage, false);
   setVisible(el.creditPage, ui.page==='credit');
   setVisible(el.debtsPage, ui.page==='debts');
-  setVisible(el.goalsPage, ui.page==='goals');
+  setVisible(el.goalsPage, false);
   setVisible(el.statementPage, ui.page==='statement');
   for(var i=0;i<el.navBtns.length;i++){
     setActive(el.navBtns[i], el.navBtns[i].getAttribute('data-page')===ui.page);
@@ -7198,14 +7199,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v15'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v16'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v15');
+      sessionStorage.setItem('sw_ctrl_reload','v16');
       window.location.href = window.location.pathname + '?v=' + Date.now();
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=15', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=16', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});

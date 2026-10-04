@@ -8,6 +8,12 @@ from env_loader import load_env_file
 
 def main():
     load_env_file()
+    try:
+        import sync_github_gist
+        sync_github_gist.start_periodic_sync(interval_seconds=30)
+    except Exception as exc:
+        print(f"Aviso sync Gist app: {exc}")
+
     api_thread = threading.Thread(target=run_server, daemon=True, name="weedverso-api")
     api_thread.start()
 

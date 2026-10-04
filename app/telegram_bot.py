@@ -46,10 +46,13 @@ from telegram_runtime import (
 )
 
 try:
-    from desktop_cloud_sync import trigger_background_push
+    import sync_github_gist
+    def trigger_background_push(reason="telegram"):
+        return sync_github_gist.trigger_push_async(reason=reason)
 except Exception:
     def trigger_background_push(reason="telegram"):
         return False
+
 
 
 load_env_file()
@@ -1990,8 +1993,15 @@ def route_message(message):
         if command in {"/modoteste", "/modo_teste", "/testemode"}:
             return _route_message_impl(message)
 
-    before_snapshot = ""
     should_trigger_sync = not telegram_test_mode_enabled()
+    if should_trigger_sync:
+        try:
+            import sync_github_gist
+            sync_github_gist.pull_from_gist(force=False, max_age_seconds=8.0)
+        except Exception as exc:
+            print(f"Aviso sync Gist pre-comando: {exc}")
+
+    before_snapshot = ""
     if should_trigger_sync:
         before_snapshot = current_state_snapshot()
 
@@ -2016,6 +2026,12 @@ def run_bot():
         raise RuntimeError("Defina TELEGRAM_BOT_TOKEN antes de iniciar o bot.")
 
     print("Bot do Telegram iniciado.")
+    try:
+        import sync_github_gist
+        sync_github_gist.start_periodic_sync(interval_seconds=30)
+    except Exception as exc:
+        print(f"Aviso: falha ao iniciar sync periodico do Gist: {exc}")
+
     if AUTO_DELETE_SECONDS > 0:
         user_cleanup = "ativada" if DELETE_USER_MESSAGES else "desativada"
         print(f"Auto limpeza do Telegram: {AUTO_DELETE_SECONDS}s | apagar mensagens do usuario: {user_cleanup}")
