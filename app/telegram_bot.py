@@ -1151,35 +1151,58 @@ def parse_balance_command_args(args):
 
 
 
-def handle_invest_command(args, persist=True):
+def handle_invest_command(command, args, persist=True):
     if not args:
         state = read_state()
         inv = state.get("investments") or {}
         tot = inv.get("total", 0)
-        return f"📈 Saldo Investido Atual: {money(tot)}\n\nPara atualizar use:\n/investir [valor] (para aporte)\n/investido [valor] (para definir total)"
+        return f"📈 Saldo Investido Atual: {money(tot)}\n\nComandos disponíveis:\n• /investir [valor] (soma aporte)\n• /resgate [valor] (subtrai resgate)\n• /investido [valor] (define saldo total)"
     
-    val = parse_amount(args[0])
-    note = " ".join(args[1:]).strip() or "Aporte via Telegram"
+    raw_val_str = args[0]
+    is_explicit_negative = raw_val_str.startswith("-")
+    val = parse_amount(raw_val_str.lstrip("-+"))
+    note = " ".join(args[1:]).strip()
     
+    cmd_lower = command.lower()
+    if cmd_lower in {"/resgate", "/retirar"} or is_explicit_negative:
+        mode = "sub"
+        default_note = "Resgate via Telegram"
+    elif cmd_lower in {"/investido", "/saldoinvestido"}:
+        mode = "set"
+        default_note = "Saldo Definido via Telegram"
+    else:
+        mode = "add"
+        default_note = "Aporte via Telegram"
+        
     def mutate(state):
         if "investments" not in state or not isinstance(state["investments"], dict):
             state["investments"] = {"total": 0.0, "history": []}
         curr = float(state["investments"].get("total", 0.0))
-        new_tot = curr + val
+        
+        if mode == "set":
+            new_tot = val
+        elif mode == "sub":
+            new_tot = max(0.0, curr - val)
+        else:
+            new_tot = curr + val
+            
         state["investments"]["total"] = new_tot
         if "history" not in state["investments"] or not isinstance(state["investments"]["history"], list):
             state["investments"]["history"] = []
+            
         state["investments"]["history"].append({
-            "type": "add",
+            "type": mode,
             "value": val,
             "balanceAfter": new_tot,
-            "note": note,
+            "note": note or default_note,
             "at": _now_iso()
         })
         return state
         
     state = update_state(mutate, persist=persist)
-    return f"📈 Aporte de {money(val)} registrado com sucesso!\nNovo Saldo Investido: {money(state['investments']['total'])}"
+    action_label = "Saldo Definido" if mode == "set" else ("Resgate (-)" if mode == "sub" else "Aporte (+)")
+    sign = "" if mode == "set" else ("-" if mode == "sub" else "+")
+    return f"📈 {action_label} de {sign}{money(val)} registrado!\nNovo Saldo Investido: {money(state['investments']['total'])}"
 
 
 def handle_balance_command(direction, args, persist=True):
@@ -1971,8 +1994,8 @@ def _route_message_impl(message):
     command = parts[0].split("@")[0].lower()
     args = parts[1:]
 
-    if command in {"/investir", "/aporte", "/investido", "/investimentos"}:
-        return chat_id, handle_invest_command(args, persist=persist_changes)
+    if command in {"/investir", "/aporte", "/resgate", "/retirar", "/investido", "/investimentos"}:
+        return chat_id, handle_invest_command(command, args, persist=persist_changes)
     if command in {"/modoteste", "/modo_teste", "/testemode"}:
         return chat_id, handle_test_mode_command(args)
     if command in {"/start", "/help", "/ajuda"}:
@@ -2025,8 +2048,8 @@ def route_message(message):
 
     if text.startswith("/"):
         command = text.split()[0].split("@")[0].lower()
-        if command in {"/investir", "/aporte", "/investido", "/investimentos"}:
-        return chat_id, handle_invest_command(args, persist=persist_changes)
+        if command in {"/investir", "/aporte", "/resgate", "/retirar", "/investido", "/investimentos"}:
+        return chat_id, handle_invest_command(command, args, persist=persist_changes)
     if command in {"/modoteste", "/modo_teste", "/testemode"}:
             return _route_message_impl(message)
 

@@ -829,7 +829,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.1</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.2</span>
               <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -1127,8 +1127,12 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
         <div id="investFormBox" style="display:none;background:rgba(0,0,0,.45);padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);margin-top:12px;">
           <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:8px;" id="investFormTitle">Definir Saldo Investido</div>
           <div style="display:flex;flex-direction:column;gap:10px;">
-            <input type="number" step="0.01" id="investFormValue" placeholder="Valor (ex: 21000)" style="font-size:1.1rem;font-weight:700;" />
-            <input type="text" id="investFormNote" placeholder="Nota ou descrição (opcional)" maxlength="40" />
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="investFormSign" style="font-size:1.4rem;font-weight:800;color:#00e5ff;">=</span>
+              <input type="number" step="0.01" id="investFormValue" placeholder="Valor (ex: 21000)" style="font-size:1.15rem;font-weight:700;flex:1;" />
+            </div>
+            <div id="investFormPreview" style="font-size:.82rem;font-weight:700;color:var(--mut);padding:2px 4px;border-radius:6px;"></div>
+            <input type="text" id="investFormNote" placeholder="Nota ou descrição (opcional, ex: Aporte CDB)" maxlength="40" />
             <div style="display:flex;gap:8px;">
               <button type="button" class="btn primary" id="investFormSaveBtn" style="flex:1;">Salvar</button>
               <button type="button" class="btn ghost" id="investFormCancelBtn">Cancelar</button>
@@ -4432,16 +4436,20 @@ function renderInvestments(){
     const color = isAdd ? '#00e676' : (isSet ? '#00e5ff' : '#ff7d8d');
     const badge = isAdd ? '+ Aporte' : (isSet ? 'Saldo Definido' : '- Resgate');
     const d = item.at ? new Date(item.at).toLocaleDateString('pt-BR') : '';
+    const originalIdx = (list.length - 1) - idx;
     return `
-      <div class="ft-cat-card" style="margin-bottom:8px;">
+      <div class="ft-cat-card" style="margin-bottom:8px;position:relative;">
         <div class="ft-cat-icon" style="background:${color}20; color:${color}; border:1px solid ${color}35;">📈</div>
         <div class="ft-cat-body">
           <div class="ft-cat-label">${safe(item.note || badge)}</div>
           <span style="font-size:.72rem;color:var(--mut);">${d} • Saldo após: ${money(item.balanceAfter)}</span>
         </div>
-        <div class="ft-cat-values">
-          <strong style="color:${color};">${isAdd ? '+' : (isSet ? '' : '-')}${money(item.value)}</strong>
-          <span style="color:${color};font-weight:700;">${badge}</span>
+        <div class="ft-cat-values" style="display:flex;flex-direction:row;align-items:center;gap:10px;">
+          <div style="text-align:right;">
+            <strong style="color:${color};display:block;">${isAdd ? '+' : (isSet ? '' : '-')}${money(item.value)}</strong>
+            <span style="color:${color};font-weight:700;font-size:.7rem;">${badge}</span>
+          </div>
+          <button type="button" class="iconBtn" style="width:28px;height:28px;padding:0;color:var(--d);opacity:.7;" onclick="deleteInvestHistoryItem(${originalIdx})" title="Excluir movimentação">✕</button>
         </div>
       </div>
     `;
@@ -4449,6 +4457,66 @@ function renderInvestments(){
 }
 
 let currentInvestFormMode = 'set'; // 'set', 'add', 'sub'
+
+function deleteInvestHistoryItem(idx){
+  ensureInvestState();
+  const list = st.investments.history || [];
+  if(idx < 0 || idx >= list.length) return;
+  const item = list[idx];
+  
+  if(confirm(`Deseja remover "${item.note || item.type}" de ${money(item.value)}?`)){
+    // Reverter o efeito se for add ou sub
+    const oldTotal = Number(st.investments.total || 0);
+    if(item.type === 'add'){
+      st.investments.total = Math.max(0, oldTotal - item.value);
+    } else if(item.type === 'sub'){
+      st.investments.total = oldTotal + item.value;
+    }
+    list.splice(idx, 1);
+    save();
+    renderHero();
+    renderInvestments();
+    showToast('Movimentação removida!', 'ok');
+  }
+}
+
+function updateInvestFormPreview(){
+  const formVal = document.getElementById('investFormValue');
+  const preview = document.getElementById('investFormPreview');
+  const sign = document.getElementById('investFormSign');
+  if(!formVal || !preview || !sign) return;
+  
+  const val = Number(formVal.value) || 0;
+  const cur = Number((st.investments && st.investments.total) || 0);
+  
+  if(currentInvestFormMode === 'set'){
+    sign.textContent = '=';
+    sign.style.color = '#00e5ff';
+    if(val > 0){
+      preview.innerHTML = `Saldo será definido para <strong style="color:#00e5ff;">${money(val)}</strong>`;
+    } else {
+      preview.textContent = 'Digite o saldo total atualizado';
+    }
+  } else if(currentInvestFormMode === 'add'){
+    sign.textContent = '+';
+    sign.style.color = '#00e676';
+    if(val > 0){
+      const next = cur + val;
+      preview.innerHTML = `Soma: ${money(cur)} + ${money(val)} = <strong style="color:#00e676;">${money(next)}</strong>`;
+    } else {
+      preview.textContent = 'Digite o valor a ser somado ao saldo investido';
+    }
+  } else if(currentInvestFormMode === 'sub'){
+    sign.textContent = '-';
+    sign.style.color = '#ff7d8d';
+    if(val > 0){
+      const next = Math.max(0, cur - val);
+      preview.innerHTML = `Subtrai: ${money(cur)} - ${money(val)} = <strong style="color:#ff7d8d;">${money(next)}</strong>`;
+    } else {
+      preview.textContent = 'Digite o valor a ser subtraído do saldo investido';
+    }
+  }
+}
 
 function initInvestBindings(){
   ensureInvestState();
@@ -4480,7 +4548,12 @@ function initInvestBindings(){
     if(formVal) { formVal.value = ''; formVal.placeholder = ph; formVal.focus(); }
     if(formNote) formNote.value = '';
     if(formBox) formBox.style.display = 'block';
+    updateInvestFormPreview();
   };
+  
+  if(formVal) {
+    formVal.addEventListener('input', updateInvestFormPreview);
+  }
   
   if(setBtn) setBtn.addEventListener('click', () => openForm('set', 'Definir Saldo Total Investido', 'Valor total (ex: 21000)'));
   if(addBtn) addBtn.addEventListener('click', () => openForm('add', 'Registrar Novo Aporte (+)', 'Valor do aporte (ex: 500)'));
