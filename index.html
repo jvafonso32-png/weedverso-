@@ -4787,10 +4787,7 @@ function generateCurveSVG(points, width, height, strokeColor, fillGradientId) {
           <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.4" />
           <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0" />
         </linearGradient>
-        <filter id="glow-${fillGradientId}" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
+        
       </defs>
       <path d="${areaD}" fill="url(#${fillGradientId})" />
       <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"  style="animation: popIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: bottom;" />
