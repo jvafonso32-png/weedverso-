@@ -1822,6 +1822,11 @@ const quickAddSheet={
       this.overlay.setAttribute('aria-hidden','true');
     }
     if(this.valInput) this.valInput.blur();
+    try{
+      if(window.location.hash.includes('quick')){
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    }catch(e){}
   },
   updateTabUI:function(){
     if(this.tabBtns){
@@ -1927,6 +1932,21 @@ function bind(){
     });
   }
   if(typeof quickAddSheet!=='undefined') quickAddSheet.init();
+
+  function checkUrlQuickAdd(){
+    const hash = (window.location.hash || '').toLowerCase();
+    const search = (window.location.search || '').toLowerCase();
+    if(hash.includes('quick') || search.includes('quick')){
+      setTimeout(()=>{
+        if(typeof quickAddSheet!=='undefined'){
+          const tab = (hash.includes('card') || search.includes('card')) ? 'card' : ((hash.includes('in') || search.includes('in')) ? 'in' : 'out');
+          quickAddSheet.open(tab);
+        }
+      }, 160);
+    }
+  }
+  checkUrlQuickAdd();
+  window.addEventListener('hashchange', checkUrlQuickAdd);
 
   if(el.financeChartFilters){
     el.financeChartFilters.addEventListener('click',e=>{
