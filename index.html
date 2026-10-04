@@ -525,8 +525,8 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.6</span>
-              <span id="userLevelBadge" class="disciplineBadge" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.7</span>
+              <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
           </div>
@@ -554,13 +554,13 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
   <section id="homePage" class="page">
   <section class="card hero">
     <div class="heroHead">
-      <span class="mini">Diretriz weedverso</span>
-      <span id="focusPill" class="focusPill ok">EM RITMO</span>
+      <span class="mini">Painel financeiro</span>
+      <span id="focusPill" class="focusPill ok">EM DIA</span>
     </div>
-    <h2 id="heroTitle" class="heroTitle">Ativar modo foco e fechar missão de hoje</h2>
-    <p id="heroDesc" class="heroDesc">Seu sistema está calibrado para consistência. Transforme execução em padrão.</p>
+    <h2 id="heroTitle" class="heroTitle">Finanças sob controle</h2>
+    <p id="heroDesc" class="heroDesc">Registre cada saída na hora para manter os saldos sempre certos.</p>
     <div class="heroKpi">
-      <div class="heroBox"><span class="mini">Missões restantes</span><strong id="heroRemaining">0</strong></div>
+      <div class="heroBox"><span class="mini">Saldo em conta</span><strong id="heroBalance">R$ 0,00</strong></div>
       <div class="heroBox"><span class="mini">Risco financeiro</span><strong id="heroRisk">Baixo</strong></div>
       <div class="heroBox"><span class="mini">A receber</span><strong id="heroDebt">R$ 0,00</strong></div>
     </div>
@@ -570,13 +570,13 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       <button class="quick" type="button" data-quick="card">+ Gasto cartão</button>
       <button class="quick" type="button" data-quick="debtor">+ Devedor</button>
     </div>
-    <div id="achievementsRow" class="badgesRow" style="margin-top:10px;"></div>
+    <div id="achievementsRow" class="badgesRow" style="display:none;" aria-hidden="true"></div>
   </section>
 
   <section class="grid">
     <section class="card">
       <h2 class="title">Contas e saldos</h2>
-      <p class="mut">Aqui ficam só seus saldos principais. Cartão e objetivos agora têm área exclusiva.</p>
+      <p class="mut">Seus saldos principais. Cartão, dívidas e extrato ficam nas abas abaixo.</p>
       <div id="finGrid" class="fgrid"></div>
       <div class="creditAnalytics accountAnalytics">
         <div class="analyticsToolbar" style="margin-bottom:8px;">
@@ -617,9 +617,9 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 
   <section class="card">
     <h2 class="title">Resumo do dia</h2>
-    <div class="sum">
-      <div class="box"><span class="mini">Rotina concluída</span><strong id="sPercent">0%</strong></div>
-      <div class="box"><span class="mini">Hábitos cumpridos</span><strong id="sHabits">0 / 0</strong></div>
+    <div class="sum" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+      <div class="box" style="display:none;" aria-hidden="true"><span class="mini">Rotina concluída</span><strong id="sPercent">0%</strong></div>
+      <div class="box" style="display:none;" aria-hidden="true"><span class="mini">Hábitos cumpridos</span><strong id="sHabits">0 / 0</strong></div>
       <div class="box"><span class="mini">Total gasto hoje</span><strong id="sSpent">R$ 0,00</strong></div>
       <div class="box"><span class="mini">Fatura cartão</span><strong id="sCard">R$ 0,00</strong></div>
       <div class="box"><span class="mini">A receber</span><strong id="sDebt">R$ 0,00</strong></div>
@@ -1669,7 +1669,7 @@ const GIST_SYNC={
 const $=s=>document.querySelector(s);
 const el={
   app:$('#appName'),appRefreshBtn:$('#appRefreshBtn'),privacyToggleBtn:$('#privacyToggleBtn'),saveCodeBtn:$('#saveCodeBtn'),saveAllBtn:$('#saveAllBtn'),openShareLinkBtn:$('#openShareLinkBtn'),saveStatus:$('#saveStatus'),saveStamp:$('#saveStamp'),saveChannels:$('#saveChannels'),codeBackupStatus:$('#codeBackupStatus'),logoutBtn:$('#logoutBtn'),homePage:$('#homePage'),routinePage:$('#routinePage'),creditPage:$('#creditPage'),debtsPage:$('#debtsPage'),goalsPage:$('#goalsPage'),statementPage:$('#statementPage'),navBtns:document.querySelectorAll('[data-page]'),
-  focusPill:$('#focusPill'),heroTitle:$('#heroTitle'),heroDesc:$('#heroDesc'),heroRemaining:$('#heroRemaining'),heroRisk:$('#heroRisk'),heroDebt:$('#heroDebt'),quickActions:$('#quickActions'),
+  focusPill:$('#focusPill'),heroTitle:$('#heroTitle'),heroDesc:$('#heroDesc'),heroBalance:$('#heroBalance'),heroRisk:$('#heroRisk'),heroDebt:$('#heroDebt'),quickActions:$('#quickActions'),
   financeChartFilters:$('#financeChartFilters'),accountFlowFilters:$('#accountFlowFilters'),accountFlowPeriodLabel:$('#accountFlowPeriodLabel'),
   hForm:$('#habitForm'),hName:$('#hName'),hGoal:$('#hGoal'),hDate:$('#hDate'),focusHabitSelect:$('#focusHabitSelect'),focusMinutesInput:$('#focusMinutesInput'),focusStartBtn:$('#focusStartBtn'),focusPauseBtn:$('#focusPauseBtn'),focusResetBtn:$('#focusResetBtn'),focusClock:$('#focusClock'),focusStatus:$('#focusStatus'),hList:$('#habitList'),mot:$('#motivation'),routineDateInfo:$('#routineDateInfo'),routineLog:$('#routineLog'),routineChart:$('#routineChart'),
   fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
@@ -6071,37 +6071,41 @@ function goalMove(goal,type,value){
 }
 
 function renderHero(){
-  const total=st.habits.length, done=st.habits.filter(h=>h.done).length, remaining=Math.max(0,total-done), p=total?Math.round((done/total)*100):0;
   const debtOpen=debtOpenTotal(), used=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), uncovered=Math.max(0,used-reserved), coverageRate=used>0?(reserved/used):1;
+  const balance=Number((st.balances&&st.balances.conta&&st.balances.conta.amount)||0);
+  const spent=spentToday();
 
   let risk='Baixo', riskClass='ok';
-  if(uncovered>=1200||debtOpen>=2000){risk='Alto'; riskClass='hot';}
+  if(uncovered>=1200||debtOpen>=2000||balance<0){risk='Alto'; riskClass='hot';}
   else if(uncovered>0||debtOpen>0||coverageRate<0.85){risk='Médio'; riskClass='mid';}
 
-  let mode='EM RITMO', modeClass='ok', title='Ativar modo foco e fechar missão de hoje', desc='Seu sistema está calibrado para consistência. Transforme execução em padrão.';
-  if(total===0){
-    mode='CONFIGURAR'; modeClass='mid';
-    title='Defina sua primeira missão para iniciar o ciclo weedverso';
-    desc='Sem hábitos ativos. Configure o plano de execução para hoje.';
-  } else if(p===100&&riskClass==='ok'){
-    mode='MODO ELITE'; modeClass='ok';
-    title='Rotina fechada com excelência operacional';
-    desc=`Você concluiu ${done}/${total} hábitos e mantém streak de ${st.streak} ${st.streak===1?'dia':'dias'}.`;
-  } else if(p>=60){
-    mode='EM RITMO'; modeClass='mid';
-    title='Execução sólida: finalize com força máxima';
-    desc=`Restam ${remaining} missão(ões). Feche acima de 90% para consolidar o progresso.`;
-  } else {
-    mode='ATIVAR FOCO'; modeClass='hot';
-    title='Disciplina primeiro: inicie com a próxima ação';
-    desc=`Você concluiu ${done}/${total}. Um passo agora muda o ritmo do dia.`;
+  let mode='EM DIA', modeClass='ok', title='Finanças sob controle', desc=spent>0?`Hoje você já gastou ${money(spent)}. Continue registrando cada saída.`:'Nenhum gasto registrado hoje. Registre cada saída na hora.';
+  if(balance<0){
+    mode='NEGATIVO'; modeClass='hot';
+    title='Conta no vermelho';
+    desc=`Seu saldo em conta está em ${money(balance)}. Evite novas saídas até regularizar.`;
+  } else if(uncovered>0 && coverageRate<0.35){
+    mode='ATENÇÃO'; modeClass='hot';
+    title='Fatura do cartão descoberta';
+    desc=`Faltam ${money(uncovered)} para cobrir a fatura atual. Reforce a reserva do cartão.`;
+  } else if(uncovered>0){
+    mode='AJUSTAR'; modeClass='mid';
+    title='Complete a reserva do cartão';
+    desc=`A reserva cobre ${Math.round(coverageRate*100)}% da fatura. Faltam ${money(uncovered)}.`;
+  } else if(debtOpen>0){
+    mode='A RECEBER'; modeClass='mid';
+    title='Você tem valores a receber';
+    desc=`${money(debtOpen)} em aberto com devedores. Vale cobrar hoje.`;
   }
 
   el.focusPill.className=`focusPill ${modeClass}`;
   el.focusPill.textContent=mode;
   el.heroTitle.textContent=title;
   el.heroDesc.textContent=desc;
-  el.heroRemaining.textContent=String(remaining);
+  if(el.heroBalance){
+    el.heroBalance.textContent=money(balance);
+    el.heroBalance.style.color=balance<0?'var(--d)':'var(--p)';
+  }
   el.heroRisk.textContent=risk;
   el.heroRisk.style.color=riskClass==='hot'?'var(--d)':(riskClass==='mid'?'#ffcf5f':'var(--p)');
   el.heroDebt.textContent=money(debtOpen);
@@ -6118,12 +6122,11 @@ function renderSummary(){
   renderFiveDayStatement();
   renderCharts();
 
-  if(p===100&&debtOpen===0&&uncovered===0){el.sStatus.textContent='Dia de Elite';el.sMsg.textContent='Rotina no alvo e fatura totalmente coberta pela reserva.';}
-  else if(cardOpen>0&&coverageRate<0.35){el.sStatus.textContent='Atenção no cartão';el.sMsg.textContent='Sua reserva cobre pouco da fatura atual. Reforce esse saldo.';}
+  if(cardOpen>0&&coverageRate<0.35){el.sStatus.textContent='Atenção no cartão';el.sMsg.textContent='Sua reserva cobre pouco da fatura atual. Reforce esse saldo.';}
+  else if(uncovered>0){el.sStatus.textContent='Reserva parcial';el.sMsg.textContent=`Faltam ${money(uncovered)} para cobrir toda a fatura.`;}
   else if(debtOpen>0){el.sStatus.textContent='Cobrança pendente';el.sMsg.textContent='Você tem valores a receber. Priorize as cobranças do dia.';}
-  else if(p>=60){el.sStatus.textContent='Bom avanço';el.sMsg.textContent='Você está no caminho certo. Feche o dia acima de 90%.';}
-  else if(p>0){el.sStatus.textContent='Em progresso';el.sMsg.textContent='Evite perder ritmo. Complete mais um hábito agora.';}
-  else{el.sStatus.textContent='Dia em construção';el.sMsg.textContent='Seu próximo nível começa com uma única ação.';}
+  else if(spent>0){el.sStatus.textContent='Em dia';el.sMsg.textContent='Fatura coberta e nada pendente. Só segue registrando os gastos.';}
+  else{el.sStatus.textContent='Tudo certo';el.sMsg.textContent='Fatura coberta, nada a receber e nenhum gasto hoje.';}
 }
 
 function rotateDay(){
@@ -7199,14 +7202,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v17'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v18'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v17');
+      sessionStorage.setItem('sw_ctrl_reload','v18');
       window.location.href = window.location.pathname + '?v=' + Date.now();
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=17', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=18', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
