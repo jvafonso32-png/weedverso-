@@ -987,11 +987,12 @@ def format_saldos():
         [
             build_block(
                 "WEEDVERSO | VISAO FINANCEIRA",
-                [
+                [line for line in [
                     f"{state['balances']['conta']['label']}: {money(summary['conta'])}",
                     f"{state['balances']['vale1']['label']}: {money(summary['vale1'])}",
                     f"{state['balances']['vale2']['label']}: {money(summary['vale2'])}",
-                ],
+                    f"Investido: {money((state.get('investments') or {}).get('total', 0))}" if (state.get('investments') or {}).get('total', 0) > 0 else None,
+                ] if line],
             ),
             build_block(
                 summary["card_name"],
@@ -1147,6 +1148,38 @@ def parse_balance_command_args(args):
         account = resolve_balance_key(second, state)
         note = " ".join(args[2:]).strip()
         return account, value, note
+
+
+
+def handle_invest_command(args, persist=True):
+    if not args:
+        state = read_state()
+        inv = state.get("investments") or {}
+        tot = inv.get("total", 0)
+        return f"📈 Saldo Investido Atual: {money(tot)}\n\nPara atualizar use:\n/investir [valor] (para aporte)\n/investido [valor] (para definir total)"
+    
+    val = parse_amount(args[0])
+    note = " ".join(args[1:]).strip() or "Aporte via Telegram"
+    
+    def mutate(state):
+        if "investments" not in state or not isinstance(state["investments"], dict):
+            state["investments"] = {"total": 0.0, "history": []}
+        curr = float(state["investments"].get("total", 0.0))
+        new_tot = curr + val
+        state["investments"]["total"] = new_tot
+        if "history" not in state["investments"] or not isinstance(state["investments"]["history"], list):
+            state["investments"]["history"] = []
+        state["investments"]["history"].append({
+            "type": "add",
+            "value": val,
+            "balanceAfter": new_tot,
+            "note": note,
+            "at": _now_iso()
+        })
+        return state
+        
+    state = update_state(mutate, persist=persist)
+    return f"📈 Aporte de {money(val)} registrado com sucesso!\nNovo Saldo Investido: {money(state['investments']['total'])}"
 
 
 def handle_balance_command(direction, args, persist=True):
@@ -1938,6 +1971,8 @@ def _route_message_impl(message):
     command = parts[0].split("@")[0].lower()
     args = parts[1:]
 
+    if command in {"/investir", "/aporte", "/investido", "/investimentos"}:
+        return chat_id, handle_invest_command(args, persist=persist_changes)
     if command in {"/modoteste", "/modo_teste", "/testemode"}:
         return chat_id, handle_test_mode_command(args)
     if command in {"/start", "/help", "/ajuda"}:
@@ -1990,7 +2025,9 @@ def route_message(message):
 
     if text.startswith("/"):
         command = text.split()[0].split("@")[0].lower()
-        if command in {"/modoteste", "/modo_teste", "/testemode"}:
+        if command in {"/investir", "/aporte", "/investido", "/investimentos"}:
+        return chat_id, handle_invest_command(args, persist=persist_changes)
+    if command in {"/modoteste", "/modo_teste", "/testemode"}:
             return _route_message_impl(message)
 
     should_trigger_sync = not telegram_test_mode_enabled()
