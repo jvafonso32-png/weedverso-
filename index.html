@@ -548,38 +548,273 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
   }
 }
 
-/* FinTech Chart Styles */
-@keyframes svgDraw { to { stroke-dashoffset: 0; } }
-@keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.ft-panel { border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; background: linear-gradient(180deg, rgba(16,24,20,0.95), rgba(10,16,14,0.98)); box-shadow: 0 12px 32px rgba(0,0,0,0.3); padding: 16px; display: flex; flex-direction: column; gap: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
-.ft-panel::before { content:''; position: absolute; top:0; left:0; right:0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); }
-.ft-header { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
-.ft-title { font-size: 0.8rem; color: var(--mut); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 4px; }
-.ft-amount { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.02em; }
-.ft-amount span { font-size: 1rem; color: var(--mut); font-weight: 600; }
-.ft-badge { padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 4px; }
-.ft-badge.up { background: rgba(255,95,112,0.15); color: #ff7d8d; border: 1px solid rgba(255,95,112,0.3); }
-.ft-badge.down { background: rgba(57,255,143,0.15); color: #39ff8f; border: 1px solid rgba(57,255,143,0.3); }
-.ft-badge.neutral { background: rgba(255,255,255,0.05); color: var(--mut); border: 1px solid rgba(255,255,255,0.1); }
-.ft-chart-container { height: 140px; position: relative; margin: 8px -8px 0 -8px; z-index: 1; }
-.ft-chart-svg { width: 100%; height: 100%; overflow: visible; }
-.ft-chart-tooltip { position: absolute; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 8px; color: #fff; font-size: 0.75rem; font-weight: 600; pointer-events: none; opacity: 0; transition: opacity 0.2s, transform 0.1s; transform: translate(-50%, -100%); margin-top: -10px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-.ft-chart-point { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 9; }
-.ft-chart-touch { position: absolute; inset: 0; z-index: 5; }
-.ft-chart-axis { display: flex; justify-content: space-between; padding: 0 16px; margin-top: -10px; z-index: 2; position: relative; }
-.ft-chart-axis span { font-size: 0.65rem; color: rgba(255,255,255,0.4); font-weight: 600; }
-.ft-cats { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; z-index: 2; }
-.ft-cat { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.ft-cat:hover { background: rgba(255,255,255,0.04); }
-.ft-cat-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 1.1rem; }
-.ft-cat-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.ft-cat-name { font-size: 0.85rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
-.ft-cat-bar-wrap { height: 4px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
-.ft-cat-bar { height: 100%; border-radius: 999px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
-.ft-cat-val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-.ft-cat-val strong { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: #fff; line-height: 1; }
-.ft-cat-val span { font-size: 0.65rem; color: var(--mut); font-weight: 600; }
 
+
+
+/* === FINTECH DASHBOARD CHARTS === */
+.ft-panel {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03), transparent 70%), linear-gradient(180deg, rgba(18,26,22,0.96), rgba(10,15,13,0.98));
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.ft-panel-credit {
+  background: radial-gradient(circle at 50% 0%, rgba(179,136,255,0.08), transparent 70%), linear-gradient(180deg, rgba(24,18,36,0.96), rgba(12,10,20,0.98));
+  border-color: rgba(179,136,255,0.15);
+}
+.ft-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ft-sub {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mut);
+  margin-bottom: 4px;
+}
+.ft-amount {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.ft-amount span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+}
+.ft-badge {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.ft-badge.emerald {
+  background: rgba(0,230,118,0.12);
+  color: #00e676;
+  border: 1px solid rgba(0,230,118,0.25);
+}
+.ft-badge.purple {
+  background: rgba(179,136,255,0.12);
+  color: #b388ff;
+  border: 1px solid rgba(179,136,255,0.25);
+}
+.ft-badge.neutral {
+  background: rgba(255,255,255,0.05);
+  color: var(--mut);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.ft-badge.up {
+  background: rgba(255,95,112,0.15);
+  color: #ff7d8d;
+  border: 1px solid rgba(255,95,112,0.3);
+}
+.ft-badge.down {
+  background: rgba(57,255,143,0.15);
+  color: #39ff8f;
+  border: 1px solid rgba(57,255,143,0.3);
+}
+
+/* Gráfico SVG */
+.ft-chart-wrap {
+  position: relative;
+  height: 160px;
+  width: 100%;
+  margin: 6px 0 0 0;
+  user-select: none;
+  touch-action: none;
+}
+.ft-chart-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+.ft-chart-touch {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: crosshair;
+}
+.ft-tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -120%);
+  background: rgba(14,20,18,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 6px 12px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.08s ease;
+  z-index: 10;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  text-align: center;
+  white-space: nowrap;
+}
+.ft-tooltip small {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--mut);
+}
+.ft-pointer {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  z-index: 9;
+  box-shadow: 0 0 14px currentColor;
+}
+.ft-guide-line {
+  position: absolute;
+  top: 10px;
+  bottom: 22px;
+  width: 1px;
+  background: rgba(255,255,255,0.2);
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Eixo de Datas */
+.ft-axis {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+  margin-top: -6px;
+  z-index: 2;
+  position: relative;
+}
+.ft-axis span {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 600;
+}
+
+/* Categorias */
+.ft-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.ft-cat-card {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.025);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s;
+}
+.ft-cat-card:hover {
+  background: rgba(255,255,255,0.045);
+}
+.ft-cat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+}
+.ft-cat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.ft-cat-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+.ft-progress-track {
+  height: 5px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ft-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ft-cat-values {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.ft-cat-values strong {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+.ft-cat-values span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--mut);
+}
+
+/* Card de Status Vazio / Dica */
+.ft-empty-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.1);
+  color: var(--mut);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.ft-empty-note span.emoji {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+/* FIM FINTECH */
 </style>
 </head>
 <body data-theme="dark">
@@ -594,7 +829,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.10</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.0</span>
               <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -647,8 +882,23 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
       <h2 class="title">Contas e saldos</h2>
       <p class="mut">Seus saldos principais. Cartão, dívidas e extrato ficam nas abas abaixo.</p>
       <div id="finGrid" class="fgrid"></div>
-      <div id="accountFlowLegend"></div>
     </section>
+  </section>
+
+  <!-- Seção Saídas da Conta -->
+  <section class="card" id="homeSummaryCard">
+    <div class="line" style="align-items:flex-start;justify-content:space-between;gap:8px;">
+      <div>
+        <h2 class="title" style="margin-bottom:2px;">Saídas da Conta</h2>
+        <p class="mut" style="font-size:.8rem;margin:0;">Fluxo e distribuição das saídas da conta corrente.</p>
+      </div>
+      <div class="segmented" id="accountFlowFilters">
+        <button type="button" class="filterChip" data-period="7d">7 dias</button>
+        <button type="button" class="filterChip active" data-period="month">Este Mês</button>
+        <button type="button" class="filterChip" data-period="all">Tudo</button>
+      </div>
+    </div>
+    <div id="accountFlowLegend"></div>
   </section>
 
   <section class="card" id="homeMissionsCard" style="display:none;" aria-hidden="true">
@@ -839,15 +1089,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
                 <select id="ccChartMonth"></select>
               </label>
             </div>
-            <div class="chartShell">
-              <canvas id="ccDescChart" class="ringCanvas" width="320" height="320"></canvas>
-              <div class="chartCenterNote">
-                <div>
-                  <strong id="ccDescTotal">R$ 0,00</strong>
-                  <span id="ccDescMonth">gastos do cartão</span>
-                </div>
-              </div>
-            </div>
+            
             <div id="ccDescLegend" class="legendList"></div>
           </div>
         </article>
@@ -4297,99 +4539,6 @@ function drawDualLineChart(ctx,labels,aVals,bVals){
 }
 
 
-function renderCreditDescChart(){
-  syncCreditExpenseMonthPicker();
-  const activeMonthKey = creditExpenseMonthKey();
-  const activeMonthLabel = monthLabelFromKey(activeMonthKey);
-  const breakdown = creditExpenseBreakdown(activeMonthKey);
-  
-  const catColors = ['#651fff','#d500f9','#f50057','#ff3d00','#ffea00','#00e5ff','#1de9b6'];
-  const cats = compressBreakdown(buildCategoryBreakdown(
-    breakdown.map(r => ({ value: r.value, label: r.label, key: r.label })),
-    catColors, 'Sem categoria'
-  ), 6, 'Outros');
-  
-  const total = cats.reduce((s,c) => s + c.value, 0);
-  const wrap = el.ccDescLegend;
-  if(!wrap) return;
-  
-  if(el.ccDescTotal) el.ccDescTotal.textContent = money(total);
-  if(document.getElementById('ccDescMonth')) document.getElementById('ccDescMonth').textContent = `em ${activeMonthLabel}`;
-  if(el.ccChartMonthTag) el.ccChartMonthTag.textContent = activeMonthLabel;
-  if(el.ccDescChart && el.ccDescChart.parentNode) el.ccDescChart.parentNode.style.display = 'none';
-  
-  if(!total) {
-    wrap.innerHTML = `<div class="ft-panel"><div class="empty">Sem gastos classificados em ${safe(activeMonthLabel)}.</div></div>`;
-    return;
-  }
-  
-  let buckets = [];
-  const color = '#b388ff';
-  let chartHtml = '';
-  
-  if(activeMonthKey !== 'all' && st.credit && st.credit.tx) {
-    const [y, m] = activeMonthKey.split('-');
-    if(y && m) {
-      const start = new Date(Number(y), Number(m)-1, 1);
-      const end = new Date(Number(y), Number(m), 1);
-      const inRange = st.credit.tx.filter(x => x.type === 'expense' && x.at >= start.toISOString() && x.at < end.toISOString());
-      const daysInMonth = new Date(Number(y), Number(m), 0).getDate();
-      for(let i=1; i<=daysInMonth; i++) {
-        const d = new Date(Number(y), Number(m)-1, i);
-        const dayTotal = inRange.filter(x => new Date(x.at).getDate() === i).reduce((s,x) => s + Number(x.value||0), 0);
-        buckets.push({ val: dayTotal, tip: `${i}/${m}` });
-      }
-      
-      const { svg, coords } = generateCurveSVG(buckets.map(b => b.val), 100, 100, color, 'grad-cc');
-      
-      chartHtml = `
-        <div class="ft-chart-container" id="ccChartTouch">
-          ${svg}
-          <div class="ft-chart-axis">
-            <span>1</span>
-            <span>${daysInMonth}</span>
-          </div>
-          <div class="ft-chart-tooltip"></div>
-          <div class="ft-chart-point" data-color="${color}"></div>
-          <div class="ft-chart-touch"></div>
-        </div>
-      `;
-      setTimeout(() => attachChartInteraction('ccChartTouch', coords, buckets.map(b => b.tip)), 50);
-    }
-  }
-
-  let html = `
-    <div class="ft-panel" style="background: linear-gradient(180deg, rgba(20,16,36,0.95), rgba(14,10,24,0.98)); border-color: rgba(179,136,255,0.15);">
-      <div class="ft-header">
-        <div>
-          <div class="ft-title" style="color:#b388ff">GASTOS DO CARTÃO · ${activeMonthLabel.toUpperCase()}</div>
-          <div class="ft-amount">${money(total).replace(',','<span>,').replace('.','.')}</span></div>
-        </div>
-      </div>
-      
-      ${chartHtml}
-      
-      <div class="ft-cats">
-        ${cats.map((c, i) => `
-          <div class="ft-cat" style="animation-delay: ${i*60}ms">
-            <div class="ft-cat-icon" style="background: ${c.color}22; color: ${c.color}; border: 1px solid ${c.color}44;">${spxEmoji(c.label)}</div>
-            <div class="ft-cat-info">
-              <div class="ft-cat-name">${safe(c.label)}</div>
-              <div class="ft-cat-bar-wrap"><div class="ft-cat-bar" style="width: ${Math.max(4, c.pct)}%; background: ${c.color}; box-shadow: 0 0 8px ${c.color}aa;"></div></div>
-            </div>
-            <div class="ft-cat-val">
-              <strong>${money(c.value)}</strong>
-              <span>${c.pct}%</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-  
-  wrap.innerHTML = html;
-}
-
 
 function creditExpenseBreakdown(monthKey){
   return buildCategoryBreakdown(
@@ -4569,110 +4718,6 @@ function spxEmoji(label){
   return '💰';
 }
 
-function renderAccountFlowChart(){
-  const period = ui.accountFlowPeriod || 'month';
-  const all = accountOutRows();
-  const now = new Date(), today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const end = new Date(today0); end.setDate(end.getDate() + 1);
-  const wd = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'], mn = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  
-  let buckets = [], start, prevStart = null, prevEnd = null, label = '', unit = 'day';
-  
-  if(period === '7d'){
-    start = new Date(today0); start.setDate(start.getDate() - 6);
-    prevStart = new Date(start); prevStart.setDate(prevStart.getDate() - 7); prevEnd = start;
-    for(let i=0; i<7; i++){ const d = new Date(start); d.setDate(start.getDate() + i); buckets.push({ key: spxDayKey(d), label: wd[d.getDay()], tip: `${d.getDate()}/${d.getMonth()+1}`, value: 0 }); }
-    label = 'Últimos 7 dias';
-  } else if(period === 'all'){
-    unit = 'month';
-    start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-    for(let i=0; i<6; i++){ const d = new Date(start.getFullYear(), start.getMonth() + i, 1); buckets.push({ key: spxMonthKey(d), label: mn[d.getMonth()], tip: `${mn[d.getMonth()]}`, value: 0 }); }
-    label = 'Últimos 6 meses';
-  } else {
-    start = new Date(now.getFullYear(), now.getMonth(), 1);
-    prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    prevEnd = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate() + 1);
-    for(let i=1; i<=now.getDate(); i++){ buckets.push({ key: spxDayKey(new Date(now.getFullYear(), now.getMonth(), i)), label: String(i), tip: `${i}/${now.getMonth()+1}`, value: 0 }); }
-    label = 'Neste mês';
-  }
-  
-  const inRange = all.filter(r => r.date >= start && r.date < end);
-  const bmap = {}; buckets.forEach(b => bmap[b.key] = b);
-  inRange.forEach(r => { const b = bmap[unit === 'month' ? spxMonthKey(r.date) : spxDayKey(r.date)]; if(b) b.value += r.value; });
-  
-  const total = inRange.reduce((s,r) => s + r.value, 0);
-  let trendHtml = `<div class="ft-badge neutral">Sem dados</div>`;
-  
-  if(prevStart){
-    const prev = all.filter(r => r.date >= prevStart && r.date < prevEnd).reduce((s,r) => s + r.value, 0);
-    if(prev > 0){
-      const diff = Math.round(((total - prev) / prev) * 100);
-      trendHtml = diff > 0 ? `<div class="ft-badge up">▲ ${diff}% vs ant.</div>` : `<div class="ft-badge down">▼ ${Math.abs(diff)}% vs ant.</div>`;
-    }
-  }
-  
-  const catColors = ['#00e676','#18ffff','#b388ff','#ff4081','#ffeb3b','#ff9800','#00b0ff'];
-  const cats = compressBreakdown(buildCategoryBreakdown(
-    inRange.map(r => ({ value: r.value, label: r.label, key: r.key })),
-    catColors, 'Sem categoria'
-  ), 6, 'Outros');
-  
-  const wrap = document.getElementById('accountFlowLegend');
-  if(!wrap) return;
-  if(!total) {
-    wrap.innerHTML = `<div class="ft-panel"><div class="empty">Nenhuma saída no período (${label}).</div></div>`;
-    return;
-  }
-  
-  const color = '#00e676';
-  const { svg, coords } = generateCurveSVG(buckets.map(b => b.value), 100, 100, color, 'grad-acc');
-  
-  let html = `
-    <div class="ft-panel">
-      <div class="ft-header">
-        <div>
-          <div class="ft-title">SAÍDAS DA CONTA · ${label.toUpperCase()}</div>
-          <div class="ft-amount">${money(total).replace(',','<span>,').replace('.','.')}</span></div>
-        </div>
-        ${trendHtml}
-      </div>
-      
-      <div class="ft-chart-container" id="accChartTouch">
-        ${svg}
-        <div class="ft-chart-axis">
-          <span>${buckets[0].label}</span>
-          <span>${buckets[buckets.length-1].label}</span>
-        </div>
-        <div class="ft-chart-tooltip"></div>
-        <div class="ft-chart-point" data-color="${color}"></div>
-        <div class="ft-chart-touch"></div>
-      </div>
-      
-      <div class="ft-cats">
-        ${cats.map((c, i) => `
-          <div class="ft-cat" style="animation-delay: ${i*60}ms">
-            <div class="ft-cat-icon" style="background: ${c.color}22; color: ${c.color}; border: 1px solid ${c.color}44;">${spxEmoji(c.label)}</div>
-            <div class="ft-cat-info">
-              <div class="ft-cat-name">${safe(c.label)}</div>
-              <div class="ft-cat-bar-wrap"><div class="ft-cat-bar" style="width: ${Math.max(4, c.pct)}%; background: ${c.color}; box-shadow: 0 0 8px ${c.color}aa;"></div></div>
-            </div>
-            <div class="ft-cat-val">
-              <strong>${money(c.value)}</strong>
-              <span>${c.pct}%</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-  
-  wrap.innerHTML = html;
-  if(el.accountFlowTotal) el.accountFlowTotal.textContent = money(total);
-  if(el.accountFlowPeriodLabel) el.accountFlowPeriodLabel.textContent = label;
-  
-  setTimeout(() => attachChartInteraction('accChartTouch', coords, buckets.map(b => b.tip)), 50);
-}
-
 
 function accountOutflowBreakdown(period){
   const targetPeriod=period || ui.accountFlowPeriod || 'all';
@@ -4755,42 +4800,59 @@ function canvasViewport(canvas,minSize){
 }
 
 
+
+
+
+// === GERADOR DE GRÁFICO FINTECH MODERNO ===
 function generateCurveSVG(points, width, height, strokeColor, fillGradientId) {
-  if (!points || points.length === 0) return { svg: '', coords: [] };
+  if (!points || points.length === 0) points = [0, 0, 0, 0, 0, 0, 0];
   const pData = points.length === 1 ? [points[0], points[0]] : points;
   const max = Math.max(...pData) || 1;
-  const min = Math.min(...pData);
-  const padTop = 15, padBot = 15;
+  const padTop = 20, padBot = 24;
   const innerW = width;
   const innerH = height - padTop - padBot;
   
   const coords = pData.map((val, i) => {
     const x = (i / (pData.length - 1)) * innerW;
     const y = padTop + innerH - (val / max) * innerH;
-    return { x, y, val };
+    return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, val };
   });
   
+  // Linha curva ou reta suave
   let d = `M ${coords[0].x},${coords[0].y}`;
   for (let i = 0; i < coords.length - 1; i++) {
-    const cp1x = coords[i].x + (coords[i+1].x - coords[i].x) / 2;
+    const cp1x = (coords[i].x + (coords[i+1].x - coords[i].x) / 2).toFixed(1);
     const cp2x = cp1x;
-    d += ` C ${cp1x},${coords[i].y} ${cp2x},${coords[i+1].y} ${coords[i+1].x},${coords[i+1].y}`;
+    d += ` C ${cp1x},${coords[i].y.toFixed(1)} ${cp2x},${coords[i+1].y.toFixed(1)} ${coords[i+1].x.toFixed(1)},${coords[i+1].y.toFixed(1)}`;
   }
   
-  const areaD = `${d} L ${width},${height} L 0,${height} Z`;
-  const pathLength = width * 2;
+  const areaD = `${d} L ${width},${height - 10} L 0,${height - 10} Z`;
   
+  // Linhas de grid sutis de fundo
+  const gridY1 = padTop + innerH * 0.25;
+  const gridY2 = padTop + innerH * 0.75;
+  const gridBase = padTop + innerH;
+  
+  const isAllZero = pData.every(v => v === 0);
+  const strokeOpacity = isAllZero ? '0.45' : '1';
+  const fillOpacity = isAllZero ? '0.04' : '0.28';
+
   const svg = `
     <svg class="ft-chart-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
       <defs>
         <linearGradient id="${fillGradientId}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.4" />
+          <stop offset="0%" stop-color="${strokeColor}" stop-opacity="${fillOpacity}" />
           <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0" />
         </linearGradient>
-        
       </defs>
+      <!-- Linhas de Grade -->
+      <line x1="0" y1="${gridY1}" x2="${width}" y2="${gridY1}" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3" stroke-width="1" />
+      <line x1="0" y1="${gridY2}" x2="${width}" y2="${gridY2}" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3" stroke-width="1" />
+      <line x1="0" y1="${gridBase}" x2="${width}" y2="${gridBase}" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+      
+      <!-- Área e Linha -->
       <path d="${areaD}" fill="url(#${fillGradientId})" />
-      <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"   />
+      <path d="${d}" fill="none" stroke="${strokeColor}" stroke-opacity="${strokeOpacity}" stroke-width="${isAllZero ? '2' : '3'}" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   `;
   return { svg, coords };
@@ -4798,37 +4860,312 @@ function generateCurveSVG(points, width, height, strokeColor, fillGradientId) {
 
 function attachChartInteraction(containerId, coords, labels) {
   const container = document.getElementById(containerId);
-  if(!container) return;
+  if (!container) return;
   const touchArea = container.querySelector('.ft-chart-touch');
-  const tooltip = container.querySelector('.ft-chart-tooltip');
-  const point = container.querySelector('.ft-chart-point');
-  if(!touchArea || !tooltip || !point) return;
+  const tooltip = container.querySelector('.ft-tooltip');
+  const pointer = container.querySelector('.ft-pointer');
+  const guideLine = container.querySelector('.ft-guide-line');
+  if (!touchArea || !tooltip || !pointer || !guideLine) return;
   
   const update = (e) => {
     const rect = touchArea.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
+    
     let closest = coords[0], minDist = Infinity, bestIdx = 0;
     coords.forEach((c, i) => {
-      const dist = Math.abs((c.x / 100 * rect.width) - x);
-      if(dist < minDist) { minDist = dist; closest = c; bestIdx = i; }
+      const px = (c.x / 100) * rect.width;
+      const dist = Math.abs(px - x);
+      if (dist < minDist) { minDist = dist; closest = c; bestIdx = i; }
     });
-    const px = (closest.x / 100) * rect.width;
-    const py = (closest.y / 100) * rect.height;
-    point.style.transform = `translate(-50%, -50%) translate(${px}px, ${py}px)`;
-    point.style.opacity = '1';
-    point.style.boxShadow = `0 0 12px ${point.dataset.color}`;
-    tooltip.innerHTML = `<span>${labels[bestIdx]}</span><br/><strong>${money(closest.val)}</strong>`;
-    tooltip.style.left = `${px}px`;
-    tooltip.style.top = `${py}px`;
+    
+    const posX = (closest.x / 100) * rect.width;
+    const posY = (closest.y / 100) * rect.height;
+    
+    pointer.style.left = posX + 'px';
+    pointer.style.top = posY + 'px';
+    pointer.style.opacity = '1';
+    
+    guideLine.style.left = posX + 'px';
+    guideLine.style.opacity = '1';
+    
+    tooltip.innerHTML = `<small>${labels[bestIdx] || ''}</small><strong>${money(closest.val)}</strong>`;
+    tooltip.style.left = posX + 'px';
+    tooltip.style.top = posY + 'px';
     tooltip.style.opacity = '1';
   };
   
-  const leave = () => { point.style.opacity = '0'; tooltip.style.opacity = '0'; };
+  const hide = () => {
+    pointer.style.opacity = '0';
+    guideLine.style.opacity = '0';
+    tooltip.style.opacity = '0';
+  };
   
   touchArea.addEventListener('mousemove', update);
-  touchArea.addEventListener('touchmove', (e)=>{ e.preventDefault(); update(e); }, {passive:false});
-  touchArea.addEventListener('mouseleave', leave);
-  touchArea.addEventListener('touchend', leave);
+  touchArea.addEventListener('touchmove', update, { passive: true });
+  touchArea.addEventListener('mouseleave', hide);
+  touchArea.addEventListener('touchend', hide);
+}
+
+// === RENDERIZAR SAÍDAS DA CONTA ===
+function renderAccountFlowChart(){
+  const period = ui.accountFlowPeriod || 'month';
+  const all = accountOutRows();
+  const now = new Date(), today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(today0); end.setDate(end.getDate() + 1);
+  const wd = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const mn = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  
+  let buckets = [], start, prevStart = null, prevEnd = null, label = '', unit = 'day';
+  
+  if (period === '7d') {
+    start = new Date(today0); start.setDate(start.getDate() - 6);
+    prevStart = new Date(start); prevStart.setDate(prevStart.getDate() - 7); prevEnd = start;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start); d.setDate(start.getDate() + i);
+      buckets.push({ key: spxDayKey(d), label: wd[d.getDay()], tip: `${wd[d.getDay()]} (${d.getDate()}/${d.getMonth()+1})`, value: 0 });
+    }
+    label = 'Últimos 7 dias';
+  } else if (period === 'all') {
+    unit = 'month';
+    start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
+      buckets.push({ key: spxMonthKey(d), label: mn[d.getMonth()], tip: `${mn[d.getMonth()]}/${d.getFullYear()}`, value: 0 });
+    }
+    label = 'Últimos 6 meses';
+  } else {
+    // Neste mês
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    prevEnd = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate() + 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    for (let i = 1; i <= lastDay; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth(), i);
+      buckets.push({ key: spxDayKey(d), label: String(i), tip: `Dia ${i} de ${mn[now.getMonth()]}`, value: 0 });
+    }
+    label = 'Neste mês';
+  }
+  
+  const inRange = all.filter(r => r.date >= start && r.date < end);
+  const bmap = {}; buckets.forEach(b => bmap[b.key] = b);
+  inRange.forEach(r => {
+    const key = unit === 'month' ? spxMonthKey(r.date) : spxDayKey(r.date);
+    if (bmap[key]) bmap[key].value += r.value;
+  });
+  
+  const total = inRange.reduce((s, r) => s + r.value, 0);
+  let trendHtml = '<span class="ft-badge emerald">Em dia</span>';
+  
+  if (prevStart && prevEnd) {
+    const prev = all.filter(r => r.date >= prevStart && r.date < prevEnd).reduce((s, r) => s + r.value, 0);
+    if (prev > 0) {
+      const diff = Math.round(((total - prev) / prev) * 100);
+      trendHtml = diff > 0 ? `<span class="ft-badge up">▲ ${diff}% vs ant.</span>` : `<span class="ft-badge down">▼ ${Math.abs(diff)}% vs ant.</span>`;
+    }
+  }
+  
+  const catColors = ['#00e676','#18ffff','#b388ff','#ff4081','#ffd600','#ff9100','#00e5ff','#76ff03'];
+  const cats = compressBreakdown(buildCategoryBreakdown(
+    inRange.map(r => ({ value: r.value, label: r.label, key: r.key })),
+    catColors, 'Sem categoria'
+  ), 6, 'Outros');
+  
+  const wrap = document.getElementById('accountFlowLegend');
+  if (!wrap) return;
+  
+  const color = '#00e676';
+  const { svg, coords } = generateCurveSVG(buckets.map(b => b.value), 100, 100, color, 'grad-acc-flow');
+  
+  // Format display amount
+  const moneyFormatted = money(total);
+  const parts = moneyFormatted.split(',');
+  const amountHtml = parts.length === 2 ? `${parts[0]}<span>,${parts[1]}</span>` : moneyFormatted;
+  
+  // Eixo labels (primeiro, meio e último para não poluir)
+  const axisStart = buckets[0] ? buckets[0].label : '';
+  const axisMid = buckets[Math.floor(buckets.length / 2)] ? buckets[Math.floor(buckets.length / 2)].label : '';
+  const axisEnd = buckets[buckets.length - 1] ? buckets[buckets.length - 1].label : '';
+
+  let html = `
+    <div class="ft-panel">
+      <div class="ft-header">
+        <div>
+          <div class="ft-sub">SAÍDAS · ${label.toUpperCase()}</div>
+          <div class="ft-amount">${amountHtml}</div>
+        </div>
+        ${trendHtml}
+      </div>
+      
+      <div class="ft-chart-wrap" id="accFlowChartWrap">
+        ${svg}
+        <div class="ft-guide-line"></div>
+        <div class="ft-pointer" style="color:${color};"></div>
+        <div class="ft-tooltip"></div>
+        <div class="ft-chart-touch"></div>
+      </div>
+      
+      <div class="ft-axis">
+        <span>${axisStart}</span>
+        <span>${axisMid}</span>
+        <span>${axisEnd}</span>
+      </div>
+      
+      ${cats.length > 0 ? `
+        <div class="ft-categories">
+          ${cats.map((c, i) => `
+            <div class="ft-cat-card">
+              <div class="ft-cat-icon" style="background:${c.color}20; color:${c.color}; border:1px solid ${c.color}35;">${spxEmoji(c.label)}</div>
+              <div class="ft-cat-body">
+                <div class="ft-cat-label">${safe(c.label)}</div>
+                <div class="ft-progress-track"><div class="ft-progress-fill" style="width:${Math.max(5, c.pct)}%; background:${c.color}; box-shadow:0 0 10px ${c.color}80;"></div></div>
+              </div>
+              <div class="ft-cat-values">
+                <strong>${money(c.value)}</strong>
+                <span>${c.pct}%</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : `
+        <div class="ft-empty-note">
+          <span class="emoji">✨</span>
+          <div>Nenhuma saída registrada em <strong>${label.toLowerCase()}</strong>. Suas despesas do extrato aparecerão detalhadas aqui.</div>
+        </div>
+      `}
+    </div>
+  `;
+  
+  wrap.innerHTML = html;
+  
+  // Sincronizar botões de filtro ativos
+  const filtersEl = document.getElementById('accountFlowFilters');
+  if (filtersEl) {
+    filtersEl.querySelectorAll('.filterChip').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.period === period);
+    });
+  }
+  
+  setTimeout(() => attachChartInteraction('accFlowChartWrap', coords, buckets.map(b => b.tip)), 40);
+}
+
+// === RENDERIZAR GASTOS DO CARTÃO DE CRÉDITO ===
+function renderCreditDescChart(){
+  syncCreditExpenseMonthPicker();
+  const activeMonthKey = creditExpenseMonthKey();
+  const activeMonthLabel = monthLabelFromKey(activeMonthKey);
+  const breakdown = creditExpenseBreakdown(activeMonthKey);
+  
+  const catColors = ['#b388ff','#d500f9','#f50057','#ff3d00','#ffd600','#00e5ff','#00e676'];
+  const cats = compressBreakdown(buildCategoryBreakdown(
+    breakdown.map(r => ({ value: r.value, label: r.label, key: r.label })),
+    catColors, 'Sem categoria'
+  ), 6, 'Outros');
+  
+  const total = cats.reduce((s, c) => s + c.value, 0);
+  const wrap = document.getElementById('ccDescLegend');
+  if (!wrap) return;
+  
+  if (el.ccChartMonthTag) el.ccChartMonthTag.textContent = activeMonthLabel === 'Sem mês' ? 'Todas as despesas' : `Fatura de ${activeMonthLabel}`;
+  
+  // Ocultar qualquer canvas antigo caso exista no DOM
+  if (el.ccDescChart) el.ccDescChart.style.display = 'none';
+  if (el.ccDescChart && el.ccDescChart.parentNode && el.ccDescChart.parentNode.classList.contains('chartShell')) {
+    el.ccDescChart.parentNode.style.display = 'none';
+  }
+  
+  let buckets = [];
+  const color = '#b388ff';
+  
+  if (activeMonthKey !== 'all' && activeMonthKey.includes('-')) {
+    const parts = activeMonthKey.split('-');
+    const y = Number(parts[0]), m = Number(parts[1]);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    const inRange = (st.credit.tx || []).filter(x => x.type === 'expense' && monthKeyFromValue(x.at) === activeMonthKey);
+    
+    for (let i = 1; i <= daysInMonth; i++) {
+      const dayTotal = inRange.filter(x => {
+        if (!x.at) return false;
+        const d = new Date(x.at);
+        return d.getDate() === i;
+      }).reduce((s, x) => s + Number(x.value || 0), 0);
+      buckets.push({ val: dayTotal, label: String(i), tip: `Dia ${i}/${m}` });
+    }
+  } else {
+    // Modo "Todos os meses": agrupar pelos últimos 6 meses
+    const now = new Date();
+    const mn = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const mk = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const mTotal = (st.credit.tx || []).filter(x => x.type === 'expense' && monthKeyFromValue(x.at) === mk)
+        .reduce((s, x) => s + Number(x.value || 0), 0);
+      buckets.push({ val: mTotal, label: mn[d.getMonth()], tip: `${mn[d.getMonth()]}/${d.getFullYear()}` });
+    }
+  }
+  
+  const { svg, coords } = generateCurveSVG(buckets.map(b => b.val), 100, 100, color, 'grad-cc-flow');
+  
+  const moneyFormatted = money(total);
+  const parts = moneyFormatted.split(',');
+  const amountHtml = parts.length === 2 ? `${parts[0]}<span>,${parts[1]}</span>` : moneyFormatted;
+  
+  const axisStart = buckets[0] ? buckets[0].label : '';
+  const axisMid = buckets[Math.floor(buckets.length / 2)] ? buckets[Math.floor(buckets.length / 2)].label : '';
+  const axisEnd = buckets[buckets.length - 1] ? buckets[buckets.length - 1].label : '';
+  
+  let html = `
+    <div class="ft-panel ft-panel-credit">
+      <div class="ft-header">
+        <div>
+          <div class="ft-sub" style="color:#b388ff;">FATURA · ${activeMonthLabel.toUpperCase()}</div>
+          <div class="ft-amount">${amountHtml}</div>
+        </div>
+        <span class="ft-badge purple">💳 Cartão</span>
+      </div>
+      
+      <div class="ft-chart-wrap" id="ccFlowChartWrap">
+        ${svg}
+        <div class="ft-guide-line"></div>
+        <div class="ft-pointer" style="color:${color};"></div>
+        <div class="ft-tooltip"></div>
+        <div class="ft-chart-touch"></div>
+      </div>
+      
+      <div class="ft-axis">
+        <span>${axisStart}</span>
+        <span>${axisMid}</span>
+        <span>${axisEnd}</span>
+      </div>
+      
+      ${cats.length > 0 ? `
+        <div class="ft-categories">
+          ${cats.map((c, i) => `
+            <div class="ft-cat-card">
+              <div class="ft-cat-icon" style="background:${c.color}20; color:${c.color}; border:1px solid ${c.color}35;">${spxEmoji(c.label)}</div>
+              <div class="ft-cat-body">
+                <div class="ft-cat-label">${safe(c.label)}</div>
+                <div class="ft-progress-track"><div class="ft-progress-fill" style="width:${Math.max(5, c.pct)}%; background:${c.color}; box-shadow:0 0 10px ${c.color}80;"></div></div>
+              </div>
+              <div class="ft-cat-values">
+                <strong>${money(c.value)}</strong>
+                <span>${c.pct}%</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : `
+        <div class="ft-empty-note">
+          <span class="emoji">💳</span>
+          <div>Nenhum gasto lançado nesta fatura (<strong>${safe(activeMonthLabel)}</strong>). Suas compras aparecerão aqui com evolução diária.</div>
+        </div>
+      `}
+    </div>
+  `;
+  
+  wrap.innerHTML = html;
+  
+  setTimeout(() => attachChartInteraction('ccFlowChartWrap', coords, buckets.map(b => b.tip)), 40);
 }
 
 function drawDoughnutChart(canvas,data){
