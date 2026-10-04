@@ -594,7 +594,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.8</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v9.9</span>
               <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub">sincronizado com telegram</span>
@@ -4781,7 +4781,7 @@ function generateCurveSVG(points, width, height, strokeColor, fillGradientId) {
   const pathLength = width * 2;
   
   const svg = `
-    <svg class="ft-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+    <svg class="ft-chart-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
       <defs>
         <linearGradient id="${fillGradientId}" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.4" />
@@ -4790,7 +4790,7 @@ function generateCurveSVG(points, width, height, strokeColor, fillGradientId) {
         
       </defs>
       <path d="${areaD}" fill="url(#${fillGradientId})" />
-      <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"  style="animation: popIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: bottom;" />
+      <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"   />
     </svg>
   `;
   return { svg, coords };
