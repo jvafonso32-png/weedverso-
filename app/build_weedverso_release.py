@@ -7,6 +7,8 @@ from zipfile import ZIP_DEFLATED, ZipFile
 ROOT = Path(__file__).resolve().parent
 DIST = ROOT / "dist"
 RUNTIME_FILES = [
+    "assets/touch-ui.css",
+    "assets/touch-ui.js",
     ".env.example",
     ".gitignore",
     "api_server.py",

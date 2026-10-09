@@ -816,6 +816,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 
 /* FIM FINTECH */
 </style>
+<link rel="stylesheet" href="assets/touch-ui.css?v=1" />
 </head>
 <body data-theme="dark">
 <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;display:none;"></canvas>
@@ -1886,6 +1887,7 @@ const GIST_SYNC={
   tokenKey:'weedverso_gh_sync_token',
   pushTimer:null,
   busy:false,
+  pendingPush:false,
   statusText:'',
   getToken:function(){
     try{return localStorage.getItem(this.tokenKey)||'';}catch(e){return '';}
@@ -1900,6 +1902,8 @@ const GIST_SYNC={
     return Boolean(this.getToken());
   },
   pull:async function(quiet){
+    if(this.busy || this.pushTimer) return false;
+    const localBefore=snapshotState();
     const token=this.getToken();
     this.busy=true;
     if(token) this.updateStatus('☁️ Sincronizando com GitHub...','running');
@@ -1912,6 +1916,7 @@ const GIST_SYNC={
         return false;
       }
       const data=await resp.json();
+      if(snapshotState()!==localBefore || this.pushTimer || this.pendingPush) return false;
       const fileInfo=data.files && data.files['weedverso_state.json'];
       if(fileInfo && fileInfo.content){
         const parsed=JSON.parse(fileInfo.content);
@@ -1934,12 +1939,14 @@ const GIST_SYNC={
       }
     }finally{
       this.busy=false;
+      if(this.pendingPush){ this.pendingPush=false; this.schedulePush(); }
     }
     return false;
   },
   push:async function(){
     const token=this.getToken();
-    if(!token||this.busy) return;
+    if(!token) return;
+    if(this.busy){ this.pendingPush=true; return; }
     this.busy=true;
     this.updateStatus('☁️ Enviando ao GitHub...','running');
     try{
@@ -1967,12 +1974,13 @@ const GIST_SYNC={
       this.updateStatus('☁️ Git: Falha ao enviar','error');
     }finally{
       this.busy=false;
+      if(this.pendingPush){ this.pendingPush=false; this.schedulePush(); }
     }
   },
   schedulePush:function(){
     if(!this.hasToken()) return;
     if(this.pushTimer) clearTimeout(this.pushTimer);
-    this.pushTimer=setTimeout(()=>this.push(),1200);
+    this.pushTimer=setTimeout(()=>{ this.pushTimer=null; this.push(); },1200);
   },
   updateStatus:function(text,tone){
     this.statusText=text;
@@ -2093,7 +2101,7 @@ const quickAddSheet={
     const fab=$('#fabQuickAddBtn');
     if(fab && !fab._bound){
       fab._bound=true;
-      fab.addEventListener('click',()=>this.open('out'));
+      fab.addEventListener('click',()=>window.WEEDVERSO_TOUCH_UI ? window.WEEDVERSO_TOUCH_UI.openContextAdd() : this.open('out'));
     }
     if(this.form){
       this.form.addEventListener('submit',e=>{
@@ -2110,6 +2118,7 @@ const quickAddSheet={
         const note=txt(this.noteInput.value,42);
         const tab=this.currentTab;
         const acc=this.currentAcc||'conta';
+        const undoBefore=tab==='card' && window.WEEDVERSO_TOUCH_UI ? window.WEEDVERSO_TOUCH_UI.captureQuick(tab,acc) : null;
 
         if(tab==='out'){
           move(acc,'out',val,note||'Gasto rápido');
@@ -2135,12 +2144,17 @@ const quickAddSheet={
           renderSummary();
           showToast('✓ Gasto de '+money(val)+' salvo no cartão!','ok');
         }
+        if(undoBefore && window.WEEDVERSO_TOUCH_UI) window.WEEDVERSO_TOUCH_UI.offerQuickUndo(undoBefore);
         this.close();
       });
     }
+    if(window.WEEDVERSO_TOUCH_UI) window.WEEDVERSO_TOUCH_UI.init();
   },
   open:function(tab='out'){
     this.currentTab=tab;
+    if(this.valInput) this.valInput.value='';
+    if(this.noteInput) this.noteInput.value='';
+    if(window.WEEDVERSO_TOUCH_UI) window.WEEDVERSO_TOUCH_UI.prepareQuick();
     this.updateTabUI();
     const preview=$('#quickCalcPreview');
     if(preview) preview.style.display='none';
@@ -2150,10 +2164,8 @@ const quickAddSheet={
     }
     setTimeout(()=>{
       if(this.valInput){
-        this.valInput.value='';
         this.valInput.focus();
       }
-      if(this.noteInput) this.noteInput.value='';
     },80);
   },
   close:function(){
@@ -2179,6 +2191,7 @@ const quickAddSheet={
     if(this.accField){
       this.accField.style.display=this.currentTab==='card'?'none':'grid';
     }
+    if(window.WEEDVERSO_TOUCH_UI) window.WEEDVERSO_TOUCH_UI.updateQuickContext();
   }
 };
 
@@ -2468,10 +2481,12 @@ function bind(){
     if(e.target.matches('[data-act="out"]')){ if(val<=0)return; move(acc,'out',val,note); inp.value=''; if(noteInp) noteInp.value=''; }
     if(e.target.matches('[data-act="set"]')){
       if(!Number.isFinite(raw)) return;
+      const undoBefore=window.WEEDVERSO_TOUCH_UI ? window.WEEDVERSO_TOUCH_UI.captureQuick('set',acc) : null;
       const prev=st.balances[acc].amount; st.balances[acc].amount=raw;
       const meta=categoryMeta(note,'Ajuste manual');
       st.tx.unshift({id:id(),account:acc,type:'set',value:raw,prev,note,category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
       save(true); renderFinance(); renderSummary(); flash(document.querySelector(`[data-acc="${acc}"] [data-bal]`),raw>=prev?'in':'out'); inp.value=''; if(noteInp) noteInp.value='';
+      if(undoBefore) window.WEEDVERSO_TOUCH_UI.offerQuickUndo(undoBefore);
     }
   });
 
@@ -4545,9 +4560,10 @@ function initInvestBindings(){
   const openForm = (mode, title, ph) => {
     currentInvestFormMode = mode;
     if(formTitle) formTitle.textContent = title;
-    if(formVal) { formVal.value = ''; formVal.placeholder = ph; formVal.focus(); }
+    if(formVal) { formVal.value = ''; formVal.placeholder = ph; }
     if(formNote) formNote.value = '';
     if(formBox) formBox.style.display = 'block';
+    if(formVal) formVal.focus();
     updateInvestFormPreview();
   };
   
@@ -4571,6 +4587,7 @@ function initInvestBindings(){
     }
     const note = (formNote.value || '').trim();
     let oldTotal = Number(st.investments.total || 0);
+    const investUndoBefore=window.WEEDVERSO_TOUCH_UI ? window.WEEDVERSO_TOUCH_UI.captureInvestment(oldTotal) : null;
     let newTotal = oldTotal;
     
     if(currentInvestFormMode === 'set'){
@@ -4596,6 +4613,7 @@ function initInvestBindings(){
     renderInvestments();
     showToast(`Saldo investido atualizado: ${money(newTotal)}!`, 'ok');
     haptic('medium');
+    if(investUndoBefore && window.WEEDVERSO_TOUCH_UI) window.WEEDVERSO_TOUCH_UI.offerInvestmentUndo(investUndoBefore);
   });
 }
 
@@ -4623,6 +4641,7 @@ function renderPage(){
     setActive(el.navBtns[i], el.navBtns[i].getAttribute('data-page')===ui.page);
   }
   if(ui.page==='statement') renderUnifiedStatement();
+  if(window.WEEDVERSO_TOUCH_UI) window.WEEDVERSO_TOUCH_UI.updateFab();
 }
 function renderProfile(){
   el.app.textContent=st.appName;
@@ -5726,11 +5745,13 @@ function renderFinance(){
 
 function move(acc,type,value,note){
   if(!st.balances[acc]) return;
+  const undoBefore=window.WEEDVERSO_TOUCH_UI ? window.WEEDVERSO_TOUCH_UI.captureQuick(type,acc) : null;
   st.balances[acc].amount += type==='in'?value:-value;
   const meta=categoryMeta(note,'Sem categoria');
   st.tx.unshift({id:id(),account:acc,type,value,note:txt(note,42),category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
   haptic('medium');
   save(true); renderFinance(); renderSummary(); flash(document.querySelector(`[data-acc="${acc}"] [data-bal]`),type);
+  if(undoBefore) window.WEEDVERSO_TOUCH_UI.offerQuickUndo(undoBefore);
 }
 
 function renderHistory(){
@@ -5855,7 +5876,7 @@ function allTransactions(){
       const isWithdraw=t.type==='withdraw';
       const label=t.type==='yield'?'Rendimento':(isWithdraw?'Resgate':'Aporte');
       return {
-        id:t.id,at:t.at,value:Math.abs(Number(t.value)||0),sign:isWithdraw?'-':'+',cls:isWithdraw?'neg':'pos',
+        id:t.id,goalId:g.id,at:t.at,value:Math.abs(Number(t.value)||0),sign:isWithdraw?'-':'+',cls:isWithdraw?'neg':'pos',
         title:`${label} · ${g.name||'Meta'}`,note:t.note||'',category:'Objetivos',
         source:'goal',
         icon:'🎯'
@@ -5895,7 +5916,7 @@ function renderUnifiedStatement(){
   const todayStr=today();
 
   items.slice(0,60).forEach(i=>{
-    const day=(i.at||'').slice(0,10);
+    const day=i.at ? dateKey(i.at) : '';
     if(day && day!==lastDay){
       lastDay=day;
       let dayTitle=dateBr(day);
@@ -5904,14 +5925,14 @@ function renderUnifiedStatement(){
     }
     const noteText=i.note?` · ${safe(i.note)}`:'';
     html+=`
-      <div class="feedRow">
+      <button type="button" class="feedRow" data-touch-transaction="${esc(i.id)}" data-touch-source="${esc(i.source)}" data-touch-goal="${esc(i.goalId||'')}" aria-label="Ver detalhes: ${esc(i.title)}${esc(i.note?' · '+i.note:'')}">
         <div class="feedIcon">${i.icon}</div>
         <div class="feedBody">
           <div class="feedTitle">${safe(i.title)}${noteText}</div>
           <div class="feedSubtitle">${safe(i.category)} · ${shortTime(i.at)}</div>
         </div>
         <div class="feedAmount ${i.cls}">${i.sign} ${money(i.value)}</div>
-      </div>
+      </button>
     `;
   });
 
@@ -6282,12 +6303,12 @@ function renderMyDebtSingleCard(d, isNested=false){
           <span class="dvPersonName" data-act="md-timeline" data-creditor="${esc(d.name)}" title="Ver histórico">${safe(d.name)}</span>
           ${dotsHtml}
         </div>
-        <div class="dvCardAmount">${money(remaining > 0 ? remaining : (d.paid ? debtPaidAmount(d) : instVal))}</div>
+        <div class="dvCardAmount"><small>${d.paid?'Total pago':'Total restante'}</small>${money(remaining > 0 ? remaining : (d.paid ? debtPaidAmount(d) : instVal))}</div>
       </div>
       <div class="dvCardLine2">
         <div class="dvMetaLeft">
           ${urgency.tagHtml}
-          ${inst > 1 ? `<span>· parcela ${money(instVal)}</span>` : ''}
+          ${!d.paid ? `<span class="dvNextPayment">${inst>1?'Próxima parcela':'Pagamento'}: <strong>${money(Math.min(instVal,remaining))}</strong> · Vencimento: ${d.payDate?dateBr(d.payDate):'não definido'}</span>` : ''}
           ${d.note ? `<span>· ${safe(d.note)}</span>` : ''}
         </div>
         <div class="dvMetaRight">
@@ -6504,12 +6525,12 @@ function renderDebtorSingleCard(d, isNested=false){
           ${!isNested ? `<span class="dvTrustBadge ${trust.cls}">${trust.icon} ${trust.label}</span>` : ''}
           ${dotsHtml}
         </div>
-        <div class="dvCardAmount">${money(d.paid ? d.amount : remainingAmount)}</div>
+        <div class="dvCardAmount"><small>${d.paid?'Total da cobrança':'Total restante'}</small>${money(d.paid ? d.amount : remainingAmount)}</div>
       </div>
       <div class="dvCardLine2">
         <div class="dvMetaLeft">
           ${urgency.tagHtml}
-          ${isMulti && !d.paid ? `<span>· parcela ${money(instVal)}</span>` : ''}
+          ${!d.paid ? `<span class="dvNextPayment">${isMulti?'Próxima parcela':'Recebimento'}: <strong>${money(Math.min(instVal,remainingAmount))}</strong> · Vencimento: ${d.payDate?dateBr(d.payDate):'não definido'}</span>` : ''}
           ${chargedText ? `<span>· ${chargedText}</span>` : ''}
           ${d.note ? `<span class="mut" title="${esc(d.note)}">· ${safe(d.note)}</span>` : ''}
         </div>
@@ -7883,9 +7904,11 @@ function startServerPolling(){
   serverSync.poller=setInterval(pullServerState,delay);
 }
 async function pullServerState(){
-  if(!API_BASE || serverSync.pushing) return;
+  if(!API_BASE || serverSync.pushing || serverSync.timer) return;
+  const localBefore=snapshotState();
   try{
     const remote=await requestApi('/api/state');
+    if(serverSync.pushing || serverSync.timer || snapshotState()!==localBefore) return;
     const next=JSON.stringify(remote||{});
     serverSync.available=true;
     if(next && next!==serverSync.lastSnapshot){
@@ -7906,9 +7929,10 @@ function scheduleServerPush(){
   serverSync.timer=setTimeout(pushServerState,350);
 }
 async function pushServerState(options){
+  if(serverSync.timer) clearTimeout(serverSync.timer);
   serverSync.timer=null;
   if(!serverSync.initialized) return;
-  if(serverSync.pushing) return;
+  if(serverSync.pushing){ serverSync.pendingPush=true; return; }
   serverSync.pushing=true;
   try{
     const payload=snapshotState();
@@ -7919,6 +7943,7 @@ async function pushServerState(options){
     serverSync.available=false;
   }finally{
     serverSync.pushing=false;
+    if(serverSync.pendingPush){ serverSync.pendingPush=false; await pushServerState(options); }
   }
 }
 function flushStateOnly(){
@@ -8144,5 +8169,6 @@ if('serviceWorker' in navigator){
 }
 </script>
 
+<script src="assets/touch-ui.js?v=1"></script>
 </body>
 </html>

@@ -1,0 +1,97 @@
+/* Interaction improvements; financial storage and URLs remain managed by the app. */
+:root { --touch-dock-height: 64px; --touch-visible-height: 100dvh; }
+button:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--p); outline-offset: 3px;
+}
+.sheetForm { display: grid; gap: 12px; }
+.sheetOverlay { height: var(--touch-visible-height); bottom: auto; }
+.sheetCard { max-height: calc(var(--touch-visible-height) - 16px); }
+body.touch-sheet-open { overflow: hidden; }
+.sheetSubmitBtn { position: sticky; bottom: 0; flex-shrink: 0; }
+.touch-favorite-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.touch-favorite-heading strong { font-size: .85rem; }
+.touch-favorites { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.touch-favorite { min-width: 0; display: flex; align-items: center; gap: 4px; }
+.touch-favorite-pick { flex: 1; text-align: left; min-width: 0; white-space: normal; }
+.touch-favorite-pick small { display: block; margin-top: 3px; color: var(--mut); font-size: .75rem; font-weight: 400; }
+.touch-favorite-remove { flex-shrink: 0; }
+.touch-favorites-hint { grid-column: 1 / -1; font-size: .8rem; color: var(--mut); line-height: 1.45; }
+.touch-details { border: 1px solid var(--ln); border-radius: 12px; padding: 10px; }
+.touch-details summary { cursor: pointer; color: var(--mut); font-size: .85rem; padding: 4px 0; }
+.touch-details[open] summary { margin-bottom: 12px; }
+.touch-details .sheetField { margin-bottom: 12px; }
+.touch-context-note { color: var(--mut); font-size: .8rem; line-height: 1.4; }
+.touch-context-actions { display: grid; gap: 12px; }
+.touch-context-actions button { text-align: left; min-height: 64px; }
+.touch-context-actions button small { display: block; color: var(--mut); margin-top: 4px; font-weight: 400; }
+.touch-transaction-value { font-size: 1.8rem; font-weight: 800; padding: 8px 0; }
+.touch-transaction-details { display: grid; gap: 12px; margin: 8px 0 16px; }
+.touch-transaction-details div { display: grid; gap: 4px; }
+.touch-transaction-details dt { color: var(--mut); font-size: .8rem; }
+.touch-transaction-details dd { font-size: .95rem; line-height: 1.45; overflow-wrap: anywhere; }
+.feedRow { width: 100%; color: var(--txt); text-align: left; font: inherit; cursor: pointer; }
+.feedRow:hover { border-color: rgba(57,255,143,.4); }
+.touch-undo { position: fixed; z-index: 100; left: 50%; transform: translateX(-50%); bottom: calc(var(--touch-dock-height) + 24px); width: min(94vw,480px); padding: 12px; border: 1px solid rgba(57,255,143,.4); border-radius: 14px; background: #12251b; box-shadow: 0 8px 24px rgba(0,0,0,.5); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.touch-undo span { font-size: .85rem; line-height: 1.4; }
+.touch-undo button { white-space: nowrap; min-height: 44px; }
+.fabQuickAdd { width: auto; min-width: 52px; height: 52px; padding: 0 16px; gap: 8px; bottom: calc(var(--touch-dock-height) + 24px); }
+.fabQuickAdd .touch-fab-label { font-size: .8rem; }
+body.touch-has-undo .fabQuickAdd { visibility: hidden; }
+.dvCardAmount small { display: block; color: var(--mut); font: 400 .75rem var(--font-ui); margin-bottom: 4px; }
+.dvNextPayment { flex-basis: 100%; line-height: 1.5; padding-top: 4px; }
+.dvNextPayment strong { color: var(--txt); }
+@media (pointer: coarse), (max-width: 720px) {
+  body { padding-bottom: calc(var(--touch-dock-height) + 112px + env(safe-area-inset-bottom)); }
+  button.btn, button.ghost, button.danger, button.quick, button.navBtn,
+  button.iconBtn, button.ck, button.filterChip, button.tagChip, button.sheetTab,
+  button.sheetPill, button.sheetClose, button.sheetTagChip, button.dvActionBtn,
+  button.quickActionChip, button.segmentBtn, .statementActions button, .topActions button,
+  .fcard .actionStack button, .dvUndoBar button {
+    min-height: 44px !important; font-size: .82rem !important;
+  }
+  button.iconBtn, button.ck, button.sheetClose, button.dvActionBtn.menu,
+  .statementActions button { min-width: 44px !important; width: 44px !important; height: 44px !important; }
+  button.sheetClose { border-radius: 12px; }
+  input, select, textarea, .sheetInput, .fcard .actionFields input {
+    min-height: 44px !important; font-size: 16px !important;
+  }
+  .sheetAmountInput { min-height: 48px !important; font-size: 1.8rem !important; }
+  .topActions { flex-wrap: wrap; gap: 8px; }
+  .card { padding: 12px; }
+  .page, .app, .fgrid, .stack, .list { gap: 12px; }
+  .fcard, .dvCard { padding: 12px; gap: 8px; }
+  .fcard .actionStack { gap: 8px; }
+  .mini, label { font-size: .75rem; line-height: 1.45; }
+  .mut, .heroDesc, .feedSubtitle, .dvMetaLeft { font-size: .82rem; line-height: 1.5; }
+  .heroKpi { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .heroKpi .heroBox:first-child { grid-column: 1 / -1; }
+  .heroBox { padding: 10px; }
+  .heroBox strong { font-size: 1.08rem; }
+  .quickRow, .sheetPills, .sheetTagChips { gap: 8px; }
+  .dock { width: calc(100% - 16px); gap: 4px; padding: 6px; }
+  .navBtn { padding: 8px 2px; font-size: .75rem !important; }
+  .navIcon { font-size: 1.05rem; }
+  .fabQuickAdd { right: 16px; width: auto; height: 52px; }
+  .feedRow { padding: 12px 10px; grid-template-columns: 28px minmax(0,1fr) auto; gap: 8px; }
+  .feedTitle { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: .85rem; line-height: 1.4; }
+  .feedAmount { font-size: .9rem; }
+  #unifiedStatementCard > .two { grid-template-columns: 1fr; gap: 10px; }
+  #statementFeedFilters { display: flex; flex-wrap: wrap; overflow: visible !important; }
+  #unifiedStatementFeed { max-height: none !important; overflow: visible; }
+  .sheetCard { padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); gap: 12px; }
+  .sheetField { gap: 6px; }
+  .dvMetaRight { gap: 8px; flex-wrap: wrap; }
+  .dvCardLine1 { align-items: flex-start; }
+  .dvPersonNameWrap { gap: 6px; }
+#investFormBox { scroll-margin-top: 16px; }
+  #statementPage .hist.inner:has(.statementEditor) { max-height: none; overflow: visible; }
+}
+@media (max-width: 360px) {
+  .touch-favorites { grid-template-columns: 1fr; }
+  .dvCardLine1 { flex-wrap: wrap; }
+  .dvCardAmount { margin-left: auto; }
+  .touch-fab-label { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
