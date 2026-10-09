@@ -100,6 +100,8 @@ foreach ($key in $ordered) {
 Set-Content -Path $EnvPath -Value $envLines -Encoding UTF8
 
 $tarSource = @(
+    "assets/touch-ui.css",
+    "assets/touch-ui.js",
     ".env.example",
     ".gitignore",
     "api_server.py",
