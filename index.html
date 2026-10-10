@@ -1186,12 +1186,29 @@ body[data-privacy="on"] #investTotalDisplay {
 
 
 /* === EXTRATO REVOLUT / APPLE WALLET STYLE === */
+#statementMainCard {
+  padding: 16px 14px 32px 14px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(180deg, rgba(16, 26, 20, 0.94) 0%, rgba(10, 16, 13, 0.98) 100%) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  margin-bottom: 16px !important;
+  transition: all 0.2s ease !important;
+}
+
+@media(max-width: 480px) {
+  #statementMainCard {
+    padding: 14px 12px 32px 12px !important;
+    border-radius: 18px !important;
+  }
+}
+
 .statementWalletNav {
   display: flex !important;
   gap: 6px !important;
   overflow-x: auto !important;
-  padding: 4px 2px 8px 2px !important;
-  margin-bottom: 6px !important;
+  padding: 2px 2px 8px 2px !important;
+  margin-bottom: 8px !important;
   -webkit-overflow-scrolling: touch !important;
   scrollbar-width: none !important;
 }
@@ -1200,8 +1217,8 @@ body[data-privacy="on"] #investTotalDisplay {
 .walletPill {
   padding: 7px 14px !important;
   border-radius: 999px !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  background: rgba(255,255,255,0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
   color: var(--mut) !important;
   font: 700 0.78rem var(--font-ui) !important;
   white-space: nowrap !important;
@@ -1210,48 +1227,59 @@ body[data-privacy="on"] #investTotalDisplay {
   flex-shrink: 0 !important;
 }
 .walletPill.active {
-  background: rgba(57,255,143,0.15) !important;
+  background: rgba(57, 255, 143, 0.15) !important;
   color: #fff !important;
-  border-color: rgba(57,255,143,0.4) !important;
-  box-shadow: 0 0 14px rgba(57,255,143,0.2) !important;
+  border-color: rgba(57, 255, 143, 0.4) !important;
+  box-shadow: 0 0 14px rgba(57, 255, 143, 0.2) !important;
 }
 
 .statementSummaryBox {
-  background: rgba(255,255,255,0.025) !important;
-  border: 1px solid rgba(255,255,255,0.06) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
   border-radius: 14px !important;
-  padding: 10px 14px !important;
+  padding: 10px 6px !important;
   display: flex !important;
   justify-content: space-around !important;
   align-items: center !important;
-  gap: 12px !important;
-  margin-bottom: 6px !important;
+  gap: 4px !important;
+  margin-bottom: 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 .statementSummaryCol {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   gap: 2px !important;
   text-align: center !important;
+  padding: 0 2px !important;
 }
 .statementSummaryCol span {
-  font-size: 0.66rem !important;
+  font-size: 0.62rem !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: 0.04em !important;
   color: var(--mut) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
 }
 .statementSummaryCol strong {
   font-family: var(--font-display) !important;
-  font-size: 1.05rem !important;
+  font-size: 0.92rem !important;
   font-weight: 800 !important;
   letter-spacing: -0.02em !important;
+  white-space: nowrap !important;
 }
 
 .statementSearchBox {
   position: relative !important;
   display: flex !important;
   align-items: center !important;
+  margin-bottom: 8px !important;
 }
 .statementSearchBox .searchIcon {
   position: absolute !important;
@@ -1264,16 +1292,16 @@ body[data-privacy="on"] #investTotalDisplay {
   width: 100% !important;
   padding: 9px 34px 9px 36px !important;
   border-radius: 12px !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  background: rgba(0,0,0,0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: rgba(0, 0, 0, 0.28) !important;
   color: #fff !important;
-  font-size: 0.85rem !important;
+  font-size: 0.84rem !important;
   font-weight: 600 !important;
 }
 .statementSearchBox input:focus {
-  border-color: rgba(57,255,143,0.4) !important;
+  border-color: rgba(57, 255, 143, 0.4) !important;
   outline: none !important;
-  box-shadow: 0 0 12px rgba(57,255,143,0.15) !important;
+  box-shadow: 0 0 12px rgba(57, 255, 143, 0.15) !important;
 }
 .clearSearchBtn {
   position: absolute !important;
@@ -1287,10 +1315,78 @@ body[data-privacy="on"] #investTotalDisplay {
 }
 
 .statementFeedContainer {
-  margin-top: 6px !important;
+  margin-top: 4px !important;
   display: flex !important;
   flex-direction: column !important;
+  gap: 3px !important;
+}
+
+.statementDateHeader {
+  display: inline-flex !important;
+  align-self: flex-start !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 10px 4px 4px 4px !important;
+  font-size: 0.70rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: var(--mut) !important;
+}
+
+.feedRow {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+  align-items: center !important;
+  padding: 9px 10px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.055) !important;
+  margin-bottom: 3px !important;
+  transition: all 0.15s ease !important;
+}
+.feedRow:active {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(57, 255, 143, 0.25) !important;
+  transform: scale(0.995) !important;
+}
+.feedIcon {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 9px !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 0.92rem !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  flex-shrink: 0 !important;
+}
+.feedBody {
+  display: grid !important;
   gap: 2px !important;
+  min-width: 0 !important;
+}
+.feedTitle {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: var(--txt) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.feedSubtitle {
+  font-size: 0.68rem !important;
+  color: var(--mut) !important;
+}
+.feedAmount {
+  font-family: var(--font-display) !important;
+  font-size: 0.94rem !important;
+  font-weight: 800 !important;
+  text-align: right !important;
+  white-space: nowrap !important;
 }
 
 .walletBadge {
@@ -1301,6 +1397,7 @@ body[data-privacy="on"] #investTotalDisplay {
   font-weight: 700 !important;
   margin-left: 6px !important;
   vertical-align: middle !important;
+  flex-shrink: 0 !important;
 }
 .walletBadge.conta { background: rgba(57,255,143,0.15) !important; color: #39ff8f !important; border: 1px solid rgba(57,255,143,0.3) !important; }
 .walletBadge.credit { background: rgba(179,136,255,0.15) !important; color: #b388ff !important; border: 1px solid rgba(179,136,255,0.3) !important; }
@@ -1308,7 +1405,6 @@ body[data-privacy="on"] #investTotalDisplay {
 .walletBadge.vale2 { background: rgba(255,82,82,0.15) !important; color: #ff5252 !important; border: 1px solid rgba(255,82,82,0.3) !important; }
 .walletBadge.invest { background: rgba(0,229,255,0.15) !important; color: #00e5ff !important; border: 1px solid rgba(0,229,255,0.3) !important; }
 .walletBadge.goal { background: rgba(255,214,0,0.15) !important; color: #ffd600 !important; border: 1px solid rgba(255,214,0,0.3) !important; }
-
 </style>
 </head>
 <body data-theme="dark">
@@ -1323,7 +1419,7 @@ body[data-privacy="on"] #investTotalDisplay {
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.6</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.7</span>
               <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub"><span class="liveDot"></span>sincronizado com telegram</span>
@@ -8860,14 +8956,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v31'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v32'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v31');
+      sessionStorage.setItem('sw_ctrl_reload','v32');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=31', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=32', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
