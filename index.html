@@ -815,6 +815,375 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
 }
 
 /* FIM FINTECH */
+
+/* === ULTRA FINTECH THEME & GLASSMORPHISM === */
+
+/* Correção do dock flutuante e botão FAB */
+[data-page="goals"], .navBtn[data-page="goals"] {
+  display: none !important;
+}
+
+.dock {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  padding: 6px 6px !important;
+  width: calc(100vw - 24px) !important;
+  max-width: 520px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: max(14px, env(safe-area-inset-bottom)) !important;
+  border-radius: 22px !important;
+  z-index: 90 !important;
+}
+
+.fabQuickAdd {
+  bottom: calc(84px + env(safe-area-inset-bottom)) !important;
+  right: 14px !important;
+  z-index: 95 !important;
+  box-shadow: 0 10px 24px rgba(18, 138, 76, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+@keyframes livePulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.6; box-shadow: 0 0 4px #39ff8f; }
+  50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #39ff8f; }
+}
+@keyframes cardSheen {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(200%) rotate(25deg); }
+}
+
+.liveDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #39ff8f;
+  box-shadow: 0 0 8px #39ff8f;
+  animation: livePulse 2.2s infinite ease-in-out;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* Micro-interação de toque háptico visual em todos os botões e cards */
+button, .btn, .navBtn, .quick, .filterChip, .iconBtn, .heroBox {
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease, filter 0.12s ease !important;
+}
+button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .iconBtn:active, .heroBox:active {
+  transform: scale(0.96) !important;
+}
+
+/* Top Actions Glassmorphism */
+.topActions {
+  gap: 6px !important;
+}
+.topActions button {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+}
+.topActions button:hover {
+  background: rgba(255, 255, 255, 0.065) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Cards com Vidro Escuro e Borda Refinada */
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(180deg, rgba(16, 24, 20, 0.88) 0%, rgba(10, 16, 13, 0.94) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Hero Card Premium */
+.hero {
+  border: 1px solid rgba(57, 255, 143, 0.25) !important;
+  background: radial-gradient(circle at 50% 0%, rgba(57, 255, 143, 0.09), transparent 75%), linear-gradient(160deg, rgba(14, 26, 20, 0.96) 0%, rgba(9, 16, 12, 0.98) 100%) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  border-radius: 18px !important;
+  padding: 14px 14px 12px 14px !important;
+}
+.heroKpi {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  margin-top: 10px !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  padding: 4px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+.heroBox {
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 10px !important;
+  padding: 8px 6px !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  text-align: center !important;
+}
+.heroBox .mini {
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--mut) !important;
+  display: block !important;
+  margin-bottom: 2px !important;
+}
+.heroBox strong {
+  font-size: 1.05rem !important;
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Quick Action Pills Estilizados */
+.quickRow {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin-top: 10px !important;
+}
+.quick {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 9px 12px !important;
+  border-radius: 12px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+.quick[data-quick="expense"] {
+  border: 1px solid rgba(255, 95, 112, 0.35) !important;
+  background: linear-gradient(180deg, rgba(38, 18, 24, 0.88), rgba(20, 10, 14, 0.94)) !important;
+  color: #ff9daa !important;
+}
+.quick[data-quick="income"] {
+  border: 1px solid rgba(57, 255, 143, 0.35) !important;
+  background: linear-gradient(180deg, rgba(16, 36, 26, 0.88), rgba(9, 20, 15, 0.94)) !important;
+  color: #7effb9 !important;
+}
+.quick[data-quick="card"] {
+  border: 1px solid rgba(179, 136, 255, 0.35) !important;
+  background: linear-gradient(180deg, rgba(30, 18, 44, 0.88), rgba(16, 10, 26, 0.94)) !important;
+  color: #d6b8ff !important;
+}
+.quick[data-quick="debtor"] {
+  border: 1px solid rgba(0, 229, 255, 0.35) !important;
+  background: linear-gradient(180deg, rgba(14, 32, 42, 0.88), rgba(8, 18, 24, 0.94)) !important;
+  color: #85ebff !important;
+}
+
+/* Carteiras de Contas e Saldos */
+.fcard {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  padding: 12px 14px !important;
+  background: linear-gradient(180deg, rgba(20, 28, 24, 0.85), rgba(12, 18, 15, 0.92)) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.fcard[data-acc="conta"] {
+  border-color: rgba(57, 255, 143, 0.22) !important;
+  background: radial-gradient(circle at 100% 0%, rgba(57, 255, 143, 0.06), transparent 50%), linear-gradient(180deg, rgba(18, 28, 22, 0.9), rgba(10, 18, 14, 0.95)) !important;
+}
+.fcard[data-acc="vale1"] {
+  border-color: rgba(255, 159, 67, 0.25) !important;
+  background: radial-gradient(circle at 100% 0%, rgba(255, 159, 67, 0.07), transparent 50%), linear-gradient(180deg, rgba(32, 24, 18, 0.9), rgba(18, 14, 10, 0.95)) !important;
+}
+.fcard[data-acc="vale2"] {
+  border-color: rgba(255, 82, 82, 0.25) !important;
+  background: radial-gradient(circle at 100% 0%, rgba(255, 82, 82, 0.07), transparent 50%), linear-gradient(180deg, rgba(32, 18, 20, 0.9), rgba(18, 10, 12, 0.95)) !important;
+}
+.fcard .bal {
+  font-size: 1.45rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  color: #fff !important;
+  margin: 4px 0 8px 0 !important;
+}
+.fcard input {
+  background: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 9px !important;
+  color: #fff !important;
+}
+
+/* Cartão Virtual weedverso Black Metal */
+.virtualCard {
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 18px !important;
+  padding: 16px 18px !important;
+  background: linear-gradient(135deg, #1c2720 0%, #101914 45%, #080d0a 100%) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.8) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.virtualCard::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -50% !important;
+  left: -50% !important;
+  width: 200% !important;
+  height: 200% !important;
+  background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.06) 50%, transparent 60%) !important;
+  pointer-events: none !important;
+}
+.virtualCardChip {
+  display: inline-block !important;
+  width: 32px !important;
+  height: 24px !important;
+  border-radius: 5px !important;
+  background: linear-gradient(135deg, #f3d790 0%, #c99e32 50%, #997818 100%) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 6px rgba(0,0,0,0.4) !important;
+  border: 1px solid rgba(201, 158, 50, 0.6) !important;
+}
+.virtualCardNumber {
+  font-family: var(--font-display) !important;
+  font-size: 1.8rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  color: #fff !important;
+}
+.virtualCardStatus.ok {
+  background: rgba(57, 255, 143, 0.16) !important;
+  color: #39ff8f !important;
+  border: 1px solid rgba(57, 255, 143, 0.35) !important;
+  box-shadow: 0 0 12px rgba(57, 255, 143, 0.2) !important;
+}
+
+/* Feed do Extrato Apple Wallet / Revolut Style */
+.feedRow {
+  display: grid !important;
+  grid-template-columns: 40px 1fr auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding: 10px 12px !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  margin-bottom: 7px !important;
+}
+.feedIcon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 1.15rem !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+.feedTitle {
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+.feedSubtitle {
+  font-size: 0.72rem !important;
+  color: var(--mut) !important;
+}
+.feedAmount {
+  font-family: var(--font-display) !important;
+  font-size: 0.98rem !important;
+  font-weight: 800 !important;
+}
+.statementDateHeader {
+  display: inline-block !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  padding: 3px 10px !important;
+  border-radius: 8px !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--mut) !important;
+  margin: 12px 0 6px 0 !important;
+}
+
+/* Floating Glass Dock (Menu Inferior Flutuante) */
+.dock {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: max(14px, env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  width: calc(100vw - 24px) !important;
+  max-width: 520px !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+  padding: 6px 6px !important;
+  padding-bottom: 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 22px !important;
+  background: rgba(10, 16, 13, 0.88) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  z-index: 99 !important;
+}
+.navBtn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  padding: 7px 4px !important;
+  border: 1px solid transparent !important;
+  border-radius: 14px !important;
+  background: transparent !important;
+  color: var(--mut) !important;
+  font: 700 0.68rem var(--font-ui) !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  position: relative !important;
+}
+.navBtn .navIcon {
+  font-size: 1.15rem !important;
+  line-height: 1 !important;
+}
+.navBtn.active {
+  background: rgba(57, 255, 143, 0.12) !important;
+  color: #fff !important;
+  border-color: rgba(57, 255, 143, 0.3) !important;
+  box-shadow: inset 0 1px 0 rgba(57, 255, 143, 0.2), 0 0 16px rgba(57, 255, 143, 0.15) !important;
+}
+.navBtn.active::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 2px !important;
+  width: 4px !important;
+  height: 4px !important;
+  border-radius: 50% !important;
+  background: #39ff8f !important;
+  box-shadow: 0 0 6px #39ff8f !important;
+}
+
+/* Modo Privacidade com Frosted Blur */
+body[data-privacy="on"] [data-bal],
+body[data-privacy="on"] .ft-amount,
+body[data-privacy="on"] .virtualCardNumber,
+body[data-privacy="on"] .bal,
+body[data-privacy="on"] .feedAmount,
+body[data-privacy="on"] #heroBalance,
+body[data-privacy="on"] #heroInvested,
+body[data-privacy="on"] #heroDebt,
+body[data-privacy="on"] #investTotalDisplay {
+  filter: blur(7px) !important;
+  user-select: none !important;
+  opacity: 0.85 !important;
+  transition: filter 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
 </style>
 </head>
 <body data-theme="dark">
@@ -829,10 +1198,10 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.2</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.3</span>
               <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
-            <span class="brandSub">sincronizado com telegram</span>
+            <span class="brandSub"><span class="liveDot"></span>sincronizado com telegram</span>
           </div>
         </div>
         <div class="topActions">
