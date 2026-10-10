@@ -1198,7 +1198,7 @@ body[data-privacy="on"] #investTotalDisplay {
           <div class="brandText">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <h1 id="appName">weedverso</h1>
-              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.3</span>
+              <span class="statusPill" style="color:#39ff8f;border-color:rgba(57,255,143,.4);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.4</span>
               <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
             </div>
             <span class="brandSub"><span class="liveDot"></span>sincronizado com telegram</span>
@@ -2614,7 +2614,7 @@ function bind(){
         }
       }catch(e){}
       setTimeout(function(){
-        window.location.href = window.location.pathname + '?v=' + Date.now();
+        window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
       },250);
     });
   }
@@ -8489,14 +8489,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v25'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v29'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v25');
-      window.location.href = window.location.pathname + '?v=' + Date.now();
+      sessionStorage.setItem('sw_ctrl_reload','v29');
+      window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=25', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=29', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
