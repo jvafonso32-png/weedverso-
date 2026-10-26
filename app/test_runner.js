@@ -12,7 +12,7 @@ const fakeEl = {
   querySelector: () => fakeEl,
   querySelectorAll: () => [],
   addEventListener: () => {},
-  classList: { add: ()=>{}, remove: ()=>{}, toggle: ()=>{} },
+  classList: { add: ()=>{}, remove: ()=>{}, toggle: ()=>{}, contains: ()=>false },
   setAttribute: () => {},
   removeAttribute: () => {},
   dataset: {},
@@ -60,10 +60,15 @@ if (!errored) {
     if (typeof renderAll === 'function') {
       renderAll();
       console.log('renderAll passed without throwing!');
+      process.exit(0);
     } else {
       console.error('renderAll not found in evaluated JS');
+      process.exit(1);
     }
   } catch (e) {
     console.error('RUNTIME ERROR:', e);
+    process.exit(1);
   }
+} else {
+  process.exit(1);
 }

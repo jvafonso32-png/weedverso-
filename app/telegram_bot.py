@@ -35,6 +35,7 @@ from shared_state import (
     resolve_balance_key,
     titleize_words,
     using_state_file,
+    STATE_FILE_OVERRIDE,
 )
 from telegram_chats import latest_chat_id, read_chats, register_chat
 from telegram_runtime import (
@@ -2048,12 +2049,10 @@ def route_message(message):
 
     if text.startswith("/"):
         command = text.split()[0].split("@")[0].lower()
-        if command in {"/investir", "/aporte", "/resgate", "/retirar", "/investido", "/investimentos"}:
-        return chat_id, handle_invest_command(command, args, persist=persist_changes)
-    if command in {"/modoteste", "/modo_teste", "/testemode"}:
+        if command in {"/modoteste", "/modo_teste", "/testemode"}:
             return _route_message_impl(message)
 
-    should_trigger_sync = not telegram_test_mode_enabled()
+    should_trigger_sync = not telegram_test_mode_enabled() and getattr(STATE_FILE_OVERRIDE, "path", None) is None
     if should_trigger_sync:
         try:
             import sync_github_gist

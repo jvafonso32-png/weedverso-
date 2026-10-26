@@ -1,5 +1,7 @@
 import copy
 import json
+import os
+import tempfile
 import threading
 import unicodedata
 from contextlib import contextmanager
@@ -480,8 +482,19 @@ def write_state(state):
     state_file = _active_state_file()
     _ensure_storage_for_file(state_file)
     normalized = normalize_state(state)
+    payload_str = json.dumps(normalized, ensure_ascii=False, indent=2)
     with LOCK:
-        state_file.write_text(json.dumps(normalized, ensure_ascii=False, indent=2), encoding="utf-8")
+        temp_file = tempfile.NamedTemporaryFile("w", dir=state_file.parent, delete=False, encoding="utf-8")
+        try:
+            temp_file.write(payload_str)
+            temp_file.flush()
+            os.fsync(temp_file.fileno())
+            temp_file.close()
+            os.replace(temp_file.name, state_file)
+        except Exception:
+            if os.path.exists(temp_file.name):
+                os.remove(temp_file.name)
+            raise
     return normalized
 
 
@@ -560,12 +573,12 @@ def _recompute_wallet_balances(state, baselines=None):
         tx_type = str(item.get("type") or "")
         value = abs(safe_float(item.get("value"), 0))
         if tx_type == "set":
-            item["prev"] = safe_float(balances[account].get("amount"), 0)
-            balances[account]["amount"] = value
+            item["prev"] = round(safe_float(balances[account].get("amount"), 0), 2)
+            balances[account]["amount"] = round(value, 2)
         elif tx_type == "in":
-            balances[account]["amount"] = safe_float(balances[account].get("amount"), 0) + value
+            balances[account]["amount"] = round(safe_float(balances[account].get("amount"), 0) + value, 2)
         elif tx_type == "out":
-            balances[account]["amount"] = safe_float(balances[account].get("amount"), 0) - value
+            balances[account]["amount"] = round(safe_float(balances[account].get("amount"), 0) - value, 2)
 
 
 def _recompute_credit_state(state):
@@ -577,13 +590,13 @@ def _recompute_credit_state(state):
         value = abs(safe_float(item.get("value"), 0))
         tx_type = str(item.get("type") or "")
         if tx_type == "expense":
-            credit["used"] += value
+            credit["used"] = round(credit["used"] + value, 2)
         elif tx_type == "payment":
-            credit["used"] = max(0.0, credit["used"] - value)
+            credit["used"] = round(max(0.0, credit["used"] - value), 2)
         elif tx_type == "reserve-in":
-            credit["reserved"] += value
+            credit["reserved"] = round(credit["reserved"] + value, 2)
         elif tx_type == "reserve-out":
-            credit["reserved"] = max(0.0, credit["reserved"] - value)
+            credit["reserved"] = round(max(0.0, credit["reserved"] - value), 2)
 
 
 def _recompute_goal_saved(goal):
@@ -594,9 +607,9 @@ def _recompute_goal_saved(goal):
     for item in _sorted_by_at(goal["tx"]):
         value = abs(safe_float(item.get("value"), 0))
         if item.get("type") == "withdraw":
-            goal["saved"] = max(0.0, safe_float(goal.get("saved"), 0) - value)
+            goal["saved"] = round(max(0.0, safe_float(goal.get("saved"), 0) - value), 2)
         else:
-            goal["saved"] = safe_float(goal.get("saved"), 0) + value
+            goal["saved"] = round(safe_float(goal.get("saved"), 0) + value, 2)
 
 
 def _resolve_named_entry(items, raw_name, item_label):

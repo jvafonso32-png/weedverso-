@@ -187,10 +187,11 @@ class WeedversoHandler(BaseHTTPRequestHandler):
         return False
 
     def _client_ip(self):
+        direct_ip = str(self.client_address[0] if self.client_address else "").strip()
         forwarded = str(self.headers.get("X-Forwarded-For", "")).split(",", 1)[0].strip()
-        if forwarded:
+        if forwarded and loopback_host(direct_ip):
             return forwarded
-        return str(self.client_address[0] if self.client_address else "").strip() or "unknown"
+        return direct_ip or "unknown"
 
     def _login_block_seconds(self):
         cleanup_login_attempts()

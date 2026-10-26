@@ -2519,6 +2519,7 @@ const GIST_SYNC={
     }
   },
   schedulePush:function(){
+    if(typeof serverSync!=='undefined' && serverSync && serverSync.available) return;
     if(!this.hasToken()) return;
     if(this.pushTimer) clearTimeout(this.pushTimer);
     this.pushTimer=setTimeout(()=>this.push(),1200);
@@ -2736,7 +2737,7 @@ function loginLocation(){
 }
 async function ensureSessionAccess(){
   try{
-    const res=await fetch(`${API_BASE}/api/session`,{credentials:'same-origin'});
+    const res=await fetch(`${API_BASE}/api/session`,{credentials:'include'});
     if(!res.ok) return true;
     const data=await res.json();
     if(data && data.authEnabled && !data.authenticated){
@@ -5901,7 +5902,7 @@ function renderCreditDescChart(){
   
   // Ocultar qualquer canvas antigo caso exista no DOM
   if (el.ccDescChart) el.ccDescChart.style.display = 'none';
-  if (el.ccDescChart && el.ccDescChart.parentNode && el.ccDescChart.parentNode.classList.contains('chartShell')) {
+  if (el.ccDescChart && el.ccDescChart.parentNode && el.ccDescChart.parentNode.classList && el.ccDescChart.parentNode.classList.contains('chartShell')) {
     el.ccDescChart.parentNode.style.display = 'none';
   }
   
@@ -6289,7 +6290,8 @@ function renderFinance(){
 
 function move(acc,type,value,note){
   if(!st.balances[acc]) return;
-  st.balances[acc].amount += type==='in'?value:-value;
+  const delta = type==='in'?Number(value):-Number(value);
+  st.balances[acc].amount = roundMoneyValue((Number(st.balances[acc].amount)||0) + delta);
   const meta=categoryMeta(note,'Sem categoria');
   st.tx.unshift({id:id(),account:acc,type,value,note:txt(note,42),category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
   haptic('medium');
@@ -8922,8 +8924,8 @@ function days(a,b){const A=parse(a),B=parse(b);return Math.round((B-A)/86400000)
 function id(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-5);} 
 function defLabel(k){return k==='vale1'?'VA Mercado':k==='vale2'?'VA Refeição':'Saldo em Conta';}
 function txt(v,m){return String(v||'').replace(/\s+/g,' ').trim().slice(0,m);} 
-function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function safe(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function safe(v){return esc(v);}
 function initial(n){return (n||'U').trim().charAt(0).toUpperCase();}
 window.showPage=showPage;
 window.addEventListener('hashchange',function(){

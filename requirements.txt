@@ -1,0 +1,9 @@
+# Weedverso Runtime Dependencies
+# Python >= 3.10 required
+# 
+# The application currently relies 100% on Python Standard Library:
+# - http.server, urllib.request, urllib.parse
+# - json, hashlib, hmac, secrets
+# - threading, time, datetime, pathlib, tempfile
+# 
+# No third-party pip packages are strictly required to run standalone.

@@ -20,8 +20,7 @@ $RootFiles = @(
     "TESTAR WEEDVERSO.cmd",
     "weedverso.cmd",
     "index.html",
-    "shared_state.py",
-    "shared_state_new.py"
+    "shared_state.py"
 )
 
 $AppExcludedDirs = @(
