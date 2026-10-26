@@ -2793,8 +2793,16 @@ function loginLocation(){
 }
 
 const AUTH_KEY = 'weedverso_julia_auth_token';
-const VALID_USER = 'juliaquist';
-const VALID_PASS = 'achadanapampulha';
+const VALID_USER_HASH = 'cc7af0e6216e3052e6603ec55cd8a54de9f805ef832c3556379d1bca6e5d0c11';
+const VALID_PASS_HASH = '798b4f09b79e1765af747c0b483b9a83d4329593bfeb1965adbb5b73994f29fb';
+
+async function sha256Hex(str) {
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  return str;
+}
 
 function isUserAuthenticated() {
   try {
@@ -2804,14 +2812,28 @@ function isUserAuthenticated() {
   }
 }
 
-function handleLoginSubmit(e) {
+let loginAttempts = 0;
+let lockoutUntil = 0;
+
+async function handleLoginSubmit(e) {
   if (e) e.preventDefault();
+  const now = Date.now();
+  const msgEl = document.getElementById('gateMsg');
+  if (now < lockoutUntil) {
+    const remaining = Math.ceil((lockoutUntil - now) / 1000);
+    msgEl.style.display = 'block';
+    msgEl.textContent = 'Muitas tentativas. Aguarde ' + remaining + 's.';
+    return;
+  }
+
   const u = (document.getElementById('gateUser').value || '').trim().toLowerCase();
   const p = (document.getElementById('gatePass').value || '').trim();
   const remember = document.getElementById('gateRemember').checked;
-  const msgEl = document.getElementById('gateMsg');
   
-  if (u === VALID_USER && p === VALID_PASS) {
+  const [uHash, pHash] = await Promise.all([sha256Hex(u), sha256Hex(p)]);
+
+  if (uHash === VALID_USER_HASH && pHash === VALID_PASS_HASH) {
+    loginAttempts = 0;
     if (remember) {
       localStorage.setItem(AUTH_KEY, 'authenticated');
     } else {
@@ -2824,8 +2846,15 @@ function handleLoginSubmit(e) {
     if (app) app.style.display = 'grid';
     boot();
   } else {
-    msgEl.style.display = 'block';
-    msgEl.textContent = 'Usuário ou senha incorretos.';
+    loginAttempts++;
+    if (loginAttempts >= 5) {
+      lockoutUntil = Date.now() + 30000;
+      msgEl.style.display = 'block';
+      msgEl.textContent = 'Muitas tentativas incorretas. Aguarde 30 segundos.';
+    } else {
+      msgEl.style.display = 'block';
+      msgEl.textContent = 'Usuário ou senha incorretos.';
+    }
     haptic('error');
   }
 }
