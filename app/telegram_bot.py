@@ -38,6 +38,15 @@ from shared_state import (
     STATE_FILE_OVERRIDE,
 )
 from telegram_chats import latest_chat_id, read_chats, register_chat
+from weedverso_paths import persistent_data_root
+
+JOAO_STATE_FILE = persistent_data_root() / "shared_state.json"
+JULIA_STATE_FILE = persistent_data_root() / "julia_state.json"
+
+CURRENT_USER_CONTEXT = threading.local()
+
+def current_user():
+    return getattr(CURRENT_USER_CONTEXT, "user", "joao")
 from telegram_runtime import (
     clear_telegram_test_state,
     read_runtime,
@@ -48,10 +57,10 @@ from telegram_runtime import (
 
 try:
     import sync_github_gist
-    def trigger_background_push(reason="telegram"):
-        return sync_github_gist.trigger_push_async(reason=reason)
+    def trigger_background_push(reason="telegram", user="joao"):
+        return sync_github_gist.trigger_push_async(reason=reason, user=user)
 except Exception:
-    def trigger_background_push(reason="telegram"):
+    def trigger_background_push(reason="telegram", user="joao"):
         return False
 
 
@@ -504,6 +513,11 @@ def schedule_user_message_cleanup(chat_id, message_id, delay_seconds=None):
     return schedule_delete_message(chat_id, message_id, delay_seconds=delay_seconds)
 
 
+def julia_chat_ids():
+    raw = os.getenv("TELEGRAM_JULIA_CHAT_ID", "").strip()
+    return {item.strip() for item in raw.split(",") if item.strip()}
+
+
 def allowed_chat_ids():
     if ALLOWED_CHAT_IDS:
         return set(ALLOWED_CHAT_IDS)
@@ -515,11 +529,18 @@ def allowed_chat_ids():
     return {item for item in fallback if item}
 
 
+def resolve_user(chat_id):
+    chat_str = str(chat_id or "").strip()
+    if chat_str in julia_chat_ids():
+        return "julia"
+    allowed_joao = allowed_chat_ids()
+    if chat_str in allowed_joao:
+        return "joao"
+    return None
+
+
 def is_allowed(chat_id):
-    allowed = allowed_chat_ids()
-    if not allowed:
-        return False
-    return str(chat_id) in allowed
+    return resolve_user(chat_id) is not None
 
 
 def parse_amount(raw_value):
@@ -1103,6 +1124,8 @@ def format_my_debts():
 
 
 def format_share_link():
+    if current_user() == "julia":
+        return "https://jvafonso32-png.github.io/weedverso-/julia/"
     info = current_share_info()
     preferred = str(((info or {}).get("links") or {}).get("preferred") or "").strip()
     if not preferred:
@@ -2047,37 +2070,44 @@ def route_message(message):
     if not text:
         return chat_id, "Envie um comando. Use /help para ver os exemplos."
 
+    user = resolve_user(chat_id) or "joao"
+    CURRENT_USER_CONTEXT.user = user
+    state_file = JULIA_STATE_FILE if user == "julia" else JOAO_STATE_FILE
+
     if text.startswith("/"):
         command = text.split()[0].split("@")[0].lower()
         if command in {"/modoteste", "/modo_teste", "/testemode"}:
-            return _route_message_impl(message)
+            with using_state_file(state_file):
+                return _route_message_impl(message)
 
     should_trigger_sync = not telegram_test_mode_enabled() and getattr(STATE_FILE_OVERRIDE, "path", None) is None
-    if should_trigger_sync:
-        try:
-            import sync_github_gist
-            sync_github_gist.pull_from_gist(force=False, max_age_seconds=8.0)
-        except Exception as exc:
-            print(f"Aviso sync Gist pre-comando: {exc}")
 
-    before_snapshot = ""
-    if should_trigger_sync:
-        before_snapshot = current_state_snapshot()
-
-    if telegram_test_mode_enabled():
-        seed_state = read_state()
-        with using_state_file(telegram_test_state_file(chat_id), seed_state=seed_state):
-            return _route_message_impl(message)
-
-    result = _route_message_impl(message)
-    if should_trigger_sync:
-        after_snapshot = current_state_snapshot()
-        if after_snapshot and after_snapshot != before_snapshot:
+    with using_state_file(state_file):
+        if should_trigger_sync:
             try:
-                trigger_background_push("telegram")
-            except Exception:
-                pass
-    return result
+                import sync_github_gist
+                sync_github_gist.pull_from_gist(user=user, force=False, max_age_seconds=8.0)
+            except Exception as exc:
+                print(f"Aviso sync Gist pre-comando ({user}): {exc}")
+
+        before_snapshot = ""
+        if should_trigger_sync:
+            before_snapshot = current_state_snapshot()
+
+        if telegram_test_mode_enabled():
+            seed_state = read_state()
+            with using_state_file(telegram_test_state_file(chat_id), seed_state=seed_state):
+                return _route_message_impl(message)
+
+        result = _route_message_impl(message)
+        if should_trigger_sync:
+            after_snapshot = current_state_snapshot()
+            if after_snapshot and after_snapshot != before_snapshot:
+                try:
+                    trigger_background_push("telegram", user=user)
+                except Exception:
+                    pass
+        return result
 
 
 def run_bot():
@@ -2113,7 +2143,12 @@ def run_bot():
                 if not chat_id:
                     continue
                 if not is_allowed(chat_id):
-                    send_message(chat_id, "Este chat nao esta autorizado para o bot weedverso.")
+                    register_chat(chat)
+                    send_message(
+                        chat_id,
+                        f"🔒 Olá! Seu Chat ID no Telegram é: `{chat_id}`\n\n"
+                        f"Para ativar o bot no seu perfil (João ou Júlia), adicione este número no arquivo de configuração."
+                    )
                     schedule_user_message_cleanup(chat_id, message.get("message_id"))
                     continue
                 register_chat(chat)
