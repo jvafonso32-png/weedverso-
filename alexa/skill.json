@@ -1,0 +1,26 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "pt-BR": {
+          "summary": "Controle financeiro pessoal por voz do Weedverso.",
+          "examplePhrases": [
+            "Alexa, abra o Weedverso",
+            "Alexa, pergunte ao Weedverso qual o meu saldo",
+            "Alexa, peça ao Weedverso para registrar trinta e cinco reais no almoço"
+          ],
+          "name": "Weedverso",
+          "description": "Skill para consultar saldos e registrar entradas e despesas no Weedverso por comandos de voz de forma instantânea e conectada ao seu banco na nuvem."
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Skill de uso pessoal para automação de finanças.",
+      "category": "ORGANIZERS_AND_ASSISTANTS",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {}
+    },
+    "manifestVersion": "1.0"
+  }
+}

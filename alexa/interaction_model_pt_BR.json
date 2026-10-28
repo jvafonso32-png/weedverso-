@@ -1,0 +1,255 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "weedverso",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": [
+            "cancelar",
+            "esquece",
+            "cancela",
+            "deixa pra lá",
+            "deixa quieto"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "ajuda",
+            "o que você pode fazer",
+            "como funciona",
+            "me ajuda"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+            "parar",
+            "sair",
+            "tchau",
+            "fechar",
+            "encerra"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "ConsultarSaldoIntent",
+          "slots": [
+            {
+              "name": "carteira",
+              "type": "CARTEIRA_TIPO"
+            }
+          ],
+          "samples": [
+            "quanto eu tenho",
+            "quanto tenho",
+            "quanto tenho de saldo",
+            "quanto sobrou",
+            "quanto sobrou na conta",
+            "quanto restou",
+            "qual o meu saldo",
+            "qual é o meu saldo",
+            "meu saldo",
+            "saldo",
+            "saldos",
+            "ver saldo",
+            "consultar saldo",
+            "quanto eu tenho no {carteira}",
+            "quanto eu tenho na {carteira}",
+            "quanto tenho no {carteira}",
+            "quanto tenho na {carteira}",
+            "qual é o saldo do {carteira}",
+            "qual é o saldo da {carteira}",
+            "qual o saldo do {carteira}",
+            "qual o saldo da {carteira}",
+            "quanto sobrou no {carteira}",
+            "quanto sobrou na {carteira}",
+            "saldo do {carteira}",
+            "saldo da {carteira}"
+          ]
+        },
+        {
+          "name": "RegistrarGastoIntent",
+          "slots": [
+            {
+              "name": "valor",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "carteira",
+              "type": "CARTEIRA_TIPO"
+            },
+            {
+              "name": "descricao",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "gastei {valor} reais",
+            "gastei {valor} reais em {descricao}",
+            "gastei {valor} reais no {carteira}",
+            "gastei {valor} reais na {carteira}",
+            "gastei {valor} reais de {descricao}",
+            "gastei {valor} reais com {descricao}",
+            "gastei {valor} reais com {descricao} no {carteira}",
+            "gastei {valor} reais com {descricao} na {carteira}",
+            "gastei {valor} reais em {descricao} no {carteira}",
+            "gastei {valor} reais em {descricao} na {carteira}",
+            "comprei {descricao} por {valor} reais",
+            "comprei {descricao} por {valor} reais no {carteira}",
+            "comprei {descricao} por {valor} reais na {carteira}",
+            "paguei {valor} reais",
+            "paguei {valor} reais de {descricao}",
+            "paguei {valor} reais em {descricao}",
+            "paguei {valor} reais no {carteira}",
+            "paguei {valor} reais na {carteira}",
+            "paguei {valor} reais de {descricao} no {carteira}",
+            "paguei {valor} reais de {descricao} na {carteira}",
+            "saída de {valor} reais",
+            "saída de {valor} reais em {descricao}",
+            "saída de {valor} reais no {carteira}",
+            "saída de {valor} reais na {carteira}",
+            "saída de {valor} reais de {descricao}",
+            "lance {valor} reais de {descricao}",
+            "lance {valor} reais em {descricao}",
+            "lance {valor} reais no {carteira}",
+            "lance {valor} reais na {carteira}",
+            "lance {valor} reais de {descricao} no {carteira}",
+            "lance {valor} reais de {descricao} na {carteira}",
+            "lance {valor} reais em {descricao} no {carteira}",
+            "lance {valor} reais em {descricao} na {carteira}",
+            "registre um gasto de {valor} reais",
+            "registre uma despesa de {valor} reais",
+            "registre {valor} reais em {descricao}",
+            "registre {valor} reais no {carteira}",
+            "registre {valor} reais na {carteira}",
+            "registre {valor} reais em {descricao} no {carteira}",
+            "registre {valor} reais em {descricao} na {carteira}",
+            "menos {valor} reais",
+            "menos {valor} reais no {carteira}",
+            "menos {valor} reais na {carteira}",
+            "menos {valor} reais em {descricao}",
+            "despesa de {valor} reais",
+            "despesa de {valor} reais em {descricao}"
+          ]
+        },
+        {
+          "name": "RegistrarEntradaIntent",
+          "slots": [
+            {
+              "name": "valor",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "carteira",
+              "type": "CARTEIRA_TIPO"
+            },
+            {
+              "name": "descricao",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "entraram {valor} reais",
+            "entraram {valor} reais na {carteira}",
+            "entraram {valor} reais no {carteira}",
+            "entraram {valor} reais de {descricao}",
+            "entraram {valor} reais de {descricao} na {carteira}",
+            "entraram {valor} reais de {descricao} no {carteira}",
+            "recebi {valor} reais",
+            "recebi {valor} reais na {carteira}",
+            "recebi {valor} reais no {carteira}",
+            "recebi {valor} reais de {descricao}",
+            "depositei {valor} reais",
+            "depositei {valor} reais na {carteira}",
+            "depositei {valor} reais no {carteira}",
+            "adicione {valor} reais",
+            "adicione {valor} reais na {carteira}",
+            "adicione {valor} reais no {carteira}",
+            "coloque {valor} reais",
+            "coloque {valor} reais na {carteira}",
+            "coloque {valor} reais no {carteira}",
+            "mais {valor} reais na {carteira}",
+            "mais {valor} reais no {carteira}",
+            "mais {valor} reais",
+            "registre uma entrada de {valor} reais",
+            "registre entrada de {valor} reais",
+            "entrada de {valor} reais",
+            "entrada de {valor} reais na {carteira}",
+            "entrada de {valor} reais no {carteira}",
+            "entrada de {valor} reais de {descricao}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "CARTEIRA_TIPO",
+          "values": [
+            {
+              "id": "conta",
+              "name": {
+                "value": "conta",
+                "synonyms": [
+                  "conta principal",
+                  "principal",
+                  "corrente",
+                  "conta corrente",
+                  "banco",
+                  "saldo da conta",
+                  "saldo em conta",
+                  "nubank",
+                  "inter",
+                  "itau",
+                  "carteira"
+                ]
+              }
+            },
+            {
+              "id": "vale1",
+              "name": {
+                "value": "alimentação",
+                "synonyms": [
+                  "vale alimentação",
+                  "alimentacao",
+                  "va",
+                  "mercado",
+                  "vale mercado",
+                  "alelo mercado",
+                  "alelo alimentação",
+                  "vale 1",
+                  "supermercado"
+                ]
+              }
+            },
+            {
+              "id": "vale2",
+              "name": {
+                "value": "refeição",
+                "synonyms": [
+                  "vale refeição",
+                  "refeicao",
+                  "vr",
+                  "almoço",
+                  "almoco",
+                  "jantar",
+                  "restaurante",
+                  "alelo refeição",
+                  "vale 2",
+                  "lanche"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
