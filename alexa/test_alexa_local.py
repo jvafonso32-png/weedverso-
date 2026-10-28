@@ -119,6 +119,50 @@ class TestAlexaSkillLogic(unittest.TestCase):
         self.assertEqual(len(state["tx"]), 2)
         print("✅ Teste de mutação de saldo e histórico: APROVADO")
 
+    def test_credit_card_and_extras(self):
+        state = {
+            "credit": {
+                "name": "AMEX",
+                "used": 1500.0,
+                "reserved": 300.0,
+                "tx": []
+            },
+            "debtors": [
+                {"name": "Dilson", "amount": 500.0, "paid": False},
+                {"name": "Lucas", "amount": 200.0, "paid": True}
+            ],
+            "tx": [
+                {"type": "out", "value": 35.0, "note": "Almoço"},
+                {"type": "in", "value": 200.0, "note": "Pix"}
+            ]
+        }
+
+        # 1. Simula Gasto de R$ 100,00 no Cartão
+        credit = state["credit"]
+        card_prev = credit["used"]
+        credit_amount = 100.0
+        credit["used"] = round(card_prev + credit_amount, 2)
+        credit["tx"].insert(0, {
+            "id": alexa_mod.make_id(),
+            "type": "expense",
+            "value": credit_amount,
+            "desc": "Farmácia"
+        })
+        self.assertEqual(credit["used"], 1600.0)
+        self.assertEqual(len(credit["tx"]), 1)
+
+        # 2. Simula Calculo de Devedores
+        debtors = [d for d in state["debtors"] if not d.get("paid")]
+        self.assertEqual(len(debtors), 1)
+        self.assertEqual(debtors[0]["name"], "Dilson")
+        self.assertEqual(debtors[0]["amount"], 500.0)
+
+        # 3. Simula Extrato
+        txs = state["tx"][:2]
+        self.assertEqual(len(txs), 2)
+        self.assertEqual(txs[0]["note"], "Almoço")
+        print("✅ Teste de cartão, extrato e devedores: APROVADO")
+
     def test_gist_live_pull(self):
         state, msg = alexa_mod.pull_state_from_gist()
         if state is not None:

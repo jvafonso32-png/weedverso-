@@ -369,6 +369,170 @@ class RegistrarEntradaIntentHandler(AbstractRequestHandler):
         )
         return handler_input.response_builder.speak(speech).response
 
+class RegistrarGastoCartaoIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Gastei 100 reais no cartão', 'Lance 50 reais no crédito de farmácia'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("RegistrarGastoCartaoIntent")(handler_input)
+
+    def handle(self, handler_input):
+        raw_val = get_slot_value(handler_input, "valor")
+        raw_desc = get_slot_value(handler_input, "categoria") or get_slot_value(handler_input, "descricao")
+
+        try:
+            amount = abs(float(str(raw_val).replace(",", ".")))
+        except (ValueError, TypeError):
+            amount = 0.0
+
+        if amount <= 0:
+            return (
+                handler_input.response_builder
+                .speak("Qual foi o valor do gasto no cartão?")
+                .ask("Por favor, diga o valor.")
+                .response
+            )
+
+        note = raw_desc.capitalize() if raw_desc else "Gasto no Cartão"
+
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak(
+                "Desculpe, não consegui conectar ao seu banco de dados na nuvem."
+            ).response
+
+        credit = state.setdefault("credit", {"name": "Cartão", "used": 0.0, "reserved": 0.0, "tx": []})
+        card_name = credit.get("name") or "Cartão"
+        prev_used = float(credit.get("used", 0.0))
+        new_used = round(prev_used + amount, 2)
+        credit["used"] = new_used
+
+        now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        entry = {
+            "id": make_id(),
+            "type": "expense",
+            "value": round(amount, 2),
+            "desc": note[:60],
+            "at": now_iso
+        }
+        credit.setdefault("tx", []).insert(0, entry)
+
+        ok, push_err = push_state_to_gist(state)
+        if not ok:
+            return handler_input.response_builder.speak(
+                "O gasto no cartão foi calculado, mas houve um erro ao sincronizar com a nuvem."
+            ).response
+
+        speech = (
+            f"Registrado! Gasto de {format_spoken_currency(amount)} em {note} "
+            f"no cartão {card_name}. Sua fatura atual é de {format_spoken_currency(new_used)}."
+        )
+        return handler_input.response_builder.speak(speech).response
+
+class ConsultarFaturaIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Qual a fatura do cartão?', 'Quanto devo no cartão?'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("ConsultarFaturaIntent")(handler_input)
+
+    def handle(self, handler_input):
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak(
+                "Desculpe, não consegui consultar sua fatura no momento."
+            ).response
+
+        credit = state.get("credit", {})
+        used = float(credit.get("used", 0.0))
+        reserved = float(credit.get("reserved", 0.0))
+        card_name = credit.get("name") or "Cartão"
+
+        speech = (
+            f"Sua fatura atual do cartão {card_name} é de {format_spoken_currency(used)}. "
+            f"Você possui {format_spoken_currency(reserved)} em reserva para o pagamento."
+        )
+        return handler_input.response_builder.speak(speech).response
+
+class ConsultarExtratoIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Quais foram minhas últimas movimentações?', 'Extrato'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("ConsultarExtratoIntent")(handler_input)
+
+    def handle(self, handler_input):
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak(
+                "Desculpe, não consegui acessar seu extrato no momento."
+            ).response
+
+        txs = state.get("tx", [])[:3]
+        if not txs:
+            return handler_input.response_builder.speak(
+                "Você ainda não possui movimentações recentes registradas."
+            ).response
+
+        items = []
+        for t in txs:
+            direction = "Saída" if t.get("type") == "out" else "Entrada"
+            val = format_spoken_currency(t.get("value", 0.0))
+            note = t.get("note") or t.get("category") or "Geral"
+            items.append(f"{direction} de {val} em {note}")
+
+        speech = f"Suas últimas movimentações foram: {', '.join(items)}."
+        return handler_input.response_builder.speak(speech).response
+
+class ConsultarDevedoresIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Quem me deve?', 'Quanto tenho para receber?'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("ConsultarDevedoresIntent")(handler_input)
+
+    def handle(self, handler_input):
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak(
+                "Desculpe, não consegui consultar os devedores no momento."
+            ).response
+
+        debtors = [d for d in state.get("debtors", []) if not d.get("paid")]
+        if not debtors:
+            return handler_input.response_builder.speak(
+                "Boas notícias! Você não tem nenhum valor pendente para receber."
+            ).response
+
+        total = sum(float(d.get("amount", 0.0)) for d in debtors)
+        details = [f"{d.get('name', 'Alguém')}, com {format_spoken_currency(d.get('amount', 0.0))}" for d in debtors[:3]]
+
+        speech = (
+            f"Você tem {format_spoken_currency(total)} para receber no total. "
+            f"Devedores em aberto: {', '.join(details)}."
+        )
+        return handler_input.response_builder.speak(speech).response
+
+class ConsultarObjetivosIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Meus objetivos', 'Como estão minhas metas?'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("ConsultarObjetivosIntent")(handler_input)
+
+    def handle(self, handler_input):
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak(
+                "Desculpe, não consegui consultar seus objetivos no momento."
+            ).response
+
+        goals = state.get("goals", [])
+        if not goals:
+            return handler_input.response_builder.speak(
+                "Você ainda não cadastrou nenhum objetivo no Weedverso."
+            ).response
+
+        details = []
+        for g in goals[:3]:
+            name = g.get("name") or "Objetivo"
+            cur = format_spoken_currency(g.get("current", 0.0))
+            tgt = format_spoken_currency(g.get("target", 0.0))
+            details.append(f"{name}, com {cur} guardados de uma meta de {tgt}")
+
+        speech = f"Seus objetivos atuais são: {', '.join(details)}."
+        return handler_input.response_builder.speak(speech).response
+
 class HelpIntentHandler(AbstractRequestHandler):
     """Ajuda ao usuário."""
     def can_handle(self, handler_input):
@@ -376,10 +540,13 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         speech = (
-            "Com o Weedverso, você pode dizer por exemplo: "
+            "Com o Weedverso, você pode perguntar: "
+            "'Qual é o meu saldo?', "
+            "'Qual a fatura do cartão?', "
             "'Gastei trinta e cinco reais no almoço', "
-            "'Entraram duzentos reais na conta', ou "
-            "'Qual é o meu saldo?'. O que você gostaria de fazer?"
+            "'Lance cinquenta reais no cartão', "
+            "'Quais foram minhas últimas movimentações?', ou "
+            "'Quem me deve?'. O que você gostaria de fazer?"
         )
         return handler_input.response_builder.speak(speech).ask("Como posso ajudar?").response
 
@@ -433,6 +600,11 @@ sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(ConsultarSaldoIntentHandler())
 sb.add_request_handler(RegistrarGastoIntentHandler())
 sb.add_request_handler(RegistrarEntradaIntentHandler())
+sb.add_request_handler(RegistrarGastoCartaoIntentHandler())
+sb.add_request_handler(ConsultarFaturaIntentHandler())
+sb.add_request_handler(ConsultarExtratoIntentHandler())
+sb.add_request_handler(ConsultarDevedoresIntentHandler())
+sb.add_request_handler(ConsultarObjetivosIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())

@@ -186,6 +186,111 @@
             "entrada de {valor} reais no {carteira}",
             "entrada de {valor} reais de {origem}"
           ]
+        },
+        {
+          "name": "RegistrarGastoCartaoIntent",
+          "slots": [
+            {
+              "name": "valor",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "categoria",
+              "type": "CATEGORIA_TIPO"
+            }
+          ],
+          "samples": [
+            "gastei {valor} reais no cartão",
+            "gastei {valor} reais no cartao",
+            "gastei {valor} reais no crédito",
+            "gastei {valor} reais no credito",
+            "gastei {valor} reais no cartão de {categoria}",
+            "gastei {valor} reais no cartão com {categoria}",
+            "gastei {valor} reais no cartão em {categoria}",
+            "lance {valor} reais no cartão",
+            "lance {valor} reais no cartao",
+            "lance {valor} reais no crédito",
+            "lance {valor} reais no credito",
+            "lance {valor} reais no cartão de {categoria}",
+            "lance {valor} reais no cartão em {categoria}",
+            "registre {valor} reais no cartão",
+            "registre {valor} reais no crédito",
+            "registre {valor} reais no cartão em {categoria}",
+            "comprei {categoria} por {valor} reais no cartão",
+            "comprei {categoria} por {valor} reais no crédito",
+            "despesa de {valor} reais no cartão",
+            "despesa de {valor} reais no crédito"
+          ]
+        },
+        {
+          "name": "ConsultarFaturaIntent",
+          "samples": [
+            "qual é a fatura do cartão",
+            "qual e a fatura do cartao",
+            "qual a fatura do cartão",
+            "qual a fatura do cartao",
+            "quanto devo no cartão",
+            "quanto devo no cartao",
+            "fatura do cartão",
+            "fatura do cartao",
+            "fatura atual",
+            "fatura",
+            "quanto gastei no cartão",
+            "quanto gastei no cartao",
+            "quanto gastei no crédito",
+            "qual o valor da fatura"
+          ]
+        },
+        {
+          "name": "ConsultarExtratoIntent",
+          "samples": [
+            "quais foram minhas últimas movimentações",
+            "quais foram minhas ultimas movimentacoes",
+            "quais foram meus últimos gastos",
+            "quais foram meus ultimos gastos",
+            "quais foram meus últimos lançamentos",
+            "últimas movimentações",
+            "ultimas movimentacoes",
+            "últimos gastos",
+            "ultimos gastos",
+            "o que eu gastei recentemente",
+            "extrato",
+            "meu extrato",
+            "ver extrato",
+            "últimos lançamentos",
+            "ultimos lancamentos"
+          ]
+        },
+        {
+          "name": "ConsultarDevedoresIntent",
+          "samples": [
+            "quem me deve",
+            "quem me está devendo",
+            "quem esta me devendo",
+            "quanto tenho para receber",
+            "quanto tenho a receber",
+            "quem está me devendo",
+            "quanto me devem",
+            "devedores",
+            "lista de devedores",
+            "valores a receber",
+            "minhas contas a receber"
+          ]
+        },
+        {
+          "name": "ConsultarObjetivosIntent",
+          "samples": [
+            "meus objetivos",
+            "minhas metas",
+            "como estão meus objetivos",
+            "como estao meus objetivos",
+            "como estão minhas metas",
+            "quanto tenho guardado nos objetivos",
+            "quanto tenho nos objetivos",
+            "metas financeiras",
+            "saldo dos objetivos",
+            "objetivos financeiros"
+          ]
         }
       ],
       "types": [
