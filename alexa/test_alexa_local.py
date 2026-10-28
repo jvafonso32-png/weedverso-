@@ -40,6 +40,15 @@ class TestAlexaSkillLogic(unittest.TestCase):
         self.assertEqual(alexa_mod.format_spoken_currency(-50), "menos 50 reais")
         print("✅ Teste de pronúncia de valores monetários: APROVADO")
 
+    def test_parse_spoken_amount(self):
+        self.assertEqual(alexa_mod.parse_spoken_amount("40"), 40.0)
+        self.assertEqual(alexa_mod.parse_spoken_amount("40 reais"), 40.0)
+        self.assertEqual(alexa_mod.parse_spoken_amount("R$ 35,50"), 35.5)
+        self.assertEqual(alexa_mod.parse_spoken_amount("35.50"), 35.5)
+        self.assertEqual(alexa_mod.parse_spoken_amount("1 real"), 1.0)
+        self.assertEqual(alexa_mod.parse_spoken_amount(""), 0.0)
+        print("✅ Teste de parser flexível de valores numéricos: APROVADO")
+
     def test_normalize_wallet_key(self):
         # Explicito
         self.assertEqual(alexa_mod.normalize_wallet_key("conta")[0], "conta")

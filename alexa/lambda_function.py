@@ -79,6 +79,26 @@ def format_spoken_currency(value):
     spoken = " e ".join(parts) if parts else "zero reais"
     return f"menos {spoken}" if is_neg else spoken
 
+def parse_spoken_amount(raw_val):
+    """Extrai o valor numérico com tolerância máxima a variações de fala da Alexa."""
+    if not raw_val:
+        return 0.0
+    text = str(raw_val).lower().replace("r$", "").replace("reais", "").replace("real", "").strip()
+    # Troca vírgula decimal por ponto
+    text = text.replace(",", ".")
+    try:
+        return abs(float(text))
+    except (ValueError, TypeError):
+        pass
+    # Tenta extrair números por regex caso venha com texto adicional
+    match = re.search(r"(\d+(?:\.\d+)?)", text)
+    if match:
+        try:
+            return abs(float(match.group(1)))
+        except (ValueError, TypeError):
+            pass
+    return 0.0
+
 def normalize_wallet_key(raw_slot, description=""):
     """
     Identifica a carteira de destino:
@@ -244,10 +264,7 @@ class RegistrarGastoIntentHandler(AbstractRequestHandler):
         raw_carteira = get_slot_value(handler_input, "carteira")
         raw_desc = get_slot_value(handler_input, "categoria") or get_slot_value(handler_input, "descricao")
 
-        try:
-            amount = abs(float(str(raw_val).replace(",", ".")))
-        except (ValueError, TypeError):
-            amount = 0.0
+        amount = parse_spoken_amount(raw_val)
 
         if amount <= 0:
             return (
@@ -312,10 +329,7 @@ class RegistrarEntradaIntentHandler(AbstractRequestHandler):
         raw_carteira = get_slot_value(handler_input, "carteira")
         raw_desc = get_slot_value(handler_input, "origem") or get_slot_value(handler_input, "descricao")
 
-        try:
-            amount = abs(float(str(raw_val).replace(",", ".")))
-        except (ValueError, TypeError):
-            amount = 0.0
+        amount = parse_spoken_amount(raw_val)
 
         if amount <= 0:
             return (
@@ -378,10 +392,7 @@ class RegistrarGastoCartaoIntentHandler(AbstractRequestHandler):
         raw_val = get_slot_value(handler_input, "valor")
         raw_desc = get_slot_value(handler_input, "categoria") or get_slot_value(handler_input, "descricao")
 
-        try:
-            amount = abs(float(str(raw_val).replace(",", ".")))
-        except (ValueError, TypeError):
-            amount = 0.0
+        amount = parse_spoken_amount(raw_val)
 
         if amount <= 0:
             return (
@@ -559,10 +570,7 @@ class RegistrarAporteIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         raw_val = get_slot_value(handler_input, "valor")
 
-        try:
-            amount = abs(float(str(raw_val).replace(",", ".")))
-        except (ValueError, TypeError):
-            amount = 0.0
+        amount = parse_spoken_amount(raw_val)
 
         if amount <= 0:
             return (
