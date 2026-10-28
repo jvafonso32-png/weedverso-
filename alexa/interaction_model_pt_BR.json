@@ -88,57 +88,56 @@
               "type": "CARTEIRA_TIPO"
             },
             {
-              "name": "descricao",
-              "type": "AMAZON.SearchQuery"
+              "name": "categoria",
+              "type": "CATEGORIA_TIPO"
             }
           ],
           "samples": [
             "gastei {valor} reais",
-            "gastei {valor} reais em {descricao}",
+            "gastei {valor} reais em {categoria}",
             "gastei {valor} reais no {carteira}",
             "gastei {valor} reais na {carteira}",
-            "gastei {valor} reais de {descricao}",
-            "gastei {valor} reais com {descricao}",
-            "gastei {valor} reais com {descricao} no {carteira}",
-            "gastei {valor} reais com {descricao} na {carteira}",
-            "gastei {valor} reais em {descricao} no {carteira}",
-            "gastei {valor} reais em {descricao} na {carteira}",
-            "comprei {descricao} por {valor} reais",
-            "comprei {descricao} por {valor} reais no {carteira}",
-            "comprei {descricao} por {valor} reais na {carteira}",
+            "gastei {valor} reais de {categoria}",
+            "gastei {valor} reais com {categoria}",
+            "gastei {valor} reais com {categoria} no {carteira}",
+            "gastei {valor} reais com {categoria} na {carteira}",
+            "gastei {valor} reais em {categoria} no {carteira}",
+            "gastei {valor} reais em {categoria} na {carteira}",
+            "comprei {categoria} por {valor} reais",
+            "comprei {categoria} por {valor} reais no {carteira}",
+            "comprei {categoria} por {valor} reais na {carteira}",
             "paguei {valor} reais",
-            "paguei {valor} reais de {descricao}",
-            "paguei {valor} reais em {descricao}",
+            "paguei {valor} reais de {categoria}",
+            "paguei {valor} reais em {categoria}",
             "paguei {valor} reais no {carteira}",
             "paguei {valor} reais na {carteira}",
-            "paguei {valor} reais de {descricao} no {carteira}",
-            "paguei {valor} reais de {descricao} na {carteira}",
+            "paguei {valor} reais de {categoria} no {carteira}",
+            "paguei {valor} reais de {categoria} na {carteira}",
             "saída de {valor} reais",
-            "saída de {valor} reais em {descricao}",
+            "saída de {valor} reais em {categoria}",
             "saída de {valor} reais no {carteira}",
             "saída de {valor} reais na {carteira}",
-            "saída de {valor} reais de {descricao}",
-            "lance {valor} reais de {descricao}",
-            "lance {valor} reais em {descricao}",
+            "lance {valor} reais de {categoria}",
+            "lance {valor} reais em {categoria}",
             "lance {valor} reais no {carteira}",
             "lance {valor} reais na {carteira}",
-            "lance {valor} reais de {descricao} no {carteira}",
-            "lance {valor} reais de {descricao} na {carteira}",
-            "lance {valor} reais em {descricao} no {carteira}",
-            "lance {valor} reais em {descricao} na {carteira}",
+            "lance {valor} reais de {categoria} no {carteira}",
+            "lance {valor} reais de {categoria} na {carteira}",
+            "lance {valor} reais em {categoria} no {carteira}",
+            "lance {valor} reais em {categoria} na {carteira}",
             "registre um gasto de {valor} reais",
             "registre uma despesa de {valor} reais",
-            "registre {valor} reais em {descricao}",
+            "registre {valor} reais em {categoria}",
             "registre {valor} reais no {carteira}",
             "registre {valor} reais na {carteira}",
-            "registre {valor} reais em {descricao} no {carteira}",
-            "registre {valor} reais em {descricao} na {carteira}",
+            "registre {valor} reais em {categoria} no {carteira}",
+            "registre {valor} reais em {categoria} na {carteira}",
             "menos {valor} reais",
             "menos {valor} reais no {carteira}",
             "menos {valor} reais na {carteira}",
-            "menos {valor} reais em {descricao}",
+            "menos {valor} reais em {categoria}",
             "despesa de {valor} reais",
-            "despesa de {valor} reais em {descricao}"
+            "despesa de {valor} reais em {categoria}"
           ]
         },
         {
@@ -153,21 +152,21 @@
               "type": "CARTEIRA_TIPO"
             },
             {
-              "name": "descricao",
-              "type": "AMAZON.SearchQuery"
+              "name": "origem",
+              "type": "ORIGEM_ENTRADA"
             }
           ],
           "samples": [
             "entraram {valor} reais",
             "entraram {valor} reais na {carteira}",
             "entraram {valor} reais no {carteira}",
-            "entraram {valor} reais de {descricao}",
-            "entraram {valor} reais de {descricao} na {carteira}",
-            "entraram {valor} reais de {descricao} no {carteira}",
+            "entraram {valor} reais de {origem}",
+            "entraram {valor} reais de {origem} na {carteira}",
+            "entraram {valor} reais de {origem} no {carteira}",
             "recebi {valor} reais",
             "recebi {valor} reais na {carteira}",
             "recebi {valor} reais no {carteira}",
-            "recebi {valor} reais de {descricao}",
+            "recebi {valor} reais de {origem}",
             "depositei {valor} reais",
             "depositei {valor} reais na {carteira}",
             "depositei {valor} reais no {carteira}",
@@ -185,7 +184,7 @@
             "entrada de {valor} reais",
             "entrada de {valor} reais na {carteira}",
             "entrada de {valor} reais no {carteira}",
-            "entrada de {valor} reais de {descricao}"
+            "entrada de {valor} reais de {origem}"
           ]
         }
       ],
@@ -245,6 +244,149 @@
                   "vale 2",
                   "lanche"
                 ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CATEGORIA_TIPO",
+          "values": [
+            {
+              "id": "almoco",
+              "name": {
+                "value": "almoço",
+                "synonyms": ["almoco", "comida", "rango", "refeição", "refeicao"]
+              }
+            },
+            {
+              "id": "jantar",
+              "name": {
+                "value": "jantar",
+                "synonyms": ["janta"]
+              }
+            },
+            {
+              "id": "cafe",
+              "name": {
+                "value": "café",
+                "synonyms": ["cafe", "café da manhã", "cafe da manha"]
+              }
+            },
+            {
+              "id": "lanche",
+              "name": {
+                "value": "lanche",
+                "synonyms": ["salgado", "lanchinho", "mcdonalds", "hambúrguer", "burger", "ifood"]
+              }
+            },
+            {
+              "id": "restaurante",
+              "name": {
+                "value": "restaurante",
+                "synonyms": ["bar", "churrascaria", "pizzaria", "pizza"]
+              }
+            },
+            {
+              "id": "mercado",
+              "name": {
+                "value": "mercado",
+                "synonyms": ["supermercado", "compras", "compras do mês", "hipermercado"]
+              }
+            },
+            {
+              "id": "padaria",
+              "name": {
+                "value": "padaria",
+                "synonyms": ["pão", "pao"]
+              }
+            },
+            {
+              "id": "feira",
+              "name": {
+                "value": "feira",
+                "synonyms": ["hortifruti", "sacolão", "sacolao", "açougue", "acougue"]
+              }
+            },
+            {
+              "id": "farmacia",
+              "name": {
+                "value": "farmácia",
+                "synonyms": ["farmacia", "remédio", "remedio", "drogaria"]
+              }
+            },
+            {
+              "id": "gasolina",
+              "name": {
+                "value": "gasolina",
+                "synonyms": ["combustível", "combustivel", "posto", "abastecimento"]
+              }
+            },
+            {
+              "id": "transporte",
+              "name": {
+                "value": "transporte",
+                "synonyms": ["uber", "99", "táxi", "taxi", "ônibus", "onibus", "metrô", "metro", "passagem"]
+              }
+            },
+            {
+              "id": "lazer",
+              "name": {
+                "value": "lazer",
+                "synonyms": ["cinema", "rolê", "role", "cerveja", "festa", "balada", "jogo"]
+              }
+            },
+            {
+              "id": "contas",
+              "name": {
+                "value": "contas",
+                "synonyms": ["conta", "boleto", "boletos", "luz", "água", "agua", "internet"]
+              }
+            },
+            {
+              "id": "outros",
+              "name": {
+                "value": "outros",
+                "synonyms": ["geral", "diversos", "compras online", "pix"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ORIGEM_ENTRADA",
+          "values": [
+            {
+              "id": "salario",
+              "name": {
+                "value": "salário",
+                "synonyms": ["salario", "pagamento", "adiantamento", "vale"]
+              }
+            },
+            {
+              "id": "pix",
+              "name": {
+                "value": "pix",
+                "synonyms": ["transferência", "transferencia", "ted", "doc"]
+              }
+            },
+            {
+              "id": "reembolso",
+              "name": {
+                "value": "reembolso",
+                "synonyms": ["devolução", "estorno"]
+              }
+            },
+            {
+              "id": "extra",
+              "name": {
+                "value": "extra",
+                "synonyms": ["bico", "freela", "freelance", "venda", "presente"]
+              }
+            },
+            {
+              "id": "deposito",
+              "name": {
+                "value": "depósito",
+                "synonyms": ["deposito", "rendimento"]
               }
             }
           ]

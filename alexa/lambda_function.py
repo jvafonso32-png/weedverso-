@@ -242,7 +242,7 @@ class RegistrarGastoIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         raw_val = get_slot_value(handler_input, "valor")
         raw_carteira = get_slot_value(handler_input, "carteira")
-        raw_desc = get_slot_value(handler_input, "descricao")
+        raw_desc = get_slot_value(handler_input, "categoria") or get_slot_value(handler_input, "descricao")
 
         try:
             amount = abs(float(str(raw_val).replace(",", ".")))
@@ -310,7 +310,7 @@ class RegistrarEntradaIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         raw_val = get_slot_value(handler_input, "valor")
         raw_carteira = get_slot_value(handler_input, "carteira")
-        raw_desc = get_slot_value(handler_input, "descricao")
+        raw_desc = get_slot_value(handler_input, "origem") or get_slot_value(handler_input, "descricao")
 
         try:
             amount = abs(float(str(raw_val).replace(",", ".")))
