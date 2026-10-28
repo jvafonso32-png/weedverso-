@@ -97,127 +97,176 @@
             }
           ],
           "samples": [
-            "{valor} e {centavos}",
-            "{valor} e {centavos} de {categoria}",
-            "{valor} e {centavos} no {categoria}",
-            "{valor} e {centavos} na {categoria}",
-            "{valor} e {centavos} de {categoria} na {carteira}",
-            "{valor} e {centavos} de {categoria} no {carteira}",
-            "{valor} e {centavos} na {carteira}",
-            "{valor} e {centavos} no {carteira}",
-            "{valor} com {centavos}",
-            "{valor} com {centavos} de {categoria}",
-            "{valor} reais e {centavos}",
-            "{valor} reais e {centavos} centavos",
-            "{valor} reais e {centavos} centavos de {categoria}",
-            "{valor} reais e {centavos} centavos no {categoria}",
-            "{valor} reais e {centavos} centavos na {carteira}",
-            "{valor} reais e {centavos} centavos no {carteira}",
+            "comprei {categoria} de {valor} e {centavos} em {carteira}",
+            "comprei {categoria} por {valor}",
+            "comprei {categoria} por {valor} e {centavos} em {carteira}",
+            "comprei {categoria} por {valor} reais",
+            "comprei {categoria} por {valor} reais na {carteira}",
+            "comprei {categoria} por {valor} reais no {carteira}",
+            "despesa de {valor} reais",
+            "despesa de {valor} reais em {categoria}",
+            "gastei {valor}",
+            "gastei {valor} com {categoria}",
+            "gastei {valor} com {centavos} em {carteira}",
+            "gastei {valor} com {centavos} em {carteira} com {categoria}",
+            "gastei {valor} de {categoria}",
             "gastei {valor} e {centavos}",
             "gastei {valor} e {centavos} de {categoria}",
-            "gastei {valor} e {centavos} no {categoria}",
+            "gastei {valor} e {centavos} em {carteira}",
+            "gastei {valor} e {centavos} em {carteira} com {categoria}",
+            "gastei {valor} e {centavos} em {carteira} de {categoria}",
             "gastei {valor} e {centavos} na {carteira}",
-            "gastei {valor} reais e {centavos}",
-            "gastei {valor} reais e {centavos} centavos",
-            "gastei {valor} reais e {centavos} centavos em {categoria}",
-            "lance {valor} e {centavos}",
-            "lance {valor} e {centavos} de {categoria}",
-            "lance {valor} e {centavos} na {carteira}",
-            "paguei {valor} e {centavos}",
-            "paguei {valor} e {centavos} de {categoria}",
-            "saída de {valor} e {centavos}",
-            "saída de {valor} e {centavos} de {categoria}",
-            "saída de {valor} reais e {centavos} centavos",
-            "{valor}",
-            "{valor} reais",
-            "{valor} de {categoria}",
-            "{valor} no {categoria}",
-            "{valor} na {categoria}",
-            "{valor} em {categoria}",
-            "{valor} com {categoria}",
-            "{valor} de {categoria} na {carteira}",
-            "{valor} de {categoria} no {carteira}",
-            "{valor} no {carteira}",
-            "{valor} na {carteira}",
-            "{categoria} {valor}",
-            "{categoria} {valor} reais",
-            "gastei {valor}",
-            "gastei {valor} reais",
-            "gastei {valor} de {categoria}",
-            "gastei {valor} no {categoria}",
-            "gastei {valor} na {categoria}",
+            "gastei {valor} e {centavos} na {carteira} com {categoria}",
+            "gastei {valor} e {centavos} na {carteira} de {categoria}",
+            "gastei {valor} e {centavos} no {carteira} com {categoria}",
+            "gastei {valor} e {centavos} no {carteira} de {categoria}",
+            "gastei {valor} e {centavos} no {categoria}",
+            "gastei {valor} em {carteira}",
+            "gastei {valor} em {carteira} com {categoria}",
+            "gastei {valor} em {carteira} de {categoria}",
             "gastei {valor} em {categoria}",
-            "gastei {valor} com {categoria}",
-            "gastei {valor} reais em {categoria}",
-            "gastei {valor} reais no {carteira}",
-            "gastei {valor} reais na {carteira}",
+            "gastei {valor} na {carteira} com {categoria}",
+            "gastei {valor} na {categoria}",
+            "gastei {valor} no {carteira} com {categoria}",
+            "gastei {valor} no {categoria}",
+            "gastei {valor} reais",
+            "gastei {valor} reais com {categoria}",
+            "gastei {valor} reais com {categoria} na {carteira}",
+            "gastei {valor} reais com {categoria} no {carteira}",
             "gastei {valor} reais de {categoria}",
             "gastei {valor} reais de {categoria} na {carteira}",
             "gastei {valor} reais de {categoria} no {carteira}",
-            "gastei {valor} reais com {categoria}",
-            "gastei {valor} reais com {categoria} no {carteira}",
-            "gastei {valor} reais com {categoria} na {carteira}",
-            "gastei {valor} reais em {categoria} no {carteira}",
+            "gastei {valor} reais e {centavos}",
+            "gastei {valor} reais e {centavos} centavos",
+            "gastei {valor} reais e {centavos} centavos em {carteira}",
+            "gastei {valor} reais e {centavos} centavos em {carteira} com {categoria}",
+            "gastei {valor} reais e {centavos} centavos em {categoria}",
+            "gastei {valor} reais e {centavos} em {carteira}",
+            "gastei {valor} reais e {centavos} em {carteira} com {categoria}",
+            "gastei {valor} reais e {centavos} em {carteira} de {categoria}",
+            "gastei {valor} reais e {centavos} na {carteira} com {categoria}",
+            "gastei {valor} reais e {centavos} no {carteira} com {categoria}",
+            "gastei {valor} reais em {carteira}",
+            "gastei {valor} reais em {carteira} com {categoria}",
+            "gastei {valor} reais em {carteira} de {categoria}",
+            "gastei {valor} reais em {categoria}",
             "gastei {valor} reais em {categoria} na {carteira}",
+            "gastei {valor} reais em {categoria} no {carteira}",
+            "gastei {valor} reais na {carteira}",
+            "gastei {valor} reais no {carteira}",
             "lance {valor}",
             "lance {valor} de {categoria}",
-            "lance {valor} no {categoria}",
-            "lance {valor} na {categoria}",
-            "lance {valor} em {categoria}",
             "lance {valor} de {categoria} na {carteira}",
             "lance {valor} de {categoria} no {carteira}",
-            "lance {valor} no {carteira}",
+            "lance {valor} e {centavos}",
+            "lance {valor} e {centavos} de {categoria}",
+            "lance {valor} e {centavos} em {carteira}",
+            "lance {valor} e {centavos} em {carteira} com {categoria}",
+            "lance {valor} e {centavos} em {carteira} de {categoria}",
+            "lance {valor} e {centavos} na {carteira}",
+            "lance {valor} e {centavos} na {carteira} com {categoria}",
+            "lance {valor} e {centavos} no {carteira} com {categoria}",
+            "lance {valor} em {carteira}",
+            "lance {valor} em {carteira} com {categoria}",
+            "lance {valor} em {carteira} de {categoria}",
+            "lance {valor} em {categoria}",
             "lance {valor} na {carteira}",
+            "lance {valor} na {categoria}",
+            "lance {valor} no {carteira}",
+            "lance {valor} no {categoria}",
+            "lance {valor} reais de {categoria}",
+            "lance {valor} reais de {categoria} na {carteira}",
+            "lance {valor} reais de {categoria} no {carteira}",
+            "lance {valor} reais em {categoria}",
+            "lance {valor} reais em {categoria} na {carteira}",
+            "lance {valor} reais em {categoria} no {carteira}",
+            "lance {valor} reais na {carteira}",
+            "lance {valor} reais no {carteira}",
+            "menos {valor} reais",
+            "menos {valor} reais em {categoria}",
+            "menos {valor} reais na {carteira}",
+            "menos {valor} reais no {carteira}",
             "paguei {valor}",
             "paguei {valor} de {categoria}",
-            "paguei {valor} no {categoria}",
-            "paguei {valor} na {categoria}",
+            "paguei {valor} e {centavos}",
+            "paguei {valor} e {centavos} de {categoria}",
+            "paguei {valor} e {centavos} em {carteira}",
+            "paguei {valor} e {centavos} em {carteira} com {categoria}",
             "paguei {valor} em {categoria}",
-            "comprei {categoria} por {valor}",
-            "{valor} reais no {categoria}",
-            "{valor} reais na {categoria}",
-            "{valor} reais de {categoria}",
-            "{valor} reais de {categoria} na {carteira}",
-            "{valor} reais de {categoria} no {carteira}",
-            "{valor} reais em {categoria}",
-            "{valor} reais no {carteira}",
-            "{valor} reais na {carteira}",
-            "{categoria} {valor} reais",
-            "comprei {categoria} por {valor} reais",
-            "comprei {categoria} por {valor} reais no {carteira}",
-            "comprei {categoria} por {valor} reais na {carteira}",
+            "paguei {valor} na {categoria}",
+            "paguei {valor} no {categoria}",
             "paguei {valor} reais",
             "paguei {valor} reais de {categoria}",
-            "paguei {valor} reais em {categoria}",
-            "paguei {valor} reais no {carteira}",
-            "paguei {valor} reais na {carteira}",
-            "paguei {valor} reais de {categoria} no {carteira}",
             "paguei {valor} reais de {categoria} na {carteira}",
-            "saída de {valor} reais",
-            "saída de {valor} reais em {categoria}",
-            "saída de {valor} reais no {carteira}",
-            "saída de {valor} reais na {carteira}",
-            "lance {valor} reais de {categoria}",
-            "lance {valor} reais em {categoria}",
-            "lance {valor} reais no {carteira}",
-            "lance {valor} reais na {carteira}",
-            "lance {valor} reais de {categoria} no {carteira}",
-            "lance {valor} reais de {categoria} na {carteira}",
-            "lance {valor} reais em {categoria} no {carteira}",
-            "lance {valor} reais em {categoria} na {carteira}",
+            "paguei {valor} reais de {categoria} no {carteira}",
+            "paguei {valor} reais em {categoria}",
+            "paguei {valor} reais na {carteira}",
+            "paguei {valor} reais no {carteira}",
             "registre um gasto de {valor} reais",
             "registre uma despesa de {valor} reais",
             "registre {valor} reais em {categoria}",
-            "registre {valor} reais no {carteira}",
-            "registre {valor} reais na {carteira}",
-            "registre {valor} reais em {categoria} no {carteira}",
             "registre {valor} reais em {categoria} na {carteira}",
-            "menos {valor} reais",
-            "menos {valor} reais no {carteira}",
-            "menos {valor} reais na {carteira}",
-            "menos {valor} reais em {categoria}",
-            "despesa de {valor} reais",
-            "despesa de {valor} reais em {categoria}"
+            "registre {valor} reais em {categoria} no {carteira}",
+            "registre {valor} reais na {carteira}",
+            "registre {valor} reais no {carteira}",
+            "saída de {valor} e {centavos}",
+            "saída de {valor} e {centavos} de {categoria}",
+            "saída de {valor} e {centavos} em {carteira}",
+            "saída de {valor} e {centavos} em {carteira} com {categoria}",
+            "saída de {valor} e {centavos} em {carteira} de {categoria}",
+            "saída de {valor} e {centavos} na {carteira} com {categoria}",
+            "saída de {valor} e {centavos} no {carteira} com {categoria}",
+            "saída de {valor} em {carteira}",
+            "saída de {valor} em {carteira} com {categoria}",
+            "saída de {valor} reais",
+            "saída de {valor} reais e {centavos} centavos",
+            "saída de {valor} reais em {categoria}",
+            "saída de {valor} reais na {carteira}",
+            "saída de {valor} reais no {carteira}",
+            "{categoria} {valor}",
+            "{categoria} {valor} reais",
+            "{valor}",
+            "{valor} com {categoria}",
+            "{valor} com {centavos}",
+            "{valor} com {centavos} de {categoria}",
+            "{valor} de {categoria}",
+            "{valor} de {categoria} na {carteira}",
+            "{valor} de {categoria} no {carteira}",
+            "{valor} e {centavos}",
+            "{valor} e {centavos} de {categoria}",
+            "{valor} e {centavos} de {categoria} na {carteira}",
+            "{valor} e {centavos} de {categoria} no {carteira}",
+            "{valor} e {centavos} em {carteira}",
+            "{valor} e {centavos} em {carteira} com {categoria}",
+            "{valor} e {centavos} em {carteira} de {categoria}",
+            "{valor} e {centavos} na {carteira}",
+            "{valor} e {centavos} na {carteira} com {categoria}",
+            "{valor} e {centavos} na {categoria}",
+            "{valor} e {centavos} no {carteira}",
+            "{valor} e {centavos} no {carteira} com {categoria}",
+            "{valor} e {centavos} no {categoria}",
+            "{valor} em {carteira}",
+            "{valor} em {carteira} com {categoria}",
+            "{valor} em {categoria}",
+            "{valor} na {carteira}",
+            "{valor} na {categoria}",
+            "{valor} no {carteira}",
+            "{valor} no {categoria}",
+            "{valor} reais",
+            "{valor} reais de {categoria}",
+            "{valor} reais de {categoria} na {carteira}",
+            "{valor} reais de {categoria} no {carteira}",
+            "{valor} reais e {centavos}",
+            "{valor} reais e {centavos} centavos",
+            "{valor} reais e {centavos} centavos de {categoria}",
+            "{valor} reais e {centavos} centavos na {carteira}",
+            "{valor} reais e {centavos} centavos no {carteira}",
+            "{valor} reais e {centavos} centavos no {categoria}",
+            "{valor} reais em {categoria}",
+            "{valor} reais na {carteira}",
+            "{valor} reais na {categoria}",
+            "{valor} reais no {carteira}",
+            "{valor} reais no {categoria}"
           ]
         },
         {
@@ -413,6 +462,79 @@
             "apliquei {valor} reais",
             "apliquei {valor} reais em investimentos"
           ]
+        },
+        {
+          "name": "DesfazerUltimoLancamentoIntent",
+          "slots": [],
+          "samples": [
+            "desfaça o último lançamento",
+            "desfaça a última movimentação",
+            "desfaça o último gasto",
+            "desfaça a última saída",
+            "desfaça o último registro",
+            "desfaça o lançamento",
+            "desfaça a movimentação",
+            "desfaça o gasto",
+            "desfaça a saída",
+            "desfazer o último lançamento",
+            "desfazer o último gasto",
+            "desfazer último lançamento",
+            "desfazer último gasto",
+            "desfazer última movimentação",
+            "desfazer última saída",
+            "desfazer lançamento",
+            "desfazer gasto",
+            "desfazer movimentação",
+            "desfazer",
+            "errei o valor",
+            "errei o último valor",
+            "errei o lançamento",
+            "errei o último lançamento",
+            "errei o gasto",
+            "errei a conta",
+            "cancele o último lançamento",
+            "cancele o último gasto",
+            "cancele a última movimentação",
+            "cancele a última saída",
+            "cancelar último lançamento",
+            "cancelar último gasto",
+            "apagar o último lançamento",
+            "apagar último lançamento",
+            "apagar o último gasto",
+            "apagar último gasto",
+            "remover último lançamento",
+            "remover o último lançamento",
+            "remover último gasto",
+            "estornar último lançamento",
+            "estorne o último gasto",
+            "voltar último lançamento"
+          ]
+        },
+        {
+          "name": "ResumoDoDiaIntent",
+          "slots": [],
+          "samples": [
+            "como foi meu dia",
+            "como foi o meu dia",
+            "como foram meus gastos hoje",
+            "quanto gastei hoje",
+            "quanto eu gastei hoje",
+            "quanto que eu gastei hoje",
+            "quanto já gastei hoje",
+            "quanto foi gasto hoje",
+            "resumo do dia",
+            "resumo de hoje",
+            "gastos de hoje",
+            "o que gastei hoje",
+            "o que eu gastei hoje",
+            "balanço do dia",
+            "balanço de hoje",
+            "qual foi o total de gastos hoje",
+            "total de gastos hoje",
+            "resumo das despesas de hoje",
+            "quanto gastei até agora",
+            "como estão meus gastos hoje"
+          ]
         }
       ],
       "types": [
@@ -482,98 +604,296 @@
               "id": "almoco",
               "name": {
                 "value": "almoço",
-                "synonyms": ["almoco", "comida", "rango", "refeição", "refeicao"]
+                "synonyms": [
+                  "almoco",
+                  "comida",
+                  "rango",
+                  "refeicao",
+                  "refeição"
+                ]
               }
             },
             {
               "id": "jantar",
               "name": {
                 "value": "jantar",
-                "synonyms": ["janta"]
+                "synonyms": [
+                  "ceia",
+                  "janta"
+                ]
               }
             },
             {
               "id": "cafe",
               "name": {
                 "value": "café",
-                "synonyms": ["cafe", "café da manhã", "cafe da manha"]
+                "synonyms": [
+                  "cafe",
+                  "café da manhã",
+                  "cafe da manha"
+                ]
               }
             },
             {
               "id": "lanche",
               "name": {
                 "value": "lanche",
-                "synonyms": ["salgado", "lanchinho", "mcdonalds", "hambúrguer", "burger", "ifood"]
+                "synonyms": [
+                  "acai",
+                  "açaí",
+                  "burger",
+                  "hambúrguer",
+                  "ifood",
+                  "lanchinho",
+                  "mcdonalds",
+                  "pastel",
+                  "pizza",
+                  "salgado"
+                ]
               }
             },
             {
               "id": "restaurante",
               "name": {
                 "value": "restaurante",
-                "synonyms": ["bar", "churrascaria", "pizzaria", "pizza"]
+                "synonyms": [
+                  "bar",
+                  "churrascaria",
+                  "pizzaria",
+                  "pizza"
+                ]
               }
             },
             {
               "id": "mercado",
               "name": {
                 "value": "mercado",
-                "synonyms": ["supermercado", "compras", "compras do mês", "hipermercado"]
+                "synonyms": [
+                  "acougue",
+                  "açougue",
+                  "compras",
+                  "compras do mês",
+                  "feira",
+                  "hipermercado",
+                  "hortifruti",
+                  "sacolao",
+                  "sacolão",
+                  "supermercado"
+                ]
               }
             },
             {
               "id": "padaria",
               "name": {
                 "value": "padaria",
-                "synonyms": ["pão", "pao"]
+                "synonyms": [
+                  "cafe",
+                  "café",
+                  "padoca",
+                  "pao",
+                  "pão"
+                ]
               }
             },
             {
               "id": "feira",
               "name": {
                 "value": "feira",
-                "synonyms": ["hortifruti", "sacolão", "sacolao", "açougue", "acougue"]
+                "synonyms": [
+                  "hortifruti",
+                  "sacolão",
+                  "sacolao",
+                  "açougue",
+                  "acougue"
+                ]
               }
             },
             {
               "id": "farmacia",
               "name": {
                 "value": "farmácia",
-                "synonyms": ["farmacia", "remédio", "remedio", "drogaria"]
+                "synonyms": [
+                  "drogaria",
+                  "farmacia",
+                  "medicamento",
+                  "remedio",
+                  "remédio"
+                ]
               }
             },
             {
               "id": "gasolina",
               "name": {
                 "value": "gasolina",
-                "synonyms": ["combustível", "combustivel", "posto", "abastecimento"]
+                "synonyms": [
+                  "abastecimento",
+                  "alcool",
+                  "combustivel",
+                  "combustível",
+                  "diesel",
+                  "etanol",
+                  "posto",
+                  "álcool"
+                ]
               }
             },
             {
               "id": "transporte",
               "name": {
                 "value": "transporte",
-                "synonyms": ["uber", "99", "táxi", "taxi", "ônibus", "onibus", "metrô", "metro", "passagem"]
+                "synonyms": [
+                  "uber",
+                  "99",
+                  "táxi",
+                  "taxi",
+                  "ônibus",
+                  "onibus",
+                  "metrô",
+                  "metro",
+                  "passagem"
+                ]
               }
             },
             {
               "id": "lazer",
               "name": {
                 "value": "lazer",
-                "synonyms": ["cinema", "rolê", "role", "cerveja", "festa", "balada", "jogo"]
+                "synonyms": [
+                  "balada",
+                  "bar",
+                  "cerveja",
+                  "chopp",
+                  "cinema",
+                  "festa",
+                  "jogo",
+                  "passeio",
+                  "role",
+                  "rolê",
+                  "show",
+                  "viagem"
+                ]
               }
             },
             {
               "id": "contas",
               "name": {
                 "value": "contas",
-                "synonyms": ["conta", "boleto", "boletos", "luz", "água", "agua", "internet"]
+                "synonyms": [
+                  "conta",
+                  "boleto",
+                  "boletos",
+                  "luz",
+                  "água",
+                  "agua",
+                  "internet"
+                ]
               }
             },
             {
               "id": "outros",
               "name": {
                 "value": "outros",
-                "synonyms": ["geral", "diversos", "compras online", "pix"]
+                "synonyms": [
+                  "avulso",
+                  "compras online",
+                  "diversos",
+                  "extra",
+                  "geral",
+                  "pix",
+                  "saida",
+                  "saída"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "alguma coisa",
+                "synonyms": [
+                  "aleatorio",
+                  "aleatório",
+                  "coisa",
+                  "compra",
+                  "compras",
+                  "despesa",
+                  "diverso",
+                  "gasto",
+                  "geral",
+                  "qualquer coisa"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "uber",
+                "synonyms": [
+                  "99",
+                  "carona",
+                  "corrida",
+                  "taxi",
+                  "transporte",
+                  "táxi"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "internet",
+                "synonyms": [
+                  "agua",
+                  "aluguel",
+                  "boleto",
+                  "celular",
+                  "condominio",
+                  "condomínio",
+                  "energia",
+                  "luz",
+                  "plano",
+                  "wifi",
+                  "água"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "roupa",
+                "synonyms": [
+                  "roupas",
+                  "sapato",
+                  "shopping",
+                  "tenis",
+                  "tênis",
+                  "vestuario",
+                  "vestuário"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "academia",
+                "synonyms": [
+                  "mensalidade",
+                  "saude",
+                  "saúde",
+                  "suplemento",
+                  "treino"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "casa",
+                "synonyms": [
+                  "limpeza",
+                  "manutencao",
+                  "manutenção",
+                  "moveis",
+                  "móveis",
+                  "pet",
+                  "racao",
+                  "ração",
+                  "veterinario",
+                  "veterinário"
+                ]
               }
             }
           ]
@@ -585,35 +905,57 @@
               "id": "salario",
               "name": {
                 "value": "salário",
-                "synonyms": ["salario", "pagamento", "adiantamento", "vale"]
+                "synonyms": [
+                  "salario",
+                  "pagamento",
+                  "adiantamento",
+                  "vale"
+                ]
               }
             },
             {
               "id": "pix",
               "name": {
                 "value": "pix",
-                "synonyms": ["transferência", "transferencia", "ted", "doc"]
+                "synonyms": [
+                  "transferência",
+                  "transferencia",
+                  "ted",
+                  "doc"
+                ]
               }
             },
             {
               "id": "reembolso",
               "name": {
                 "value": "reembolso",
-                "synonyms": ["devolução", "estorno"]
+                "synonyms": [
+                  "devolução",
+                  "estorno"
+                ]
               }
             },
             {
               "id": "extra",
               "name": {
                 "value": "extra",
-                "synonyms": ["bico", "freela", "freelance", "venda", "presente"]
+                "synonyms": [
+                  "bico",
+                  "freela",
+                  "freelance",
+                  "venda",
+                  "presente"
+                ]
               }
             },
             {
               "id": "deposito",
               "name": {
                 "value": "depósito",
-                "synonyms": ["deposito", "rendimento"]
+                "synonyms": [
+                  "deposito",
+                  "rendimento"
+                ]
               }
             }
           ]

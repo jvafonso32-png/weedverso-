@@ -10,7 +10,7 @@ import json
 import re
 import urllib.request
 import urllib.error
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 # Alexa Skills Kit SDK (com suporte a fallback local para testes sem instalacao previa)
 try:
@@ -664,6 +664,151 @@ class FallbackIntentHandler(AbstractRequestHandler):
         )
         return handler_input.response_builder.speak(speech).ask("Deseja tentar novamente?").response
 
+
+class DesfazerUltimoLancamentoIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Desfaça o último lançamento', 'Errei o valor', 'Cancele a última movimentação'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("DesfazerUltimoLancamentoIntent")(handler_input)
+
+    def handle(self, handler_input):
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak("Desculpe, não consegui acessar seus dados na nuvem para desfazer o lançamento.").response
+
+        tx_list = state.get("tx") or []
+        credit = state.get("credit") or {}
+        credit_tx_list = credit.get("tx") or []
+
+        last_tx = tx_list[0] if tx_list else None
+        last_credit_tx = credit_tx_list[0] if credit_tx_list else None
+
+        if not last_tx and not last_credit_tx:
+            return handler_input.response_builder.speak("Você não possui nenhum lançamento recente para desfazer.").response
+
+        target = "wallet"
+        if last_tx and last_credit_tx:
+            tx_time = str(last_tx.get("at") or "")
+            credit_time = str(last_credit_tx.get("at") or "")
+            if credit_time > tx_time:
+                target = "credit"
+            else:
+                target = "wallet"
+        elif last_credit_tx:
+            target = "credit"
+        else:
+            target = "wallet"
+
+        if target == "wallet":
+            undone_tx = tx_list.pop(0)
+            val = float(undone_tx.get("value", 0.0))
+            tx_type = undone_tx.get("type", "out")
+            account_key = undone_tx.get("account", "conta")
+            desc = undone_tx.get("note") or undone_tx.get("category") or "gasto"
+
+            balances = state.setdefault("balances", {})
+            wallet = balances.setdefault(account_key, {"label": "Conta", "amount": 0.0})
+            cur_bal = float(wallet.get("amount", 0.0))
+
+            if tx_type == "out":
+                wallet["amount"] = round(cur_bal + val, 2)
+                verb = "cancelado"
+            else:
+                wallet["amount"] = round(cur_bal - val, 2)
+                verb = "estornada"
+
+            ok, push_err = push_state_to_gist(state)
+            if not ok:
+                return handler_input.response_builder.speak("O lançamento foi localizado, mas houve um erro ao sincronizar o cancelamento com a nuvem.").response
+
+            speech = f"Último lançamento de {format_spoken_currency(val)} em {desc} {verb} com sucesso. Seu saldo foi restaurado para {format_spoken_currency(wallet['amount'])}."
+            return handler_input.response_builder.speak(speech).response
+        else:
+            undone_tx = credit_tx_list.pop(0)
+            val = float(undone_tx.get("value", 0.0))
+            desc = undone_tx.get("desc") or "cartão"
+            used = float(credit.get("used", 0.0))
+            credit["used"] = max(0.0, round(used - val, 2))
+
+            ok, push_err = push_state_to_gist(state)
+            if not ok:
+                return handler_input.response_builder.speak("O lançamento do cartão foi localizado, mas houve um erro ao sincronizar o cancelamento com a nuvem.").response
+
+            speech = f"Último lançamento no cartão de {format_spoken_currency(val)} em {desc} cancelado com sucesso. A fatura atual foi atualizada para {format_spoken_currency(credit['used'])}."
+            return handler_input.response_builder.speak(speech).response
+
+class ResumoDoDiaIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Como foi meu dia?', 'Quanto gastei hoje?', 'Resumo do dia'. Dá o balanço falado de todas as saídas de hoje."""
+    def can_handle(self, handler_input):
+        return is_intent_name("ResumoDoDiaIntent")(handler_input)
+
+    def handle(self, handler_input):
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak("Desculpe, não consegui conectar à sua conta na nuvem para calcular o resumo do dia.").response
+
+        now_br = datetime.now(timezone(timedelta(hours=-3)))
+        today_iso = now_br.strftime("%Y-%m-%d")
+
+        tx_list = state.get("tx") or []
+        credit = state.get("credit") or {}
+        credit_tx_list = credit.get("tx") or []
+
+        today_expenses = []
+        for item in tx_list:
+            if item.get("type") == "out":
+                at_val = str(item.get("at") or "")
+                try:
+                    dt = datetime.fromisoformat(at_val.replace("Z", "+00:00"))
+                    dt_br = dt.astimezone(timezone(timedelta(hours=-3)))
+                    item_date = dt_br.strftime("%Y-%m-%d")
+                except Exception:
+                    item_date = at_val[:10]
+                if item_date == today_iso:
+                    today_expenses.append({
+                        "value": float(item.get("value", 0.0)),
+                        "desc": item.get("note") or item.get("category") or "gasto"
+                    })
+
+        for item in credit_tx_list:
+            if item.get("type") in ("expense", "out") or not item.get("type"):
+                at_val = str(item.get("at") or "")
+                try:
+                    dt = datetime.fromisoformat(at_val.replace("Z", "+00:00"))
+                    dt_br = dt.astimezone(timezone(timedelta(hours=-3)))
+                    item_date = dt_br.strftime("%Y-%m-%d")
+                except Exception:
+                    item_date = at_val[:10]
+                if item_date == today_iso:
+                    today_expenses.append({
+                        "value": float(item.get("value", 0.0)),
+                        "desc": item.get("desc") or "cartão"
+                    })
+
+        total_spent = sum(x["value"] for x in today_expenses)
+        count = len(today_expenses)
+
+        if count == 0:
+            return handler_input.response_builder.speak("Você ainda não registrou nenhum gasto hoje! Todos os seus saldos continuam intactos.").response
+
+        total_spoken = format_spoken_currency(total_spent)
+        plural_mov = "movimentação" if count == 1 else "movimentações"
+
+        if count == 1:
+            speech = f"Hoje você registrou apenas 1 gasto de {total_spoken} em {today_expenses[0]['desc']}."
+        elif count <= 3:
+            detalhes = []
+            for exp in today_expenses:
+                detalhes.append(f"{format_spoken_currency(exp['value'])} em {exp['desc']}")
+            detalhes_str = ", ".join(detalhes[:-1]) + " e " + detalhes[-1]
+            speech = f"Hoje você gastou um total de {total_spoken} em {count} {plural_mov}: {detalhes_str}."
+        else:
+            sorted_exp = sorted(today_expenses, key=lambda x: x["value"], reverse=True)
+            detalhes = [f"{format_spoken_currency(x['value'])} em {x['desc']}" for x in sorted_exp[:3]]
+            detalhes_str = ", ".join(detalhes[:2]) + " e " + detalhes[2]
+            speech = f"Hoje você gastou um total de {total_spoken} em {count} {plural_mov}, incluindo os maiores gastos de {detalhes_str}."
+
+        return handler_input.response_builder.speak(speech).response
+
 class SessionEndedRequestHandler(AbstractRequestHandler):
     """Fim de sessão."""
     def can_handle(self, handler_input):
@@ -702,6 +847,8 @@ sb.add_request_handler(ConsultarDevedoresIntentHandler())
 sb.add_request_handler(ConsultarObjetivosIntentHandler())
 sb.add_request_handler(ConsultarInvestimentosIntentHandler())
 sb.add_request_handler(RegistrarAporteIntentHandler())
+sb.add_request_handler(DesfazerUltimoLancamentoIntentHandler())
+sb.add_request_handler(ResumoDoDiaIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())

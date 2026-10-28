@@ -185,6 +185,49 @@ class TestAlexaSkillLogic(unittest.TestCase):
         self.assertEqual(state["investments"]["total"], 20123.34)
         print("✅ Teste de cartão, extrato, devedores e investimentos: APROVADO")
 
+
+    def test_undo_and_daily_summary(self):
+        # 1. Teste de Desfazer Ultimo Lancamento
+        state = {
+            "balances": {"conta": {"label": "Conta", "amount": 970.76}},
+            "tx": [{
+                "id": "20261028190000",
+                "account": "conta",
+                "type": "out",
+                "value": 29.24,
+                "note": "Padaria",
+                "at": "2026-10-28T22:30:00Z"
+            }],
+            "credit": {"used": 150.0, "tx": []}
+        }
+
+        # Desfaz a saída de 29.24
+        undone = state["tx"].pop(0)
+        state["balances"]["conta"]["amount"] = round(state["balances"]["conta"]["amount"] + undone["value"], 2)
+        self.assertEqual(state["balances"]["conta"]["amount"], 1000.0)
+        self.assertEqual(len(state["tx"]), 0)
+
+        # 2. Teste de Resumo do Dia (Soma de Saídas de Hoje)
+        now_iso = alexa_mod.datetime.now(alexa_mod.timezone.utc).isoformat().replace("+00:00", "Z")
+        state["tx"] = [
+            {"type": "out", "value": 35.0, "note": "Almoço", "at": now_iso},
+            {"type": "out", "value": 29.24, "note": "Padaria", "at": now_iso},
+            {"type": "in", "value": 500.0, "note": "Salário", "at": now_iso}
+        ]
+        today_expenses = [x for x in state["tx"] if x.get("type") == "out"]
+        total_spent = sum(x["value"] for x in today_expenses)
+        self.assertEqual(len(today_expenses), 2)
+        self.assertEqual(round(total_spent, 2), 64.24)
+        self.assertEqual(alexa_mod.format_spoken_currency(total_spent), "64 reais e 24 centavos")
+        print("✅ Teste de comando Desfazer e Resumo Diário de Gastos: APROVADO")
+
+    def test_recognize_conta_corrente_alguma_coisa(self):
+        w_key, w_label = alexa_mod.normalize_wallet_key("conta corrente", "alguma coisa")
+        self.assertEqual(w_key, "conta")
+        amount = alexa_mod.calculate_amount("29", "24")
+        self.assertEqual(amount, 29.24)
+        print("✅ Teste de reconhecimento 'gastei 29,24 em conta corrente com alguma coisa': APROVADO")
+
     def test_gist_live_pull(self):
         state, msg = alexa_mod.pull_state_from_gist()
         if state is not None:

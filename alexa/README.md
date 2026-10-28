@@ -75,6 +75,22 @@ Pronto! Automaticamente o seu aparelho Echo físico conectado à mesma conta já
 
 ---
 
+### ⏪ Desfazer / Errei o Valor (Segurança Total)
+- *"Alexa, desfaça o último lançamento em minhas finanças"*
+- *"Alexa, errei o valor em minhas finanças"*
+- *"Alexa, cancele o último gasto em minhas finanças"*
+- *"Alexa, desfazer último registro"*
+*(A Alexa remove a movimentação do Gist e devolve o dinheiro imediatamente para o saldo)*
+
+### 🌙 Resumo Diário de Gastos (Balanço do Dia)
+- *"Alexa, como foi meu dia em minhas finanças?"*
+- *"Alexa, quanto gastei hoje em minhas finanças?"*
+- *"Alexa, resumo do dia em minhas finanças"*
+- *"Alexa, balanço de hoje em minhas finanças"*
+*(A Alexa soma todas as saídas de Conta, Vales e Cartão feitas no dia de hoje e dá um resumo falado)*
+
+---
+
 ## 🛡️ Sincronização em Tempo Real
 
 Toda vez que você fala com a Alexa:
