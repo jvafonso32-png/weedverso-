@@ -99,6 +99,16 @@ def parse_spoken_amount(raw_val):
             pass
     return 0.0
 
+def calculate_amount(raw_val, raw_cents=""):
+    """Calcula o valor total somando reais e centavos (ex: 29 reais e 24 centavos = 29.24)."""
+    base = parse_spoken_amount(raw_val)
+    cents = parse_spoken_amount(raw_cents)
+    if round(base, 2) != int(base):
+        return round(base, 2)
+    if cents > 0:
+        return round(base + (cents / 100.0), 2)
+    return round(base, 2)
+
 def normalize_wallet_key(raw_slot, description=""):
     """
     Identifica a carteira de destino:
@@ -261,10 +271,11 @@ class RegistrarGastoIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         raw_val = get_slot_value(handler_input, "valor")
+        raw_cents = get_slot_value(handler_input, "centavos")
         raw_carteira = get_slot_value(handler_input, "carteira")
         raw_desc = get_slot_value(handler_input, "categoria") or get_slot_value(handler_input, "descricao")
 
-        amount = parse_spoken_amount(raw_val)
+        amount = calculate_amount(raw_val, raw_cents)
 
         if amount <= 0:
             return (
@@ -326,10 +337,11 @@ class RegistrarEntradaIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         raw_val = get_slot_value(handler_input, "valor")
+        raw_cents = get_slot_value(handler_input, "centavos")
         raw_carteira = get_slot_value(handler_input, "carteira")
         raw_desc = get_slot_value(handler_input, "origem") or get_slot_value(handler_input, "descricao")
 
-        amount = parse_spoken_amount(raw_val)
+        amount = calculate_amount(raw_val, raw_cents)
 
         if amount <= 0:
             return (
@@ -390,9 +402,10 @@ class RegistrarGastoCartaoIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         raw_val = get_slot_value(handler_input, "valor")
+        raw_cents = get_slot_value(handler_input, "centavos")
         raw_desc = get_slot_value(handler_input, "categoria") or get_slot_value(handler_input, "descricao")
 
-        amount = parse_spoken_amount(raw_val)
+        amount = calculate_amount(raw_val, raw_cents)
 
         if amount <= 0:
             return (
@@ -569,8 +582,9 @@ class RegistrarAporteIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         raw_val = get_slot_value(handler_input, "valor")
+        raw_cents = get_slot_value(handler_input, "centavos")
 
-        amount = parse_spoken_amount(raw_val)
+        amount = calculate_amount(raw_val, raw_cents)
 
         if amount <= 0:
             return (

@@ -47,7 +47,14 @@ class TestAlexaSkillLogic(unittest.TestCase):
         self.assertEqual(alexa_mod.parse_spoken_amount("35.50"), 35.5)
         self.assertEqual(alexa_mod.parse_spoken_amount("1 real"), 1.0)
         self.assertEqual(alexa_mod.parse_spoken_amount(""), 0.0)
-        print("✅ Teste de parser flexível de valores numéricos: APROVADO")
+
+        # Teste de centavos combinados (ex: 29 reais e 24 centavos)
+        self.assertEqual(alexa_mod.calculate_amount("29", "24"), 29.24)
+        self.assertEqual(alexa_mod.calculate_amount("29.24", ""), 29.24)
+        self.assertEqual(alexa_mod.calculate_amount("29,24", ""), 29.24)
+        self.assertEqual(alexa_mod.calculate_amount("29", ""), 29.0)
+        self.assertEqual(alexa_mod.calculate_amount("0", "50"), 0.5)
+        print("✅ Teste de parser flexível com centavos (29,24): APROVADO")
 
     def test_normalize_wallet_key(self):
         # Explicito

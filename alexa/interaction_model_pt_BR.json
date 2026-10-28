@@ -84,6 +84,10 @@
               "type": "AMAZON.NUMBER"
             },
             {
+              "name": "centavos",
+              "type": "AMAZON.NUMBER"
+            },
+            {
               "name": "carteira",
               "type": "CARTEIRA_TIPO"
             },
@@ -93,6 +97,37 @@
             }
           ],
           "samples": [
+            "{valor} e {centavos}",
+            "{valor} e {centavos} de {categoria}",
+            "{valor} e {centavos} no {categoria}",
+            "{valor} e {centavos} na {categoria}",
+            "{valor} e {centavos} de {categoria} na {carteira}",
+            "{valor} e {centavos} de {categoria} no {carteira}",
+            "{valor} e {centavos} na {carteira}",
+            "{valor} e {centavos} no {carteira}",
+            "{valor} com {centavos}",
+            "{valor} com {centavos} de {categoria}",
+            "{valor} reais e {centavos}",
+            "{valor} reais e {centavos} centavos",
+            "{valor} reais e {centavos} centavos de {categoria}",
+            "{valor} reais e {centavos} centavos no {categoria}",
+            "{valor} reais e {centavos} centavos na {carteira}",
+            "{valor} reais e {centavos} centavos no {carteira}",
+            "gastei {valor} e {centavos}",
+            "gastei {valor} e {centavos} de {categoria}",
+            "gastei {valor} e {centavos} no {categoria}",
+            "gastei {valor} e {centavos} na {carteira}",
+            "gastei {valor} reais e {centavos}",
+            "gastei {valor} reais e {centavos} centavos",
+            "gastei {valor} reais e {centavos} centavos em {categoria}",
+            "lance {valor} e {centavos}",
+            "lance {valor} e {centavos} de {categoria}",
+            "lance {valor} e {centavos} na {carteira}",
+            "paguei {valor} e {centavos}",
+            "paguei {valor} e {centavos} de {categoria}",
+            "saída de {valor} e {centavos}",
+            "saída de {valor} e {centavos} de {categoria}",
+            "saída de {valor} reais e {centavos} centavos",
             "{valor}",
             "{valor} reais",
             "{valor} de {categoria}",
