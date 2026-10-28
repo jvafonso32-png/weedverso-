@@ -533,6 +533,77 @@ class ConsultarObjetivosIntentHandler(AbstractRequestHandler):
         speech = f"Seus objetivos atuais são: {', '.join(details)}."
         return handler_input.response_builder.speak(speech).response
 
+class ConsultarInvestimentosIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Quanto eu tenho investido?', 'Saldo de investimentos'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("ConsultarInvestimentosIntent")(handler_input)
+
+    def handle(self, handler_input):
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak(
+                "Desculpe, não consegui consultar seus investimentos no momento."
+            ).response
+
+        invest = state.get("investments", {})
+        total = float(invest.get("total", 0.0))
+
+        speech = f"Seu saldo total investido atualmente é de {format_spoken_currency(total)}."
+        return handler_input.response_builder.speak(speech).response
+
+class RegistrarAporteIntentHandler(AbstractRequestHandler):
+    """Chamado ao dizer: 'Aporte de 500 reais nos investimentos', 'Investi 200 reais'."""
+    def can_handle(self, handler_input):
+        return is_intent_name("RegistrarAporteIntent")(handler_input)
+
+    def handle(self, handler_input):
+        raw_val = get_slot_value(handler_input, "valor")
+
+        try:
+            amount = abs(float(str(raw_val).replace(",", ".")))
+        except (ValueError, TypeError):
+            amount = 0.0
+
+        if amount <= 0:
+            return (
+                handler_input.response_builder
+                .speak("Qual foi o valor do aporte para os investimentos?")
+                .ask("Por favor, diga o valor.")
+                .response
+            )
+
+        state, err = pull_state_from_gist()
+        if not state:
+            return handler_input.response_builder.speak(
+                "Desculpe, não consegui conectar ao seu banco de dados na nuvem."
+            ).response
+
+        invest = state.setdefault("investments", {"total": 0.0, "history": []})
+        old_total = float(invest.get("total", 0.0))
+        new_total = round(old_total + amount, 2)
+        invest["total"] = new_total
+
+        now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        invest.setdefault("history", []).insert(0, {
+            "type": "add",
+            "value": round(amount, 2),
+            "balanceAfter": new_total,
+            "note": "Aporte via Alexa",
+            "at": now_iso
+        })
+
+        ok, push_err = push_state_to_gist(state)
+        if not ok:
+            return handler_input.response_builder.speak(
+                "O aporte foi calculado, mas houve um erro ao sincronizar com a nuvem."
+            ).response
+
+        speech = (
+            f"Registrado! Aporte de {format_spoken_currency(amount)} nos investimentos. "
+            f"Seu novo saldo total investido é de {format_spoken_currency(new_total)}."
+        )
+        return handler_input.response_builder.speak(speech).response
+
 class HelpIntentHandler(AbstractRequestHandler):
     """Ajuda ao usuário."""
     def can_handle(self, handler_input):
@@ -605,6 +676,8 @@ sb.add_request_handler(ConsultarFaturaIntentHandler())
 sb.add_request_handler(ConsultarExtratoIntentHandler())
 sb.add_request_handler(ConsultarDevedoresIntentHandler())
 sb.add_request_handler(ConsultarObjetivosIntentHandler())
+sb.add_request_handler(ConsultarInvestimentosIntentHandler())
+sb.add_request_handler(RegistrarAporteIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())

@@ -291,6 +291,48 @@
             "saldo dos objetivos",
             "objetivos financeiros"
           ]
+        },
+        {
+          "name": "ConsultarInvestimentosIntent",
+          "samples": [
+            "quanto eu tenho investido",
+            "quanto tenho investido",
+            "quanto eu tenho em investimentos",
+            "quanto tenho em investimentos",
+            "qual é o meu saldo investido",
+            "qual e o meu saldo investido",
+            "qual meu saldo investido",
+            "qual o meu saldo de investimentos",
+            "saldo de investimentos",
+            "saldo investido",
+            "meus investimentos",
+            "investimentos",
+            "patrimônio investido",
+            "patrimonio investido",
+            "quanto está investido",
+            "quanto esta investido"
+          ]
+        },
+        {
+          "name": "RegistrarAporteIntent",
+          "slots": [
+            {
+              "name": "valor",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "aporte de {valor} reais",
+            "aporte de {valor} reais nos investimentos",
+            "aporte de {valor} reais em investimentos",
+            "investi {valor} reais",
+            "guarde {valor} reais em investimentos",
+            "guarde {valor} reais nos investimentos",
+            "adicione {valor} reais aos investimentos",
+            "adicione {valor} reais nos investimentos",
+            "apliquei {valor} reais",
+            "apliquei {valor} reais em investimentos"
+          ]
         }
       ],
       "types": [

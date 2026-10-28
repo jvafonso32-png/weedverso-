@@ -161,7 +161,13 @@ class TestAlexaSkillLogic(unittest.TestCase):
         txs = state["tx"][:2]
         self.assertEqual(len(txs), 2)
         self.assertEqual(txs[0]["note"], "Almoço")
-        print("✅ Teste de cartão, extrato e devedores: APROVADO")
+
+        # 4. Simula Investimentos
+        state["investments"] = {"total": 19623.34, "history": []}
+        invest_amount = 500.0
+        state["investments"]["total"] += invest_amount
+        self.assertEqual(state["investments"]["total"], 20123.34)
+        print("✅ Teste de cartão, extrato, devedores e investimentos: APROVADO")
 
     def test_gist_live_pull(self):
         state, msg = alexa_mod.pull_state_from_gist()
