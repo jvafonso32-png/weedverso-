@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "weedverso",
+      "invocationName": "minhas finanças",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
