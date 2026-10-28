@@ -2111,39 +2111,29 @@ const STORAGE=(function(){
   }
 })();
 const DEF={
-  appName:'weedverso',userName:'',xp:40,streak:0,routineDone:false,lastDate:'2026-10-03',
+  appName:'weedverso',userName:'',xp:40,streak:0,routineDone:false,lastDate:today(),
   habits:[
-    {id:'qfp42sybsajcf',name:'Academia',goal:'',done:false,date:'2026-09-11',lastDoneAt:'2026-09-12T02:46:51.164Z',skillTag:'treinar'}
+    {id:'qfp-h1',name:'Academia',goal:'',done:false,date:today(),lastDoneAt:'',skillTag:'treinar'}
   ],
   balances:{
-    conta:{label:'Saldo em Conta',amount:569.06},
-    vale1:{label:'Alelo Alimentação',amount:594.69},
-    vale2:{label:'Alelo Refeição',amount:421.01}
+    conta:{label:'Saldo em Conta',amount:0},
+    vale1:{label:'Alelo Alimentação',amount:0},
+    vale2:{label:'Alelo Refeição',amount:0}
   },
   tx:[],
   credit:{
-    name:'AMEX',
-    used:3684,
-    reserved:860,
-    tx:[
-      {id:'mia2fr322yblk',type:'expense',value:1400,desc:'',category:'Sem Categoria',categoryKey:'sem categoria',at:'2026-09-18T14:55:03.992Z'},
-      {id:'lyyw631r2xxun',type:'reserve-in',value:700,desc:'Reserva cartão',category:'Reserva Cartao',categoryKey:'reserva cartao',at:'2026-09-18T14:54:46.175Z'},
-      {id:'qnrueho6x12ei',type:'reserve-in',value:160,desc:'Reserva cartão',category:'Reserva Cartao',categoryKey:'reserva cartao',at:'2026-09-10T02:36:00.234Z'},
-      {id:'09x2q0i4x0qeh',type:'expense',value:4383,desc:'Gasto no cartão',category:'Sem Categoria',categoryKey:'sem categoria',at:'2026-09-10T02:35:44.681Z'}
-    ]
+    name:'Cartão Principal',
+    used:0,
+    reserved:0,
+    tx:[]
   },
-  debtors:[
-    {id:'kler0dqobgw3r',name:'André',amount:282,note:'',payDate:'',paid:false,paidAt:'',at:'2026-09-15T23:42:22.599Z'},
-    {id:'1glozn8ex2nu3',name:'Lucas',amount:267,note:'',payDate:'2026-09-29',paid:true,paidAt:'2026-09-29T16:48:02.214Z',at:'2026-09-10T02:37:14.667Z'},
-    {id:'h0zpcvijx1zkz',name:'Dilson',amount:366,note:'',payDate:'',paid:false,paidAt:'',at:'2026-09-10T02:36:43.235Z'},
-    {id:'lndsa4olx1r0s',name:'Pai',amount:1200,note:'',payDate:'2026-10-01',paid:false,paidAt:'',at:'2026-09-10T02:36:32.140Z'}
-  ],
+  debtors:[],
   myDebts:[],
   routineLog:[],
-  skills:{estudar:0,treinar:25,trabalhar:0},
+  skills:{estudar:0,treinar:0,trabalhar:0},
   goals:[],
-  dailyStats:{'2026-09-09':{done:0,total:0,percent:0},'2026-09-10':{done:0,total:0,percent:0}},
-  focusSession:{habitId:'qfp42sybsajcf',secondsLeft:1500,running:false}
+  dailyStats:{},
+  focusSession:{habitId:'qfp-h1',secondsLeft:1500,running:false}
 };
 var focusTick=null;
 var st=load();
@@ -2430,6 +2420,57 @@ function setupPullToRefresh(){
   });
 }
 
+
+function mergeStates(local, remote){
+  if (!remote || typeof remote !== 'object') return local || normalizeLoadedState(DEF);
+  if (!local || typeof local !== 'object') return remote;
+
+  const txMap = new Map();
+  (remote.tx || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
+  (local.tx || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
+  const mergedTx = Array.from(txMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+
+  const cTxMap = new Map();
+  ((remote.credit && remote.credit.tx) || []).forEach(t => { if (t && t.id) cTxMap.set(t.id, t); });
+  ((local.credit && local.credit.tx) || []).forEach(t => { if (t && t.id) cTxMap.set(t.id, t); });
+  const mergedCreditTx = Array.from(cTxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+
+  const debtorMap = new Map();
+  (remote.debtors || []).forEach(d => { if (d && d.id) debtorMap.set(d.id, d); });
+  (local.debtors || []).forEach(d => { if (d && d.id) debtorMap.set(d.id, d); });
+
+  const debtMap = new Map();
+  (remote.myDebts || []).forEach(d => { if (d && d.id) debtMap.set(d.id, d); });
+  (local.myDebts || []).forEach(d => { if (d && d.id) debtMap.set(d.id, d); });
+
+  const habitMap = new Map();
+  (remote.habits || []).forEach(h => { if (h && h.id) habitMap.set(h.id, h); });
+  (local.habits || []).forEach(h => { if (h && h.id) habitMap.set(h.id, h); });
+
+  const goalMap = new Map();
+  (remote.goals || []).forEach(g => { if (g && g.id) goalMap.set(g.id, g); });
+  (local.goals || []).forEach(g => { if (g && g.id) goalMap.set(g.id, g); });
+
+  const localTime = new Date(local.lastUpdatedAt || 0).getTime();
+  const remoteTime = new Date(remote.lastUpdatedAt || 0).getTime();
+  const primary = (localTime >= remoteTime || !remoteTime) ? local : remote;
+
+  return Object.assign({}, remote, local, {
+    balances: primary.balances || local.balances || remote.balances,
+    credit: Object.assign({}, remote.credit, local.credit, {
+      used: (primary.credit && primary.credit.used !== undefined) ? primary.credit.used : (local.credit ? local.credit.used : 0),
+      reserved: (primary.credit && primary.credit.reserved !== undefined) ? primary.credit.reserved : (local.credit ? local.credit.reserved : 0),
+      tx: mergedCreditTx
+    }),
+    tx: mergedTx,
+    debtors: Array.from(debtorMap.values()),
+    myDebts: Array.from(debtMap.values()),
+    habits: Array.from(habitMap.values()),
+    goals: Array.from(goalMap.values()),
+    lastUpdatedAt: new Date(Math.max(localTime, remoteTime, Date.now())).toISOString()
+  });
+}
+
 const GIST_SYNC={
   id:'20470ade1d831a08ca6f87955658d8a2',
   tokenKey:'weedverso_gh_sync_token',
@@ -2465,10 +2506,14 @@ const GIST_SYNC={
       if(fileInfo && fileInfo.content){
         const parsed=JSON.parse(fileInfo.content);
         if(parsed && typeof parsed==='object'){
-          st=normalizeLoadedState(parsed);
+          const normRemote = normalizeLoadedState(parsed);
+          st = mergeStates(st, normRemote);
           rotateDay();
           writeStoredState(JSON.stringify(st));
           renderAll();
+          if(token && this.hasToken()){
+            this.schedulePush();
+          }
           const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
           this.updateStatus('☁️ Git Sincronizado '+hora,'ok');
           if(!quiet && token) showToast('☁️ Sincronização concluída! Dados atualizados do GitHub.','ok');
@@ -2748,6 +2793,42 @@ async function ensureSessionAccess(){
   }catch(err){}
   return true;
 }
+
+
+// iOS Safari Lifecycle & Persistence Protection
+try {
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().catch(function(){});
+  }
+} catch(e){}
+
+window.addEventListener('pagehide', function(){
+  try {
+    if (st) {
+      st.lastUpdatedAt = new Date().toISOString();
+      writeStoredState(JSON.stringify(st));
+    }
+    if (typeof GIST_SYNC !== 'undefined' && GIST_SYNC.pushTimer) {
+      clearTimeout(GIST_SYNC.pushTimer);
+      GIST_SYNC.push();
+    }
+  } catch(e){}
+});
+
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'hidden') {
+    try {
+      if (st) {
+        st.lastUpdatedAt = new Date().toISOString();
+        writeStoredState(JSON.stringify(st));
+      }
+      if (typeof GIST_SYNC !== 'undefined' && GIST_SYNC.pushTimer) {
+        clearTimeout(GIST_SYNC.pushTimer);
+        GIST_SYNC.push();
+      }
+    } catch(e){}
+  }
+});
 
 boot();
 async function boot(){
@@ -8811,14 +8892,17 @@ function setActive(node, active){
 
 function readStoredState(){
   try{
-    return STORAGE.getItem(KEY);
-  }catch(err){
-    return null;
-  }
+    const primary = STORAGE.getItem(KEY);
+    if(primary) return primary;
+    const backup = STORAGE.getItem(KEY + '_backup');
+    if(backup) return backup;
+  }catch(err){}
+  return null;
 }
 function writeStoredState(value){
   try{
-    STORAGE.setItem(KEY,value);
+    STORAGE.setItem(KEY, value);
+    STORAGE.setItem(KEY + '_backup', value);
   }catch(err){}
 }
 function readPrivacyMode(){
@@ -8871,6 +8955,7 @@ function load(){
   }catch(err){return normalizeLoadedState(DEF);}
 }
 function save(immediate){
+  if(st) st.lastUpdatedAt = new Date().toISOString();
   writeStoredState(JSON.stringify(st));
   if(typeof GIST_SYNC!=='undefined') GIST_SYNC.schedulePush();
   if(immediate) pushServerState({keepalive:true});

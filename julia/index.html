@@ -2597,6 +2597,57 @@ function setupPullToRefresh(){
   });
 }
 
+
+function mergeStates(local, remote){
+  if (!remote || typeof remote !== 'object') return local || normalizeLoadedState(DEF);
+  if (!local || typeof local !== 'object') return remote;
+
+  const txMap = new Map();
+  (remote.tx || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
+  (local.tx || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
+  const mergedTx = Array.from(txMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+
+  const cTxMap = new Map();
+  ((remote.credit && remote.credit.tx) || []).forEach(t => { if (t && t.id) cTxMap.set(t.id, t); });
+  ((local.credit && local.credit.tx) || []).forEach(t => { if (t && t.id) cTxMap.set(t.id, t); });
+  const mergedCreditTx = Array.from(cTxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+
+  const debtorMap = new Map();
+  (remote.debtors || []).forEach(d => { if (d && d.id) debtorMap.set(d.id, d); });
+  (local.debtors || []).forEach(d => { if (d && d.id) debtorMap.set(d.id, d); });
+
+  const debtMap = new Map();
+  (remote.myDebts || []).forEach(d => { if (d && d.id) debtMap.set(d.id, d); });
+  (local.myDebts || []).forEach(d => { if (d && d.id) debtMap.set(d.id, d); });
+
+  const habitMap = new Map();
+  (remote.habits || []).forEach(h => { if (h && h.id) habitMap.set(h.id, h); });
+  (local.habits || []).forEach(h => { if (h && h.id) habitMap.set(h.id, h); });
+
+  const goalMap = new Map();
+  (remote.goals || []).forEach(g => { if (g && g.id) goalMap.set(g.id, g); });
+  (local.goals || []).forEach(g => { if (g && g.id) goalMap.set(g.id, g); });
+
+  const localTime = new Date(local.lastUpdatedAt || 0).getTime();
+  const remoteTime = new Date(remote.lastUpdatedAt || 0).getTime();
+  const primary = (localTime >= remoteTime || !remoteTime) ? local : remote;
+
+  return Object.assign({}, remote, local, {
+    balances: primary.balances || local.balances || remote.balances,
+    credit: Object.assign({}, remote.credit, local.credit, {
+      used: (primary.credit && primary.credit.used !== undefined) ? primary.credit.used : (local.credit ? local.credit.used : 0),
+      reserved: (primary.credit && primary.credit.reserved !== undefined) ? primary.credit.reserved : (local.credit ? local.credit.reserved : 0),
+      tx: mergedCreditTx
+    }),
+    tx: mergedTx,
+    debtors: Array.from(debtorMap.values()),
+    myDebts: Array.from(debtMap.values()),
+    habits: Array.from(habitMap.values()),
+    goals: Array.from(goalMap.values()),
+    lastUpdatedAt: new Date(Math.max(localTime, remoteTime, Date.now())).toISOString()
+  });
+}
+
 const GIST_SYNC={
   id:'746f27fac12d7211f3966965afbf7889',
   tokenKey:'weedverso_julia_gh_sync_token',
@@ -2633,10 +2684,14 @@ const GIST_SYNC={
       if(fileInfo && fileInfo.content){
         const parsed=JSON.parse(fileInfo.content);
         if(parsed && typeof parsed==='object'){
-          st=normalizeLoadedState(parsed);
+          const normRemote = normalizeLoadedState(parsed);
+          st = mergeStates(st, normRemote);
           rotateDay();
           writeStoredState(JSON.stringify(st));
           renderAll();
+          if(token && this.hasToken()){
+            this.schedulePush();
+          }
           const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
           this.updateStatus('☁️ Git Sincronizado '+hora,'ok');
           if(!quiet && token) showToast('☁️ Sincronização concluída! Dados atualizados do GitHub.','ok');
@@ -3015,6 +3070,42 @@ function checkBrotherNotice() {
     }
   } catch(e) {}
 }
+
+
+// iOS Safari Lifecycle & Persistence Protection
+try {
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().catch(function(){});
+  }
+} catch(e){}
+
+window.addEventListener('pagehide', function(){
+  try {
+    if (st) {
+      st.lastUpdatedAt = new Date().toISOString();
+      writeStoredState(JSON.stringify(st));
+    }
+    if (typeof GIST_SYNC !== 'undefined' && GIST_SYNC.pushTimer) {
+      clearTimeout(GIST_SYNC.pushTimer);
+      GIST_SYNC.push();
+    }
+  } catch(e){}
+});
+
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'hidden') {
+    try {
+      if (st) {
+        st.lastUpdatedAt = new Date().toISOString();
+        writeStoredState(JSON.stringify(st));
+      }
+      if (typeof GIST_SYNC !== 'undefined' && GIST_SYNC.pushTimer) {
+        clearTimeout(GIST_SYNC.pushTimer);
+        GIST_SYNC.push();
+      }
+    } catch(e){}
+  }
+});
 
 checkAuthAndStart();
 async function boot(){
@@ -9078,14 +9169,17 @@ function setActive(node, active){
 
 function readStoredState(){
   try{
-    return STORAGE.getItem(KEY);
-  }catch(err){
-    return null;
-  }
+    const primary = STORAGE.getItem(KEY);
+    if(primary) return primary;
+    const backup = STORAGE.getItem(KEY + '_backup');
+    if(backup) return backup;
+  }catch(err){}
+  return null;
 }
 function writeStoredState(value){
   try{
-    STORAGE.setItem(KEY,value);
+    STORAGE.setItem(KEY, value);
+    STORAGE.setItem(KEY + '_backup', value);
   }catch(err){}
 }
 function readPrivacyMode(){
@@ -9140,6 +9234,7 @@ function load(){
   }catch(err){return normalizeLoadedState(DEF);}
 }
 function save(immediate){
+  if(st) st.lastUpdatedAt = new Date().toISOString();
   writeStoredState(JSON.stringify(st));
   if(typeof GIST_SYNC!=='undefined') GIST_SYNC.schedulePush();
   if(immediate) pushServerState({keepalive:true});
