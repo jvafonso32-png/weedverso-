@@ -146,13 +146,19 @@ class WeedversoHandler(BaseHTTPRequestHandler):
         return self.server_version
 
     def _request_scheme(self):
-        forwarded = str(self.headers.get("X-Forwarded-Proto", "")).split(",", 1)[0].strip().lower()
-        if forwarded in {"http", "https"}:
-            return forwarded
+        direct_ip = str(self.client_address[0] if self.client_address else "").strip()
+        if loopback_host(direct_ip):
+            forwarded = str(self.headers.get("X-Forwarded-Proto", "")).split(",", 1)[0].strip().lower()
+            if forwarded in {"http", "https"}:
+                return forwarded
         return "http"
 
     def _request_origin(self):
-        host = str(self.headers.get("X-Forwarded-Host") or self.headers.get("Host") or "").split(",", 1)[0].strip()
+        direct_ip = str(self.client_address[0] if self.client_address else "").strip()
+        if loopback_host(direct_ip):
+            host = str(self.headers.get("X-Forwarded-Host") or self.headers.get("Host") or "").split(",", 1)[0].strip()
+        else:
+            host = str(self.headers.get("Host") or "").split(",", 1)[0].strip()
         if not host:
             return ""
         return normalize_origin(f"{self._request_scheme()}://{host}")
@@ -161,8 +167,12 @@ class WeedversoHandler(BaseHTTPRequestHandler):
         origins = {
             normalize_origin(public_base_url()),
             normalize_origin(local_base_url()),
-            self._request_origin(),
         }
+        direct_ip = str(self.client_address[0] if self.client_address else "").strip()
+        if loopback_host(direct_ip):
+            req_origin = self._request_origin()
+            if req_origin:
+                origins.add(req_origin)
         return {origin for origin in origins if origin}
 
     def _cors_origin(self):

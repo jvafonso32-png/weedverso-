@@ -2649,13 +2649,22 @@ function mergeStates(local, remote){
 }
 
 const GIST_SYNC={
-  id:'746f27fac12d7211f3966965afbf7889',
+  gistKey:'weedverso_julia_gh_sync_gist_id',
   tokenKey:'weedverso_julia_gh_sync_token',
   pushTimer:null,
   busy:false,
   statusText:'',
+  getGistId:function(){
+    try{return (localStorage.getItem(this.gistKey)||'').trim();}catch(e){return '';}
+  },
+  setGistId:function(val){
+    try{
+      if(val) localStorage.setItem(this.gistKey,val.trim());
+      else localStorage.removeItem(this.gistKey);
+    }catch(e){}
+  },
   getToken:function(){
-    try{return localStorage.getItem(this.tokenKey)||'';}catch(e){return '';}
+    try{return (localStorage.getItem(this.tokenKey)||'').trim();}catch(e){return '';}
   },
   setToken:function(val){
     try{
@@ -2664,7 +2673,7 @@ const GIST_SYNC={
     }catch(e){}
   },
   hasToken:function(){
-    return Boolean(this.getToken());
+    return Boolean(this.getToken() && this.getGistId());
   },
   pull:async function(quiet){
     if(!this.id){ this.busy=false; return false; }
@@ -2674,7 +2683,7 @@ const GIST_SYNC={
     try{
       const headers={'Accept':'application/vnd.github+json'};
       if(token) headers['Authorization']='token '+token;
-      const resp=await fetch('https://api.github.com/gists/'+this.id,{headers:headers});
+      const resp=await fetch('https://api.github.com/gists/'+gistId,{headers:headers});
       if(!resp.ok){
         if(token && resp.status===401) throw new Error('Token inválido');
         return false;
@@ -2711,7 +2720,8 @@ const GIST_SYNC={
   },
   push:async function(){
     const token=this.getToken();
-    if(!token||this.busy) return;
+    const gistId=this.getGistId();
+    if(!token||!gistId||this.busy) return;
     this.busy=true;
     this.updateStatus('☁️ Enviando ao GitHub...','running');
     try{
@@ -2722,7 +2732,7 @@ const GIST_SYNC={
           }
         }
       };
-      const resp=await fetch('https://api.github.com/gists/'+this.id,{
+      const resp=await fetch('https://api.github.com/gists/'+gistId,{
         method:'PATCH',
         headers:{
           'Authorization':'token '+token,
@@ -2761,20 +2771,26 @@ const GIST_SYNC={
   },
   handleClick:function(){
     if(!this.hasToken()){
-      const token=prompt('Para sincronizar os gastos entre seu iPhone e o computador, cole seu Token do GitHub:');
-      if(token && token.trim()){
-        this.setToken(token.trim());
+      const currentGist=this.getGistId();
+      const gistPrompt=prompt('ID do seu GitHub Gist privado (32 caracteres):', currentGist);
+      if(!gistPrompt || !gistPrompt.trim()) return;
+      const tokenPrompt=prompt('Seu GitHub Token pessoal (Personal Access Token com permissão gist):', this.getToken());
+      if(tokenPrompt && tokenPrompt.trim()){
+        this.setGistId(gistPrompt.trim());
+        this.setToken(tokenPrompt.trim());
+        this.updateStatus('☁️ Nuvem Git','ok');
         this.pull(false);
       }
     }else{
-      const opt=confirm('Sincronizar agora com o GitHub?\n\n(Dica: Para desconectar o token, clique em Cancelar)');
+      const opt=confirm('Sincronizar agora com o GitHub?\n\n(Dica: Para desconectar ou trocar token/gist, clique em Cancelar)');
       if(opt){
         this.pull(false);
       }else{
-        if(confirm('Deseja desconectar o token do GitHub deste aparelho?')){
+        if(confirm('Deseja desconectar a sincronização do GitHub deste aparelho?')){
           this.setToken('');
+          this.setGistId('');
           this.updateStatus('☁️ Conectar Git','idle');
-          showToast('Token desconectado com sucesso.','ok');
+          showToast('Sincronização desconectada deste aparelho.','ok');
         }
       }
     }

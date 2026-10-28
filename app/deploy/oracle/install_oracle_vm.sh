@@ -36,7 +36,9 @@ fi
 cp "$APP_DIR/deploy/oracle/weedverso.service" "/etc/systemd/system/${SERVICE_NAME}.service"
 
 if command -v firewall-cmd >/dev/null 2>&1; then
-  firewall-cmd --permanent --add-port=8765/tcp || true
+  # Mantem porta 8765 fechada ao mundo exterior e libera HTTP/HTTPS para proxy reverso TLS
+  firewall-cmd --permanent --add-service=http || true
+  firewall-cmd --permanent --add-service=https || true
   firewall-cmd --reload || true
 fi
 

@@ -28,6 +28,9 @@ tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
 
 curl -fsSL "$CADDY_URL" -o "$tmpdir/caddy.tar.gz"
+if command -v sha256sum >/dev/null 2>&1 && [[ -n "${CADDY_SHA256:-}" ]]; then
+  echo "${CADDY_SHA256}  $tmpdir/caddy.tar.gz" | sha256sum --check -
+fi
 tar -xzf "$tmpdir/caddy.tar.gz" -C "$tmpdir"
 install -m 0755 "$tmpdir/caddy" /usr/local/bin/caddy
 setcap cap_net_bind_service=+ep /usr/local/bin/caddy || true

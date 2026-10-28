@@ -521,12 +521,10 @@ def julia_chat_ids():
 def allowed_chat_ids():
     if ALLOWED_CHAT_IDS:
         return set(ALLOWED_CHAT_IDS)
-    fallback = {
-        str(os.getenv("WEEDVERSO_NOTIFY_CHAT_ID") or "").strip(),
-        str(latest_chat_id() or "").strip(),
-    }
-    fallback.update(str(item.get("id") or "").strip() for item in read_chats())
-    return {item for item in fallback if item}
+    notify = str(os.getenv("WEEDVERSO_NOTIFY_CHAT_ID") or "").strip()
+    if notify:
+        return {notify}
+    return set()
 
 
 def resolve_user(chat_id):

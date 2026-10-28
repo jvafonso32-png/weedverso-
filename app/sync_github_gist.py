@@ -14,8 +14,8 @@ import shared_state
 load_env_file()
 
 TOKEN = os.getenv("GITHUB_SYNC_TOKEN", "").strip()
-JOAO_GIST_ID = os.getenv("GITHUB_GIST_ID", "20470ade1d831a08ca6f87955658d8a2").strip()
-JULIA_GIST_ID = os.getenv("GITHUB_JULIA_GIST_ID", "746f27fac12d7211f3966965afbf7889").strip()
+JOAO_GIST_ID = os.getenv("GITHUB_GIST_ID", "").strip()
+JULIA_GIST_ID = os.getenv("GITHUB_JULIA_GIST_ID", "").strip()
 
 _LAST_PULL_TIMES = {"joao": 0.0, "julia": 0.0}
 _PULL_LOCKS = {"joao": threading.Lock(), "julia": threading.Lock()}

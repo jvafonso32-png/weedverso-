@@ -36,11 +36,11 @@ except ImportError:
     Response = object
 
 # Configuracoes de Sincronizacao (Configuradas nas Variaveis de Ambiente da Skill)
-DEFAULT_GIST_ID = "20470ade1d831a08ca6f87955658d8a2"
+EXPECTED_SKILL_ID = os.getenv("ALEXA_SKILL_ID", "").strip()
 
 def get_env_config():
     token = os.getenv("GITHUB_TOKEN") or os.getenv("GITHUB_SYNC_TOKEN") or ""
-    gist_id = os.getenv("GITHUB_GIST_ID") or DEFAULT_GIST_ID
+    gist_id = os.getenv("GITHUB_GIST_ID", "")
     return token.strip(), gist_id.strip()
 
 # ==============================================================================
@@ -688,6 +688,8 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 # ==============================================================================
 
 sb = SkillBuilder()
+if EXPECTED_SKILL_ID and hasattr(sb, "skill_id"):
+    sb.skill_id = EXPECTED_SKILL_ID
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(ConsultarSaldoIntentHandler())
