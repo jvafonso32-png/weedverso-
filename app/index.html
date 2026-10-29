@@ -2472,13 +2472,18 @@ function mergeStates(local, remote){
 }
 
 const GIST_SYNC={
+  defaultGistId:'20470ade1d831a08ca6f87955658d8a2',
   gistKey:'weedverso_gh_sync_gist_id',
   tokenKey:'weedverso_gh_sync_token',
   pushTimer:null,
   busy:false,
   statusText:'',
   getGistId:function(){
-    try{return (localStorage.getItem(this.gistKey)||'').trim();}catch(e){return '';}
+    try{
+      return (localStorage.getItem(this.gistKey) || this.defaultGistId || '').trim();
+    }catch(e){
+      return this.defaultGistId || '';
+    }
   },
   setGistId:function(val){
     try{
@@ -2598,13 +2603,13 @@ const GIST_SYNC={
   },
   handleClick:function(){
     if(!this.hasToken()){
-      const currentGist=this.getGistId();
-      const gistPrompt=prompt('ID do seu GitHub Gist privado (32 caracteres):', currentGist);
-      if(!gistPrompt || !gistPrompt.trim()) return;
-      const tokenPrompt=prompt('Seu GitHub Token pessoal (Personal Access Token com permissão gist):', this.getToken());
+      const currentToken=this.getToken();
+      const tokenPrompt=prompt('Cole seu Token do GitHub (Personal Access Token com permissão gist) para sincronizar com seu iPhone e Alexa:', currentToken);
       if(tokenPrompt && tokenPrompt.trim()){
-        this.setGistId(gistPrompt.trim());
         this.setToken(tokenPrompt.trim());
+        if(!localStorage.getItem(this.gistKey)){
+          this.setGistId(this.defaultGistId);
+        }
         this.updateStatus('☁️ Nuvem Git','ok');
         this.pull(false);
       }
@@ -9064,14 +9069,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v32'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v33'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v32');
+      sessionStorage.setItem('sw_ctrl_reload','v33');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=32', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=33', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
