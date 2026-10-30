@@ -3494,7 +3494,8 @@ function bind(){
           <label class="mini">Em qual conta o dinheiro caiu?</label>
           <div class="sheetPills" id="dvReceiveAccPills">
             <button type="button" class="sheetPill ${defaultAcc==='conta'?'active':''}" data-acc="conta">🏦 Conta (${money(st.balances.conta.amount)})</button>
-            <button type="button" class="sheetPill ${defaultAcc==='amex'?'active':''}" data-acc="amex">💳 Abater AMEX (Usado: ${money(st.credit.used)})</button>
+            <button type="button" class="sheetPill ${defaultAcc==='reserve'?'active':''}" data-acc="reserve">🛡️ Saldo Reserva (${money((st.credit&&st.credit.reserved)||0)})</button>
+            <button type="button" class="sheetPill ${defaultAcc==='amex'?'active':''}" data-acc="amex">💳 Abater AMEX (Usado: ${money((st.credit&&st.credit.used)||0)})</button>
             <button type="button" class="sheetPill ${defaultAcc==='vale1'?'active':''}" data-acc="vale1">🥗 Alelo Alimentação</button>
             <button type="button" class="sheetPill ${defaultAcc==='vale2'?'active':''}" data-acc="vale2">🍽️ Alelo Refeição</button>
           </div>
@@ -3565,6 +3566,20 @@ function bind(){
         categoryKey:'pagamento',
         at:nowIso
       });
+    } else if(account==='reserve'){
+      st.credit.reserved=roundMoneyValue((Number(st.credit.reserved)||0)+val);
+      st.credit.tx=st.credit.tx||[];
+      st.credit.tx.unshift({
+        id:txId,
+        type:'reserve-in',
+        value:val,
+        desc:`Recebido de ${d.name} (Reserva cartão)`,
+        category:'Reserva cartao',
+        categoryKey:'reserva',
+        at:nowIso
+      });
+      flash(document.getElementById('ccReserved'),'in');
+      flash(document.getElementById('ccCardReserved'),'in');
     } else {
       st.balances[account].amount=roundMoneyValue((Number(st.balances[account].amount)||0)+val);
       st.tx.unshift({
@@ -3716,6 +3731,9 @@ function bind(){
     if(account==='amex'){
       st.credit.used=roundMoneyValue((Number(st.credit.used)||0)+val);
       st.credit.tx=(st.credit.tx||[]).filter(t=>t.id!==txId);
+    } else if(account==='reserve'){
+      st.credit.reserved=Math.max(0,roundMoneyValue((Number(st.credit.reserved)||0)-val));
+      st.credit.tx=(st.credit.tx||[]).filter(t=>t.id!==txId);
     } else {
       st.balances[account].amount=roundMoneyValue((Number(st.balances[account].amount)||0)-val);
       st.tx=(st.tx||[]).filter(t=>t.id!==txId);
@@ -3801,7 +3819,7 @@ function bind(){
       (d.payments||[]).forEach(p=>{
         const pVal=Number(p.value)||0;
         totalPaid+=pVal;
-        const accNames={conta:'Saldo em Conta',amex:'Abatido no AMEX',vale1:'Alelo Alimentação',vale2:'Alelo Refeição'};
+        const accNames={conta:'Saldo em Conta',reserve:'Saldo Reserva (Cartão)',amex:'Abatido no AMEX',vale1:'Alelo Alimentação',vale2:'Alelo Refeição'};
         events.push({
           type:'payment',
           date:p.at,
@@ -8396,7 +8414,7 @@ function normalizeDebtorEntry(item){
       id:p.id||id(),
       value:roundMoneyValue(p.value),
       at:p.at||new Date().toISOString(),
-      account:['conta','vale1','vale2','amex'].includes(p.account)?p.account:'conta',
+      account:['conta','vale1','vale2','amex','reserve'].includes(p.account)?p.account:'conta',
       txId:p.txId||''
     }));
   }
@@ -9069,14 +9087,14 @@ window.addEventListener('offline',function(){
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v33'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v34'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v33');
+      sessionStorage.setItem('sw_ctrl_reload','v34');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=33', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=34', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});

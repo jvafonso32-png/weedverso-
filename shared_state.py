@@ -359,7 +359,7 @@ def normalize_debt_item(item):
 
 
 DEBTOR_REASONS = {"card", "loan", "split", "other"}
-DEBTOR_PAYMENT_ACCOUNTS = {"conta", "vale1", "vale2", "amex"}
+DEBTOR_PAYMENT_ACCOUNTS = {"conta", "vale1", "vale2", "amex", "reserve"}
 
 
 def _debtor_total(entry):
@@ -915,9 +915,47 @@ def receive_debtor_in_account(debtor_name, account_alias="conta", note="", persi
         if not debtor.get("payDate"):
             debtor["payDate"] = _today_key()
         payment_note = debtor_note or f"Recebido de {debtor.get('name') or 'Devedor'}"
-        account_key, entry = _apply_balance_transaction(
-            state, account_alias, "in", amount, payment_note, debtor_id=debtor.get("id") or "", at=now_iso
-        )
+        account_norm = fold_text(account_alias)
+        if account_norm in {"reserve", "reserva", "saldo reserva", "reserva cartao", "reserva do cartao"}:
+            credit = state.setdefault("credit", {})
+            credit["reserved"] = round(max(0.0, safe_float(credit.get("reserved"), 0) + amount), 2)
+            entry_id = make_id()
+            credit.setdefault("tx", []).insert(
+                0,
+                {
+                    "id": entry_id,
+                    "type": "reserve-in",
+                    "value": amount,
+                    "desc": f"Recebido de {debtor.get('name') or 'Devedor'} (Reserva cartão)",
+                    "category": "Reserva cartao",
+                    "categoryKey": "reserva",
+                    "at": now_iso,
+                },
+            )
+            account_key = "reserve"
+        elif account_norm in {"amex", "cartao", "abater amex"}:
+            credit = state.setdefault("credit", {})
+            credit["used"] = round(max(0.0, safe_float(credit.get("used"), 0) - amount), 2)
+            entry_id = make_id()
+            credit.setdefault("tx", []).insert(
+                0,
+                {
+                    "id": entry_id,
+                    "type": "payment",
+                    "value": amount,
+                    "desc": f"Recebido de {debtor.get('name') or 'Devedor'} (abater AMEX)",
+                    "category": "Pagamento cartao",
+                    "categoryKey": "pagamento",
+                    "at": now_iso,
+                },
+            )
+            account_key = "amex"
+        else:
+            account_key, entry = _apply_balance_transaction(
+                state, account_alias, "in", amount, payment_note, debtor_id=debtor.get("id") or "", at=now_iso
+            )
+            entry_id = str(entry.get("id") or "")
+
         payments = debtor.get("payments") if isinstance(debtor.get("payments"), list) else []
         if not isinstance(debtor.get("payments"), list) and received > 0:
             payments.append({"id": make_id(), "value": received, "at": debtor.get("at") or now_iso, "account": "conta", "txId": ""})
@@ -927,7 +965,7 @@ def receive_debtor_in_account(debtor_name, account_alias="conta", note="", persi
                 "value": amount,
                 "at": now_iso,
                 "account": account_key if account_key in DEBTOR_PAYMENT_ACCOUNTS else "conta",
-                "txId": str(entry.get("id") or ""),
+                "txId": entry_id,
             }
         )
         debtor["payments"] = payments
