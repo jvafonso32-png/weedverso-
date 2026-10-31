@@ -728,30 +728,35 @@ const STORAGE=(function(){
   }
 })();
 const DEF={
-  appName:'weedverso',userName:'André',xp:0,streak:0,routineDone:false,lastDate:today(),
-  habits:[
-    {id:'hab-a1',name:'Água (2L)',goal:'2000ml',done:false,date:today(),lastDoneAt:'',skillTag:'saude'},
-    {id:'hab-a2',name:'Exercício / Treino',goal:'45 min',done:false,date:today(),lastDoneAt:'',skillTag:'treinar'}
+  appName: CFG.appName || 'weedverso',
+  userName: CFG.userName || 'João',
+  xp: 40,
+  streak: 0,
+  routineDone: false,
+  lastDate: today(),
+  habits: CFG.defaultHabits || [
+    {id:'qfp-h1',name:'Academia',goal:'',done:false,date:today(),lastDoneAt:'',skillTag:'treinar'}
   ],
-  balances:{
-    conta:{label:'Conta Principal',amount:0},
-    reserva:{label:'Reserva',amount:0}
+  balances: CFG.defaultBalances || {
+    conta: {label:'Saldo em Conta',amount:5803.23},
+    vale1: {label:'Alelo Alimentação',amount:2075.92},
+    vale2: {label:'Alelo Refeição',amount:819.47}
   },
-  tx:[],
-  credit:{
-    name:'Cartão Principal',
-    used:0,
-    reserved:0,
-    tx:[]
+  tx: [],
+  credit: {
+    name: CFG.defaultCreditName || 'AMEX',
+    used: 4758.75,
+    reserved: 814.82,
+    tx: []
   },
-  debtors:[],
-  myDebts:[],
-  routineLog:[],
-  skills:{estudar:0,treinar:0,trabalhar:0},
-  goals:[],
-  investments:[],
-  dailyStats:{},
-  focusSession:{habitId:'hab-a1',secondsLeft:1500,running:false}
+  debtors: [],
+  myDebts: [],
+  routineLog: [],
+  skills: {estudar:0,treinar:25,trabalhar:0},
+  goals: [],
+  investments: [],
+  dailyStats: {},
+  focusSession: {habitId:'qfp-h1',secondsLeft:1500,running:false}
 };
 var focusTick=null;
 var st=load();
@@ -1124,7 +1129,7 @@ const GIST_SYNC={
   pull:async function(quiet){
     const token=this.getToken();
     const gistId=this.getGistId();
-    if(!token || !gistId){
+    if(!gistId){
       if(!quiet) this.handleClick();
       return false;
     }
