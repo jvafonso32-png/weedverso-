@@ -2262,10 +2262,22 @@ body[data-privacy="on"] #investTotalDisplay {
 </div>
 
 <script>
+// Captura automatica de Token de Nuvem via link de convite/configuracao
+try{
+  var rawParams = window.location.hash || window.location.search || '';
+  var tokenMatch = rawParams.match(/[#?&]token=([a-zA-Z0-9_\-]+)/);
+  if(tokenMatch && tokenMatch[1]){
+    localStorage.setItem('weedverso_andre_gh_sync_token', tokenMatch[1]);
+    if(!localStorage.getItem('weedverso_andre_gh_sync_gist_id')){
+      localStorage.setItem('weedverso_andre_gh_sync_gist_id', '5be5ec96e808cb90bc95de6c71d8ba1a');
+    }
+  }
+}catch(e){}
+
 // Higienização de URL: mantém a URL sempre limpa e idêntica
 try{
-  if(window.location.search && !window.location.search.includes('code=')){
-    var cleanUrl=window.location.origin+window.location.pathname+(window.location.hash||'');
+  if(window.location.search || (window.location.hash && window.location.hash.includes('token='))){
+    var cleanUrl=window.location.origin+window.location.pathname;
     window.history.replaceState(null,'',cleanUrl);
   }
 }catch(e){}
@@ -9349,12 +9361,12 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',function(){
     if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v33'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v34');
+      sessionStorage.setItem('sw_ctrl_reload','v35');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=34', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=35', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
