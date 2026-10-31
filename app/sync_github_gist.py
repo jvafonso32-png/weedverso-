@@ -16,10 +16,11 @@ load_env_file()
 TOKEN = os.getenv("GITHUB_SYNC_TOKEN", "").strip()
 JOAO_GIST_ID = os.getenv("GITHUB_GIST_ID", "").strip()
 JULIA_GIST_ID = os.getenv("GITHUB_JULIA_GIST_ID", "").strip()
+ANDRE_GIST_ID = os.getenv("GITHUB_ANDRE_GIST_ID", "").strip()
 
-_LAST_PULL_TIMES = {"joao": 0.0, "julia": 0.0}
-_PULL_LOCKS = {"joao": threading.Lock(), "julia": threading.Lock()}
-_PUSH_LOCKS = {"joao": threading.Lock(), "julia": threading.Lock()}
+_LAST_PULL_TIMES = {"joao": 0.0, "julia": 0.0, "andre": 0.0}
+_PULL_LOCKS = {"joao": threading.Lock(), "julia": threading.Lock(), "andre": threading.Lock()}
+_PUSH_LOCKS = {"joao": threading.Lock(), "julia": threading.Lock(), "andre": threading.Lock()}
 _PERIODIC_SYNC_STARTED = False
 
 
@@ -30,6 +31,13 @@ def _get_user_config(user="joao"):
             "user": "julia",
             "gist_id": JULIA_GIST_ID,
             "state_file": persistent_data_root() / "julia_state.json",
+            "state_filename": "weedverso_state.json"
+        }
+    if user == "andre":
+        return {
+            "user": "andre",
+            "gist_id": ANDRE_GIST_ID,
+            "state_file": persistent_data_root() / "andre_state.json",
             "state_filename": "weedverso_state.json"
         }
     return {
@@ -174,12 +182,20 @@ def start_periodic_sync(interval_seconds=30):
             except Exception as exc:
                 print(f"[Gist Sync Inicial Julia Falhou]: {exc}")
 
+        if ANDRE_GIST_ID:
+            try:
+                pull_from_gist(user="andre", force=True)
+            except Exception as exc:
+                print(f"[Gist Sync Inicial Andre Falhou]: {exc}")
+
         while True:
             try:
                 time.sleep(interval_seconds)
                 pull_from_gist(user="joao", force=False, max_age_seconds=interval_seconds - 5)
                 if JULIA_GIST_ID:
                     pull_from_gist(user="julia", force=False, max_age_seconds=interval_seconds - 5)
+                if ANDRE_GIST_ID:
+                    pull_from_gist(user="andre", force=False, max_age_seconds=interval_seconds - 5)
             except Exception as exc:
                 print(f"[Gist Sync Loop Falhou]: {exc}")
 

@@ -2649,7 +2649,7 @@ function mergeStates(local, remote){
 }
 
 const GIST_SYNC={
-  defaultGistId:'',
+  defaultGistId:'5be5ec96e808cb90bc95de6c71d8ba1a',
   gistKey:'weedverso_andre_gh_sync_gist_id',
   tokenKey:'weedverso_andre_gh_sync_token',
   pushTimer:null,
@@ -9349,12 +9349,12 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',function(){
     if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v33'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v33');
+      sessionStorage.setItem('sw_ctrl_reload','v34');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js?v=33', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js?v=34', { updateViaCache: 'none' }).then(function(reg){
       reg.update();
       if(reg.waiting){
         reg.waiting.postMessage({type:'SKIP_WAITING'});
