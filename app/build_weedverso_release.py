@@ -15,6 +15,8 @@ RUNTIME_FILES = [
     "desktop_code_backup_status.py",
     "desktop_cloud_sync.py",
     "index.html",
+    "core/app.css",
+    "core/app.js",
     "login.html",
     "env_loader.py",
     "share_publish.py",

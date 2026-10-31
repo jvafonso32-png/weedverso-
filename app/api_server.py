@@ -406,6 +406,23 @@ class WeedversoHandler(BaseHTTPRequestHandler):
         if target.is_file():
             self._send_file(target)
             return True
+
+        # Fallback to repo root for shared multi-user assets (julia, andre, core)
+        try:
+            repo_root = BASE_DIR.parent.resolve()
+            parent_target = (repo_root / cleaned).resolve()
+            parent_target.relative_to(repo_root)
+            if parent_target.is_dir():
+                parent_target = parent_target / "index.html"
+            if (parent_target.is_file() and 
+                not parent_target.name.startswith(".") and 
+                parent_target.name not in self.BLOCKED_FILENAMES and
+                (parent_target.suffix.lower() in self.ALLOWED_STATIC_EXTENSIONS or parent_target.name == "manifest.json")):
+                self._send_file(parent_target)
+                return True
+        except (ValueError, Exception):
+            pass
+
         return False
 
     def do_OPTIONS(self):

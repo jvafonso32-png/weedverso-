@@ -101,6 +101,10 @@ if ($AppExcludedFiles.Count -gt 0) {
 
 Invoke-RobocopyChecked -Source (Join-Path $ProjectRoot "app") -Destination $stageApp -ExtraArgs $robocopyAppArgs
 
+if (Test-Path (Join-Path $ProjectRoot "core")) {
+    Invoke-RobocopyChecked -Source (Join-Path $ProjectRoot "core") -Destination (Join-Path $StageRoot "core")
+}
+
 foreach ($file in $RootFiles) {
     $sourcePath = Join-Path $ProjectRoot $file
     if (Test-Path $sourcePath) {

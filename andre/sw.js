@@ -1,24 +1,17 @@
-const CACHE_NAME = 'weedverso-andre-v2';
+const CACHE_NAME = 'weedverso-andre-v3';
 const PRECACHE_ASSETS = [
   './',
   'manifest.json',
   'icon.png',
-  'apple-touch-icon.png'
+  'apple-touch-icon.png',
+  '../core/app.css',
+  '../core/app.js'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      await Promise.allSettled(
-        PRECACHE_ASSETS.map(async (url) => {
-          try {
-            const res = await fetch(url, { cache: 'reload' });
-            if (res.ok) await cache.put(url, res);
-          } catch (e) {
-            try { await cache.add(url); } catch (err) {}
-          }
-        })
-      );
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_ASSETS);
     })
   );
   self.skipWaiting();
@@ -52,18 +45,14 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request, { cache: 'no-cache' })
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const clone = networkResponse.clone();
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
           }
-          return networkResponse;
+          return response;
         })
-        .catch(async () => {
-          const cached = (await caches.match('./')) || (await caches.match('index.html'));
-          if (cached) return cached;
-          return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-        })
+        .catch(() => caches.match(event.request).then((res) => res || caches.match('./')))
     );
     return;
   }
@@ -71,14 +60,23 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        fetch(event.request).then((netRes) => {
-          if (netRes && netRes.status === 200) {
-            caches.open(CACHE_NAME).then((c) => c.put(event.request, netRes));
-          }
-        }).catch(() => {});
+        fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+            }
+          })
+          .catch(() => {});
         return cachedResponse;
       }
-      return fetch(event.request);
+
+      return fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return networkResponse;
+      });
     })
   );
 });
