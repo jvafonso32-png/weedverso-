@@ -808,36 +808,44 @@ const STORAGE=(function(){
     try{ return window.sessionStorage; }catch(e){ return null; }
   }
 })();
+const IS_DEFAULT_USER = (CFG.userId === 'default' || !CFG.userId);
+
 const DEF={
   appName: CFG.appName || 'weedverso',
-  userName: CFG.userName || 'João',
-  xp: 40,
+  userName: CFG.userName || (IS_DEFAULT_USER ? 'João' : 'Usuário'),
+  xp: CFG.defaultXp !== undefined ? CFG.defaultXp : (IS_DEFAULT_USER ? 40 : 0),
   streak: 0,
   routineDone: false,
   lastDate: today(),
-  habits: CFG.defaultHabits || [
+  habits: CFG.defaultHabits || (IS_DEFAULT_USER ? [
     {id:'qfp-h1',name:'Academia',goal:'',done:false,date:today(),lastDoneAt:'',skillTag:'treinar'}
-  ],
-  balances: CFG.defaultBalances || {
+  ] : [
+    {id:'hab-1',name:'Água (2L)',goal:'2000ml',done:false,date:today(),lastDoneAt:'',skillTag:'saude'},
+    {id:'hab-2',name:'Exercício / Treino',goal:'45 min',done:false,date:today(),lastDoneAt:'',skillTag:'treinar'}
+  ]),
+  balances: CFG.defaultBalances || (IS_DEFAULT_USER ? {
     conta: {label:'Saldo em Conta',amount:5803.23},
     vale1: {label:'Alelo Alimentação',amount:2075.92},
     vale2: {label:'Alelo Refeição',amount:819.47}
-  },
+  } : {
+    conta: {label:'Conta Principal',amount:0},
+    reserva: {label:'Reserva',amount:0}
+  }),
   tx: [],
   credit: {
-    name: CFG.defaultCreditName || 'AMEX',
-    used: 4758.75,
-    reserved: 814.82,
+    name: CFG.defaultCreditName || (IS_DEFAULT_USER ? 'AMEX' : 'Cartão Principal'),
+    used: (CFG.defaultCreditUsed !== undefined ? CFG.defaultCreditUsed : (IS_DEFAULT_USER ? 4758.75 : 0)),
+    reserved: (CFG.defaultCreditReserved !== undefined ? CFG.defaultCreditReserved : (IS_DEFAULT_USER ? 814.82 : 0)),
     tx: []
   },
   debtors: [],
   myDebts: [],
   routineLog: [],
-  skills: {estudar:0,treinar:25,trabalhar:0},
+  skills: IS_DEFAULT_USER ? {estudar:0,treinar:25,trabalhar:0} : {estudar:0,treinar:0,trabalhar:0},
   goals: [],
   investments: [],
   dailyStats: {},
-  focusSession: {habitId:'qfp-h1',secondsLeft:1500,running:false}
+  focusSession: {habitId:(IS_DEFAULT_USER ? 'qfp-h1' : 'hab-1'),secondsLeft:1500,running:false}
 };
 var focusTick=null;
 var st=load();
@@ -7805,7 +7813,14 @@ function load(){
     if(!hasMeaningfulData(parsed) && hasMeaningfulData(DEF)){
       return normalizeLoadedState(DEF);
     }
-    return normalizeLoadedState(parsed);
+    const state = normalizeLoadedState(parsed);
+    // Protecao de isolamento: impede vazamento de saldos da conta padrao para outros perfis
+    if(!IS_DEFAULT_USER && state && state.credit && state.credit.name === 'AMEX' && state.balances && state.balances.conta && state.balances.conta.amount === 5803.23){
+      const clean = normalizeLoadedState(DEF);
+      writeStoredState(JSON.stringify(clean));
+      return clean;
+    }
+    return state;
   }catch(err){return normalizeLoadedState(DEF);}
 }
 function save(immediate){

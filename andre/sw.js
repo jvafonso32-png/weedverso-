@@ -1,4 +1,4 @@
-const CACHE_NAME = 'weedverso-andre-v3';
+const CACHE_NAME = 'weedverso-andre-v5';
 const PRECACHE_ASSETS = [
   './',
   'manifest.json',

@@ -30,6 +30,17 @@
       gistKey: 'weedverso_andre_gh_sync_gist_id',
       tokenKey: 'weedverso_andre_gh_sync_token',
       brandSubtitle: 'painel pessoal isolado',
+      defaultBalances: {
+        conta: {label:'Conta Principal', amount: 0},
+        reserva: {label:'Reserva', amount: 0}
+      },
+      defaultCreditName: 'Cartão Principal',
+      defaultCreditUsed: 0,
+      defaultCreditReserved: 0,
+      defaultHabits: [
+        {id:'hab-a1',name:'Água (2L)',goal:'2000ml',done:false,lastDoneAt:'',skillTag:'saude'},
+        {id:'hab-a2',name:'Exercício / Treino',goal:'45 min',done:false,lastDoneAt:'',skillTag:'treinar'}
+      ],
       welcomeModal: {
         seenKey: 'weedverso_andre_notice_seen_v1',
         icon: '🚀',
@@ -38,7 +49,7 @@
         quote: 'Seu espaço pessoal e 100% isolado para rotina, metas e finanças.',
         btnText: 'Pode entrar! 🚀'
       },
-      swPath: 'sw.js?v=3'
+      swPath: 'sw.js?v=5'
     };
   </script>
 </head>
