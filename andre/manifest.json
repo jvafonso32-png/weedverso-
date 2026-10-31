@@ -1,0 +1,23 @@
+{
+  "name": "Weedverso | André",
+  "short_name": "Weedverso",
+  "description": "Seu organizador de rotina, metas e financas",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050a12",
+  "theme_color": "#050a12",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
