@@ -15,7 +15,79 @@
     <button id="closeUserWelcomeModalBtn" type="button" class="btn brotherBtn">Pode entrar! 🚀</button>
   </div>
 </div>
+
+<canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;display:none;"></canvas>
+<div id="pullIndicator" class="pullIndicator" style="display:none;">↓ Puxe para sincronizar</div>
+
+<main class="shell" id="loginGateShell">
+  <div class="brand">
+    <span class="logo">W</span>
+    <h1>weedverso</h1>
+  </div>
+  <section class="card">
+    <span class="eyebrow" style="font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px">Acesso protegido</span>
+    <h2 class="title" style="font:700 1.6rem var(--font-display);margin-top:6px">Entrar no painel</h2>
+    <p class="desc" style="margin-top:6px;color:var(--mut);font-size:.85rem;line-height:1.4">Informe seu usuário e senha para acessar sua rotina, metas e finanças.</p>
+    <form id="loginGateForm" class="form" style="display:grid;gap:12px;margin-top:16px">
+      <div>
+        <label for="gateUser" style="font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:.8px">Usuário</label>
+        <input id="gateUser" type="text" autocomplete="username" required autofocus placeholder="andre" style="margin-top:4px;" />
+      </div>
+      <div>
+        <label for="gatePass" style="font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:.8px">Senha</label>
+        <input id="gatePass" type="password" autocomplete="current-password" required placeholder="••••••••" style="margin-top:4px;" />
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+        <input type="checkbox" id="gateRemember" checked style="width:16px;height:16px;min-height:unset;accent-color:var(--p);cursor:pointer;" />
+        <label for="gateRemember" style="font-size:.78rem;color:var(--txt);text-transform:none;cursor:pointer;">Lembrar login neste celular</label>
+      </div>
+      <button id="gateBtn" type="submit" class="btn" style="width:100%;min-height:42px;margin-top:6px;font-size:.9rem;">Entrar no weedverso</button>
+      <p id="gateMsg" class="msg" style="display:none;margin-top:4px;color:#ff9daa;background:rgba(255,95,112,.1);border-color:rgba(255,95,112,.3);"></p>
+    </form>
+    <div style="display:grid;gap:6px;margin-top:16px">
+      <div style="border:1px solid var(--ln);border-radius:10px;padding:8px 10px;background:rgba(255,255,255,.02);font-size:.76rem;color:var(--mut);line-height:1.35;">
+        🔒 Perfil exclusivo e isolado do André. Seus lançamentos e rotinas ficam salvos com total privacidade.
+      </div>
+    </div>
   </section>
+</main>
+
+<main class="app" id="appMain" style="display:none;">
+  <section class="card top">
+    <div class="topMain">
+      <div class="brandRow">
+        <div class="brand">
+          <span class="logo">W</span>
+          <div class="brandText">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <h1 id="appName">weedverso</h1>
+              <span id="userProfileBadge" class="statusPill" style="color:var(--p);border-color:var(--ps);font-size:.65rem;font-weight:700;padding:2px 6px;">v10.7</span>
+              <span id="userLevelBadge" class="disciplineBadge" style="display:none;" aria-hidden="true" title="Nível de Disciplina Diária">🌱 Nv. 1 · Aspirante</span>
+            </div>
+            <span class="brandSub"><span class="liveDot"></span>painel pessoal isolado</span>
+          </div>
+        </div>
+        <div class="topActions">
+          <button id="appRefreshBtn" class="iconBtn" type="button" title="Recarregar versão mais recente do aplicativo">🔄</button>
+          <button id="saveCodeBtn" class="ghost" type="button" title="Sincronização com GitHub">☁️ Nuvem Git</button>
+          <button id="privacyToggleBtn" class="iconBtn" type="button" title="Ocultar resultados">👁</button>
+          <button id="logoutBtn" class="ghost" type="button" title="Sair do sistema">Sair</button>
+          <button id="saveAllBtn" class="btn" type="button" style="display:none">Salvar</button>
+          <button id="openShareLinkBtn" class="ghost" type="button" style="display:none">Abrir</button>
+        </div>
+      </div>
+      <div class="saveMeta">
+        <div class="statusRow">
+          <span id="codeBackupStatus" class="statusPill codeMeta" data-tone="idle">☁️ Git Conectado</span>
+          <span id="saveStatus" class="statusPill" style="opacity:.85">Pronto</span>
+          <span id="saveStamp" class="saveStamp" style="display:none"></span>
+          <span id="saveChannels" class="statusPill" style="display:none"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
 
   <section id="homePage" class="page">
   <section class="card hero">
@@ -669,6 +741,15 @@
     if (subEl && window.WEEDVERSO_CONFIG && window.WEEDVERSO_CONFIG.brandSubtitle) {
       subEl.innerHTML = '<span class="liveDot"></span>' + window.WEEDVERSO_CONFIG.brandSubtitle;
     }
+    const badgeEl = document.getElementById('userProfileBadge');
+    if (badgeEl && window.WEEDVERSO_CONFIG) {
+      const uName = window.WEEDVERSO_CONFIG.userName;
+      if (uName && uName !== 'João') {
+        badgeEl.textContent = uName.toLowerCase();
+      } else {
+        badgeEl.textContent = 'v10.7';
+      }
+    }
   }
 
   // Execute mount immediately
@@ -690,7 +771,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=35';
+const SW_PATH = CFG.swPath || 'sw.js?v=36';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -1504,6 +1585,8 @@ function checkAuthAndStart() {
   if (!VALID_USER_HASH || !AUTH_KEY) {
     if (gate) gate.style.display = 'none';
     if (app) app.style.display = 'grid';
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) logoutBtn.style.display = 'none';
     boot();
     return;
   }
@@ -1600,7 +1683,6 @@ document.addEventListener('visibilitychange', function(){
   }
 });
 
-checkAuthAndStart();
 async function boot(){
   if(API_BASE && !(await ensureSessionAccess())) return;
   rotateDay();
@@ -7812,12 +7894,14 @@ window.addEventListener('offline',function(){
     GIST_SYNC.updateStatus('📴 Modo Offline (dados salvos no aparelho)','idle');
   }
 });
+
+checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
     if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v33'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v35');
+      sessionStorage.setItem('sw_ctrl_reload','v36');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
