@@ -85,11 +85,11 @@ if (!errored) {
     if (typeof renderAll === 'function') {
       renderAll();
       console.log('renderAll passed without throwing!');
-      process.exit(0);
     } else {
       console.log('Weedverso Core mounted successfully!');
-      process.exit(0);
     }
+    // Executa suite de testes de multi-usuario, isolamento e seguranca de Gist
+    require('./test_users_and_safety.js');
   } catch (e) {
     console.error('RUNTIME ERROR:', e);
     process.exit(1);

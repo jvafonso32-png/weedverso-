@@ -266,8 +266,8 @@
             <div class="track" style="height:8px;border-radius:6px;overflow:hidden;margin:0"><div id="ccBar" class="fill cc"></div></div>
           </div>
 
-          <!-- Ações Rápidas de Reserva e Pagamento -->
-          <div style="margin:4px 0 12px 0;">
+          <!-- Ações Rápidas de Reserva e Pagamento (Mantido para André e Júlia, oculto no João) -->
+          <div id="ccQuickActionsSection" style="margin:4px 0 12px 0;">
             <span class="mini" style="display:block;margin-bottom:6px;font-weight:600">⚡ Ações Rápidas</span>
             <div class="quickChipsRow" id="ccQuickChips">
               <button type="button" class="quickActionChip highlight" data-cc-quick="coverAll">🛡️ Cobrir Fatura Total</button>
@@ -294,10 +294,11 @@
             </div>
           </div>
 
-          <!-- Gestão de Reserva Manual -->
-          <div class="cardSectionBox">
-            <span class="cardSectionTitle">🛡️ Ajuste Manual da Reserva</span>
-            <div class="actionLayout">
+          <!-- Gestão de Reserva Manual (Remodelado para o João; Padrão intacto para André e Júlia) -->
+          <div class="cardSectionBox" id="ccReserveBox">
+            <span class="cardSectionTitle" id="ccReserveTitle">🛡️ Ajuste Manual da Reserva</span>
+            <!-- Layout padrão para André e Júlia -->
+            <div class="actionLayout" id="ccReserveStandardLayout">
               <div class="actionFields">
                 <input id="ccReserveValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor a transferir (R$)" />
               </div>
@@ -305,6 +306,16 @@
                 <button id="ccReserveIn" type="button" class="btn">+ Guardar na Reserva</button>
                 <button id="ccReserveOut" type="button" class="danger">- Retirar da Reserva</button>
               </div>
+            </div>
+            <!-- Layout remodelado exclusivo para o João -->
+            <div id="ccReserveDefaultLayout" style="display:none;">
+              <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.07);margin-bottom:10px;">
+                <span class="mut" style="font-size:.85rem;">Saldo atual na reserva:</span>
+                <strong id="ccReserveCurrentAmount" style="color:var(--p);font-size:1.05rem;">R$ 0,00</strong>
+              </div>
+              <button id="ccTransferToContaBtn" type="button" class="btn" style="width:100%;padding:11px 14px;font-size:.88rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;background:linear-gradient(135deg,rgba(0,194,255,.25),rgba(0,194,255,.1));border:1px solid rgba(0,194,255,.4);color:#ffffff;">
+                🔄 Levar saldo para Conta Corrente e Zerar
+              </button>
             </div>
           </div>
 
@@ -771,7 +782,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=36';
+const SW_PATH = CFG.swPath || 'sw.js?v=38';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -1137,15 +1148,35 @@ function mergeStates(local, remote){
   if (!remote || typeof remote !== 'object') return local || normalizeLoadedState(DEF);
   if (!local || typeof local !== 'object') return remote;
 
+  const localHasData = hasMeaningfulData(local) || (Array.isArray(local.tx) && local.tx.length > 0) || (local.credit && Array.isArray(local.credit.tx) && local.credit.tx.length > 0) || (Array.isArray(local.debtors) && local.debtors.length > 0) || (Array.isArray(local.myDebts) && local.myDebts.length > 0) || (Array.isArray(local.goals) && local.goals.length > 0);
+  const remoteHasData = hasMeaningfulData(remote) || (Array.isArray(remote.tx) && remote.tx.length > 0) || (remote.credit && Array.isArray(remote.credit.tx) && remote.credit.tx.length > 0) || (Array.isArray(remote.debtors) && remote.debtors.length > 0) || (Array.isArray(remote.myDebts) && remote.myDebts.length > 0) || (Array.isArray(remote.goals) && remote.goals.length > 0);
+
+  // Protecao contra sobrescrita por Gist remoto vazio:
+  // Se o dispositivo local ja possui dados inseridos e o remoto esta vazio, nunca apaga os dados locais
+  if (localHasData && !remoteHasData) {
+    return local;
+  }
+  if (!localHasData && remoteHasData) {
+    return normalizeLoadedState(remote);
+  }
+
   const txMap = new Map();
   (remote.tx || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
   (local.tx || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
-  const mergedTx = Array.from(txMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  let mergedTx = Array.from(txMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  if (Array.isArray(local.tx) && local.tx.length > 0 && mergedTx.length < local.tx.length) {
+    local.tx.forEach(t => { if (t && t.id && !txMap.has(t.id)) txMap.set(t.id, t); });
+    mergedTx = Array.from(txMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  }
 
   const cTxMap = new Map();
   ((remote.credit && remote.credit.tx) || []).forEach(t => { if (t && t.id) cTxMap.set(t.id, t); });
   ((local.credit && local.credit.tx) || []).forEach(t => { if (t && t.id) cTxMap.set(t.id, t); });
-  const mergedCreditTx = Array.from(cTxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  let mergedCreditTx = Array.from(cTxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  if (local.credit && Array.isArray(local.credit.tx) && local.credit.tx.length > 0 && mergedCreditTx.length < local.credit.tx.length) {
+    local.credit.tx.forEach(t => { if (t && t.id && !cTxMap.has(t.id)) cTxMap.set(t.id, t); });
+    mergedCreditTx = Array.from(cTxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  }
 
   const debtorMap = new Map();
   (remote.debtors || []).forEach(d => { if (d && d.id) debtorMap.set(d.id, d); });
@@ -1165,11 +1196,12 @@ function mergeStates(local, remote){
 
   const localTime = new Date(local.lastUpdatedAt || 0).getTime();
   const remoteTime = new Date(remote.lastUpdatedAt || 0).getTime();
-  const primary = (localTime >= remoteTime || !remoteTime) ? local : remote;
+  const primary = (localTime >= remoteTime || !remoteTime || !remoteHasData) ? local : remote;
 
   return Object.assign({}, remote, local, {
     balances: primary.balances || local.balances || remote.balances,
     credit: Object.assign({}, remote.credit, local.credit, {
+      name: (primary.credit && primary.credit.name) || (local.credit && local.credit.name) || (remote.credit && remote.credit.name),
       used: (primary.credit && primary.credit.used !== undefined) ? primary.credit.used : (local.credit ? local.credit.used : 0),
       reserved: (primary.credit && primary.credit.reserved !== undefined) ? primary.credit.reserved : (local.credit ? local.credit.reserved : 0),
       tx: mergedCreditTx
@@ -1234,22 +1266,59 @@ const GIST_SYNC={
       }
       const data=await resp.json();
       const fileInfo=data.files && data.files['weedverso_state.json'];
-      if(fileInfo && fileInfo.content){
-        const parsed=JSON.parse(fileInfo.content);
-        if(parsed && typeof parsed==='object'){
-          const normRemote = normalizeLoadedState(parsed);
-          st = mergeStates(st, normRemote);
-          rotateDay();
-          writeStoredState(JSON.stringify(st));
-          renderAll();
+      let rawContent = (fileInfo && fileInfo.content) ? fileInfo.content : '';
+      if(fileInfo && fileInfo.truncated && fileInfo.raw_url){
+        try{
+          const rawResp = await fetch(fileInfo.raw_url, {headers:headers});
+          if(rawResp.ok) rawContent = await rawResp.text();
+        }catch(eTrun){}
+      }
+
+      const localHasData = hasMeaningfulData(st) || (st && Array.isArray(st.tx) && st.tx.length > 0);
+
+      if(!rawContent || !rawContent.trim()){
+        if(localHasData && token && this.hasToken()){
+          this.schedulePush();
+          this.updateStatus('☁️ Git: Remoto vazio, dados locais preservados','ok');
+        }
+        return false;
+      }
+
+      let parsed;
+      try{
+        parsed=JSON.parse(rawContent);
+      }catch(errP){
+        console.warn('JSON inválido no Gist:', errP);
+        return false;
+      }
+
+      if(parsed && typeof parsed==='object'){
+        const remoteHasData = hasMeaningfulData(parsed) || (Array.isArray(parsed.tx) && parsed.tx.length > 0);
+        if(localHasData && !remoteHasData){
           if(token && this.hasToken()){
             this.schedulePush();
           }
           const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-          this.updateStatus('☁️ Git Sincronizado '+hora,'ok');
-          if(!quiet && token) showToast('☁️ Sincronização concluída! Dados atualizados do GitHub.','ok');
+          this.updateStatus('☁️ Git Seguro: Dados locais preservados '+hora,'ok');
           return true;
         }
+
+        if(localHasData){
+          saveSecuritySnapshot('before_gist_pull', snapshotState());
+        }
+
+        const normRemote = normalizeLoadedState(parsed);
+        st = mergeStates(st, normRemote);
+        rotateDay();
+        writeStoredState(JSON.stringify(st));
+        renderAll();
+        if(token && this.hasToken()){
+          this.schedulePush();
+        }
+        const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+        this.updateStatus('☁️ Git Sincronizado '+hora,'ok');
+        if(!quiet && token) showToast('☁️ Sincronização concluída! Dados atualizados do GitHub.','ok');
+        return true;
       }
     }catch(err){
       console.warn('Gist pull err:',err);
@@ -1349,7 +1418,7 @@ const el={
   hForm:$('#habitForm'),hName:$('#hName'),hGoal:$('#hGoal'),hDate:$('#hDate'),focusHabitSelect:$('#focusHabitSelect'),focusMinutesInput:$('#focusMinutesInput'),focusStartBtn:$('#focusStartBtn'),focusPauseBtn:$('#focusPauseBtn'),focusResetBtn:$('#focusResetBtn'),focusClock:$('#focusClock'),focusStatus:$('#focusStatus'),hList:$('#habitList'),mot:$('#motivation'),routineDateInfo:$('#routineDateInfo'),routineLog:$('#routineLog'),routineChart:$('#routineChart'),
   fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
   ccEditBtn:$('#ccEditBtn'),ccMeta:$('#ccMeta'),ccMetaSummary:$('#ccMetaSummary'),ccMetaHint:$('#ccMetaHint'),ccName:$('#ccName'),ccValue:$('#ccValue'),ccDesc:$('#ccDesc'),
-  ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
+  ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccQuickActionsSection:$('#ccQuickActionsSection'),ccReserveStandardLayout:$('#ccReserveStandardLayout'),ccReserveDefaultLayout:$('#ccReserveDefaultLayout'),ccReserveCurrentAmount:$('#ccReserveCurrentAmount'),ccTransferToContaBtn:$('#ccTransferToContaBtn'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
   debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debInstallments:$('#debInstallments'),debInstallmentPreview:$('#debInstallmentPreview'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
   mdForm:$('#mdForm'),mdName:$('#mdName'),mdAmount:$('#mdAmount'),mdInstallments:$('#mdInstallments'),mdInstallmentPreview:$('#mdInstallmentPreview'),mdNote:$('#mdNote'),mdPayDate:$('#mdPayDate'),myDebtList:$('#myDebtList'),mdSummaryLine:$('#mdSummaryLine'),mdProgress:$('#mdProgress'),mdWeek:$('#mdWeek'),mdOpenFormBtn:$('#mdOpenFormBtn'),
   goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),goalsTotalSavedBox:$('#goalsTotalSavedBox'),
@@ -1983,8 +2052,57 @@ function bind(){
   });
   el.ccExpense.addEventListener('click',()=>creditMove('expense'));
   el.ccPay.addEventListener('click',()=>creditMove('payment'));
-  el.ccReserveIn.addEventListener('click',()=>creditReserveMove('in'));
-  el.ccReserveOut.addEventListener('click',()=>creditReserveMove('out'));
+  if(IS_DEFAULT_USER){
+    if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'none';
+    if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'none';
+    if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'block';
+    const resTitle = document.getElementById('ccReserveTitle');
+    if(resTitle) resTitle.textContent = '🛡️ Reserva do Cartão';
+  } else {
+    if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'block';
+    if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'block';
+    if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'none';
+  }
+  if(el.ccReserveIn) el.ccReserveIn.addEventListener('click',()=>creditReserveMove('in'));
+  if(el.ccReserveOut) el.ccReserveOut.addEventListener('click',()=>creditReserveMove('out'));
+  if(el.ccTransferToContaBtn){
+    el.ccTransferToContaBtn.addEventListener('click', () => {
+      const reserved = Math.max(0, Number(st.credit && st.credit.reserved) || 0);
+      if(reserved <= 0){
+        showToast('O saldo reservado já está zerado!', 'warn');
+        return;
+      }
+      if(!st.balances.conta) st.balances.conta = { label: 'Saldo em Conta', amount: 0 };
+      st.balances.conta.amount = roundMoneyValue((Number(st.balances.conta.amount) || 0) + reserved);
+      st.credit.reserved = 0;
+      const nowIso = new Date().toISOString();
+      st.credit.tx = st.credit.tx || [];
+      st.credit.tx.unshift({
+        id: id(),
+        type: 'reserve-out',
+        value: reserved,
+        desc: 'Resgate integral para conta corrente',
+        category: 'Reserva cartao',
+        categoryKey: 'reserva',
+        at: nowIso
+      });
+      st.tx = st.tx || [];
+      st.tx.unshift({
+        id: id(),
+        account: 'conta',
+        type: 'in',
+        value: reserved,
+        note: 'Resgate da reserva do cartão',
+        category: 'Ajuste manual',
+        categoryKey: 'ajuste',
+        at: nowIso
+      });
+      haptic('success');
+      save(true);
+      renderAll();
+      showToast(`✓ ${money(reserved)} transferido para a Conta Corrente! Reserva zerada.`, 'ok');
+    });
+  }
   if(el.ccChartMonth){
     el.ccChartMonth.addEventListener('change',e=>{
       ui.creditChartMonth=String((e.target&&e.target.value)||'');
@@ -5197,7 +5315,14 @@ function motivation(p,done,total){
 }
 // Funções de finanças/saldos
 function renderFinance(){
-  el.fGrid.innerHTML=Object.entries(st.balances).map(([k,a])=>{
+  const entries = Object.entries(st.balances).filter(([k, a]) => {
+    // Para o usuário João (IS_DEFAULT_USER), remove o box de saldo reserva na tela inicial
+    if (IS_DEFAULT_USER && (k === 'reserva' || (a && a.label && a.label.toLowerCase().trim() === 'reserva'))) {
+      return false;
+    }
+    return true;
+  });
+  el.fGrid.innerHTML=entries.map(([k,a])=>{
     const editing=Boolean(ui.balances[k]);
     return `<article class="fcard" data-acc="${k}">
       <div class="line">
@@ -5412,6 +5537,26 @@ function renderCredit(){
   const used=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), uncovered=Math.max(0,used-reserved), pct=used>0?Math.min(100,Math.round((reserved/used)*100)):(reserved>0?100:0);
   el.ccMeta.hidden=!ui.credit;
   setActive(el.ccEditBtn, ui.credit);
+
+  // Exclusividade do usuário João (IS_DEFAULT_USER):
+  // Remove ações rápidas e ativa a remodelagem da reserva com botão de transferência direta
+  // André e Júlia permanecem 100% inalterados com o layout original
+  if(IS_DEFAULT_USER){
+    if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'none';
+    if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'none';
+    if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'block';
+    const resTitle = document.getElementById('ccReserveTitle');
+    if(resTitle) resTitle.textContent = '🛡️ Reserva do Cartão';
+    if(el.ccReserveCurrentAmount) el.ccReserveCurrentAmount.textContent = money(reserved);
+    if(el.ccTransferToContaBtn){
+      el.ccTransferToContaBtn.style.opacity = reserved > 0 ? '1' : '0.55';
+      el.ccTransferToContaBtn.style.cursor = reserved > 0 ? 'pointer' : 'default';
+    }
+  } else {
+    if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'block';
+    if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'block';
+    if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'none';
+  }
   if(el.ccMetaSummary) el.ccMetaSummary.textContent=`${st.credit.name||'Cartão weedverso'}`;
   if(el.ccMetaHint) el.ccMetaHint.textContent=ui.credit?'Edição do cartão ativa.':creditReserveStatus(used,reserved);
   if(el.ccUsed){
@@ -7805,6 +7950,56 @@ async function logout(){
   }
 }
 
+function saveSecuritySnapshot(reason, dataToSave){
+  try{
+    if(!STORAGE) return null;
+    const keyPrefix = KEY || 'rotina_prime_v2';
+    const tag = reason || 'migration';
+    // 1. Chave versionada de snapshot exata (ex: weedverso_andre_v1_snap_migration)
+    const exactSnapKey = `${keyPrefix}_snap_${tag}`;
+    const payload = typeof dataToSave === 'string' ? dataToSave : JSON.stringify(dataToSave || {});
+    STORAGE.setItem(exactSnapKey, payload);
+
+    // 2. Chave com timestamp para historico versionado
+    const d = new Date();
+    const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}${String(d.getSeconds()).padStart(2,'0')}`;
+    const histKey = `${keyPrefix}_snap_${tag}_${stamp}`;
+    STORAGE.setItem(histKey, payload);
+
+    // 3. Indice de snapshots no STORAGE
+    const indexKey = `${keyPrefix}_snapshots_index`;
+    let indexList = [];
+    try {
+      indexList = JSON.parse(STORAGE.getItem(indexKey) || '[]');
+      if(!Array.isArray(indexList)) indexList = [];
+    }catch(e){ indexList = []; }
+    if(!indexList.includes(exactSnapKey)) indexList.push(exactSnapKey);
+    if(!indexList.includes(histKey)) indexList.push(histKey);
+    if(indexList.length > 30) indexList = indexList.slice(-30);
+    STORAGE.setItem(indexKey, JSON.stringify(indexList));
+    return exactSnapKey;
+  }catch(err){
+    console.warn('Falha ao gravar snapshot de seguranca:', err);
+    return null;
+  }
+}
+
+function restoreSecuritySnapshot(snapshotKey){
+  try{
+    if(!STORAGE) return false;
+    const raw = STORAGE.getItem(snapshotKey || `${KEY}_snap_migration`);
+    if(!raw) return false;
+    const parsed = JSON.parse(raw);
+    st = normalizeLoadedState(parsed);
+    writeStoredState(JSON.stringify(st));
+    renderAll();
+    return true;
+  }catch(e){
+    console.warn('Falha ao restaurar snapshot:', e);
+    return false;
+  }
+}
+
 function load(){
   try{
     const raw=readStoredState();
@@ -7815,11 +8010,50 @@ function load(){
     }
     const state = normalizeLoadedState(parsed);
     // Protecao de isolamento: impede vazamento de saldos da conta padrao para outros perfis
-    if(!IS_DEFAULT_USER && state && state.credit && state.credit.name === 'AMEX' && state.balances && state.balances.conta && state.balances.conta.amount === 5803.23){
-      const clean = normalizeLoadedState(DEF);
-      writeStoredState(JSON.stringify(clean));
-      return clean;
+    // Higienizacao nao-destrutiva: sanitiza APENAS saldos (balances) e nome do cartao (credit.name),
+    // NUNCA zera o array de transacoes (tx), dividas (debtors, myDebts), habitos (habits) ou metas (goals).
+    const isLeakedAccount = !IS_DEFAULT_USER && state && (
+      (state.credit && state.credit.name === 'AMEX') ||
+      (state.balances && state.balances.conta && state.balances.conta.amount === 5803.23)
+    );
+    if(isLeakedAccount){
+      // Historico de Snapshots de Seguranca: Salva snapshot versionado antes de qualquer sanitizacao
+      saveSecuritySnapshot('migration', raw);
+
+      // Sanitiza apenas saldos e nome do cartao para os valores configurados do usuario
+      state.balances = JSON.parse(JSON.stringify(DEF.balances));
+      if(!state.credit) state.credit = {};
+      state.credit.name = DEF.credit.name;
+      if(state.credit.used === 4758.75) state.credit.used = (DEF.credit && DEF.credit.used !== undefined) ? DEF.credit.used : 0;
+      if(state.credit.reserved === 814.82) state.credit.reserved = (DEF.credit && DEF.credit.reserved !== undefined) ? DEF.credit.reserved : 0;
+
+      // Preserva absolutamente todas as colecoes do usuario
+      if(!Array.isArray(state.tx)) state.tx = [];
+      if(!Array.isArray(state.debtors)) state.debtors = [];
+      if(!Array.isArray(state.myDebts)) state.myDebts = [];
+      if(!Array.isArray(state.habits)) state.habits = Array.isArray(DEF.habits) ? DEF.habits : [];
+      if(!Array.isArray(state.goals)) state.goals = [];
+
+      writeStoredState(JSON.stringify(state));
+      return state;
     }
+
+    // Exclusividade do usuário João:
+    // Salva snapshot de segurança das informações atuais e limpa box de reserva residual se existir
+    if(IS_DEFAULT_USER && state){
+      if(hasMeaningfulData(state)){
+        saveSecuritySnapshot('joao_backup', raw || state);
+      }
+      if(state.balances && state.balances.reserva){
+        const resAmount = Number(state.balances.reserva.amount) || 0;
+        if(resAmount > 0 && state.balances.conta){
+          state.balances.conta.amount = roundMoneyValue((Number(state.balances.conta.amount) || 0) + resAmount);
+        }
+        delete state.balances.reserva;
+        writeStoredState(JSON.stringify(state));
+      }
+    }
+
     return state;
   }catch(err){return normalizeLoadedState(DEF);}
 }
@@ -7882,6 +8116,13 @@ function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;'
 function safe(v){return esc(v);}
 function initial(n){return (n||'U').trim().charAt(0).toUpperCase();}
 window.showPage=showPage;
+window.saveSecuritySnapshot=saveSecuritySnapshot;
+window.restoreSecuritySnapshot=restoreSecuritySnapshot;
+window.mergeStates=mergeStates;
+window.GIST_SYNC=GIST_SYNC;
+window.renderCredit=renderCredit;
+window.renderAll=renderAll;
+window.renderFinance=renderFinance;
 window.addEventListener('hashchange',function(){
   syncPageFromHash();
   renderPage();
@@ -7914,9 +8155,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v33'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v38'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v36');
+      sessionStorage.setItem('sw_ctrl_reload','v38');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });

@@ -2070,7 +2070,8 @@ def route_message(message):
 
     user = resolve_user(chat_id) or "joao"
     CURRENT_USER_CONTEXT.user = user
-    state_file = JULIA_STATE_FILE if user == "julia" else JOAO_STATE_FILE
+    override_file = getattr(STATE_FILE_OVERRIDE, "path", None)
+    state_file = override_file if override_file is not None else (JULIA_STATE_FILE if user == "julia" else JOAO_STATE_FILE)
 
     if text.startswith("/"):
         command = text.split()[0].split("@")[0].lower()
