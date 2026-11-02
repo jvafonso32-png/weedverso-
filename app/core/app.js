@@ -309,9 +309,19 @@
             </div>
             <!-- Layout remodelado exclusivo para o João -->
             <div id="ccReserveDefaultLayout" style="display:none;">
-              <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.07);margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.07);margin-bottom:12px;">
                 <span class="mut" style="font-size:.85rem;">Saldo atual na reserva:</span>
                 <strong id="ccReserveCurrentAmount" style="color:var(--p);font-size:1.05rem;">R$ 0,00</strong>
+              </div>
+              <!-- Box exclusivo para adicionar e remover saldo somente na reserva (como era antes) -->
+              <div class="actionLayout" style="margin-bottom:12px;">
+                <div class="actionFields">
+                  <input id="ccDefaultReserveValue" type="number" step="0.01" inputmode="decimal" placeholder="Valor para a reserva (R$)" />
+                </div>
+                <div class="actionStack reserveActions">
+                  <button id="ccDefaultReserveIn" type="button" class="btn">+ Guardar na Reserva</button>
+                  <button id="ccDefaultReserveOut" type="button" class="danger">- Retirar da Reserva</button>
+                </div>
               </div>
               <button id="ccTransferToContaBtn" type="button" class="btn" style="width:100%;padding:11px 14px;font-size:.88rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;background:linear-gradient(135deg,rgba(0,194,255,.25),rgba(0,194,255,.1));border:1px solid rgba(0,194,255,.4);color:#ffffff;">
                 🔄 Levar saldo para Conta Corrente e Zerar
@@ -782,7 +792,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=38';
+const SW_PATH = CFG.swPath || 'sw.js?v=39';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -1418,7 +1428,7 @@ const el={
   hForm:$('#habitForm'),hName:$('#hName'),hGoal:$('#hGoal'),hDate:$('#hDate'),focusHabitSelect:$('#focusHabitSelect'),focusMinutesInput:$('#focusMinutesInput'),focusStartBtn:$('#focusStartBtn'),focusPauseBtn:$('#focusPauseBtn'),focusResetBtn:$('#focusResetBtn'),focusClock:$('#focusClock'),focusStatus:$('#focusStatus'),hList:$('#habitList'),mot:$('#motivation'),routineDateInfo:$('#routineDateInfo'),routineLog:$('#routineLog'),routineChart:$('#routineChart'),
   fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
   ccEditBtn:$('#ccEditBtn'),ccMeta:$('#ccMeta'),ccMetaSummary:$('#ccMetaSummary'),ccMetaHint:$('#ccMetaHint'),ccName:$('#ccName'),ccValue:$('#ccValue'),ccDesc:$('#ccDesc'),
-  ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccQuickActionsSection:$('#ccQuickActionsSection'),ccReserveStandardLayout:$('#ccReserveStandardLayout'),ccReserveDefaultLayout:$('#ccReserveDefaultLayout'),ccReserveCurrentAmount:$('#ccReserveCurrentAmount'),ccTransferToContaBtn:$('#ccTransferToContaBtn'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
+  ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccDefaultReserveValue:$('#ccDefaultReserveValue'),ccDefaultReserveIn:$('#ccDefaultReserveIn'),ccDefaultReserveOut:$('#ccDefaultReserveOut'),ccQuickActionsSection:$('#ccQuickActionsSection'),ccReserveStandardLayout:$('#ccReserveStandardLayout'),ccReserveDefaultLayout:$('#ccReserveDefaultLayout'),ccReserveCurrentAmount:$('#ccReserveCurrentAmount'),ccTransferToContaBtn:$('#ccTransferToContaBtn'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
   debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debInstallments:$('#debInstallments'),debInstallmentPreview:$('#debInstallmentPreview'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
   mdForm:$('#mdForm'),mdName:$('#mdName'),mdAmount:$('#mdAmount'),mdInstallments:$('#mdInstallments'),mdInstallmentPreview:$('#mdInstallmentPreview'),mdNote:$('#mdNote'),mdPayDate:$('#mdPayDate'),myDebtList:$('#myDebtList'),mdSummaryLine:$('#mdSummaryLine'),mdProgress:$('#mdProgress'),mdWeek:$('#mdWeek'),mdOpenFormBtn:$('#mdOpenFormBtn'),
   goalForm:$('#goalForm'),goalName:$('#goalName'),goalTarget:$('#goalTarget'),goalActiveCount:$('#goalActiveCount'),goalWeekYield:$('#goalWeekYield'),goalList:$('#goalList'),goalStmt:$('#goalStmt'),goalsTotalSavedBox:$('#goalsTotalSavedBox'),
@@ -2063,8 +2073,10 @@ function bind(){
     if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'block';
     if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'none';
   }
-  if(el.ccReserveIn) el.ccReserveIn.addEventListener('click',()=>creditReserveMove('in'));
-  if(el.ccReserveOut) el.ccReserveOut.addEventListener('click',()=>creditReserveMove('out'));
+  if(el.ccReserveIn) el.ccReserveIn.addEventListener('click',()=>creditReserveMove('in', el.ccReserveValue));
+  if(el.ccReserveOut) el.ccReserveOut.addEventListener('click',()=>creditReserveMove('out', el.ccReserveValue));
+  if(el.ccDefaultReserveIn) el.ccDefaultReserveIn.addEventListener('click',()=>creditReserveMove('in', el.ccDefaultReserveValue));
+  if(el.ccDefaultReserveOut) el.ccDefaultReserveOut.addEventListener('click',()=>creditReserveMove('out', el.ccDefaultReserveValue));
   if(el.ccTransferToContaBtn){
     el.ccTransferToContaBtn.addEventListener('click', () => {
       const reserved = Math.max(0, Number(st.credit && st.credit.reserved) || 0);
@@ -5628,15 +5640,18 @@ function creditMove(type){
   showToast(type==='expense'?'✓ Gasto no cartão salvo!':'✓ Pagamento de fatura salvo!','ok');
 }
 
-function creditReserveMove(type){
-  const raw=parseFloat((el.ccReserveValue.value||'').replace(',','.')), v=Number.isFinite(raw)?Math.abs(raw):0;
+function creditReserveMove(type, inputEl){
+  const targetInput = inputEl || (IS_DEFAULT_USER && el.ccDefaultReserveValue ? el.ccDefaultReserveValue : el.ccReserveValue);
+  const raw=parseFloat(((targetInput && targetInput.value)||'').replace(',','.')), v=Number.isFinite(raw)?Math.abs(raw):0;
   if(v<=0) return;
   st.credit.reserved=Math.max(0,(Number(st.credit.reserved)||0)+(type==='in'?v:-v));
   const meta=categoryMeta('Reserva cartao','Reserva cartao');
   st.credit.tx.unshift({id:id(),type:type==='in'?'reserve-in':'reserve-out',value:v,desc:'Reserva cartão',category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
   haptic('medium');
   save(true); renderCredit(); renderSummary();
-  el.ccReserveValue.value='';
+  if(targetInput) targetInput.value='';
+  if(el.ccReserveValue) el.ccReserveValue.value='';
+  if(el.ccDefaultReserveValue) el.ccDefaultReserveValue.value='';
   showToast(type==='in'?'✓ Reserva adicionada!':'✓ Retirada da reserva efetuada!','ok');
 }
 
@@ -8121,6 +8136,7 @@ window.restoreSecuritySnapshot=restoreSecuritySnapshot;
 window.mergeStates=mergeStates;
 window.GIST_SYNC=GIST_SYNC;
 window.renderCredit=renderCredit;
+window.creditReserveMove=creditReserveMove;
 window.renderAll=renderAll;
 window.renderFinance=renderFinance;
 window.addEventListener('hashchange',function(){
@@ -8155,9 +8171,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v38'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v39'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v38');
+      sessionStorage.setItem('sw_ctrl_reload','v39');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });

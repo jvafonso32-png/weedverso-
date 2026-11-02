@@ -488,7 +488,29 @@ testGistPullEmptyProtection().then(() => {
   assert.strictEqual(joaoElements['ccReserveDefaultLayout'].style.display, 'block', 'Layout remodelado deve estar ativo no João');
   console.log('  [OK] Aba cartões do João: Ações Rápidas removidas e ajuste de reserva remodelado.');
 
-  // 5.4 Teste do botão: Levar saldo da reserva direto para a conta corrente e zerar
+  // 5.4 Teste do box de adicionar e remover saldo SOMENTE na reserva (como era antes)
+  const defaultReserveVal = joaoElements['ccDefaultReserveValue'];
+  const defaultReserveIn = joaoElements['ccDefaultReserveIn'];
+  const defaultReserveOut = joaoElements['ccDefaultReserveOut'];
+  assert(defaultReserveVal && defaultReserveIn && defaultReserveOut, 'Box de adicionar e remover saldo na reserva deve existir');
+
+  // Adiciona 100 na reserva
+  defaultReserveVal.value = '100.00';
+  defaultReserveIn.click();
+  let stateAfterAdd = JSON.parse(joaoEnv.store['rotina_prime_v2']);
+  assert.strictEqual(stateAfterAdd.credit.reserved, 914.82, 'Reserva do cartão deve ser incrementada em 100');
+  assert.strictEqual(stateAfterAdd.balances.conta.amount, 1835.15, 'Conta corrente NÃO deve ser alterada ao adicionar saldo somente na reserva');
+  assert(stateAfterAdd.credit.tx.some(t => t.type === 'reserve-in' && t.value === 100), 'Transação reserve-in registrada');
+
+  // Remove 14.82 da reserva
+  defaultReserveVal.value = '14.82';
+  defaultReserveOut.click();
+  let stateAfterSub = JSON.parse(joaoEnv.store['rotina_prime_v2']);
+  assert.strictEqual(stateAfterSub.credit.reserved, 900, 'Reserva do cartão deve ter sido reduzida para 900');
+  assert.strictEqual(stateAfterSub.balances.conta.amount, 1835.15, 'Conta corrente permanece intacta ao retirar da reserva');
+  console.log('  [OK] Box de adicionar e remover saldo funcionou exclusivamente na reserva sem afetar conta corrente!');
+
+  // 5.5 Teste do botão: Levar saldo da reserva direto para a conta corrente e zerar
   const transferBtn = joaoElements['ccTransferToContaBtn'];
   assert(transferBtn, 'Botão de transferência da reserva deve existir');
 
@@ -497,10 +519,10 @@ testGistPullEmptyProtection().then(() => {
 
   const joaoFinalState = JSON.parse(joaoEnv.store['rotina_prime_v2']);
   assert.strictEqual(joaoFinalState.credit.reserved, 0, 'Reserva do cartão do João deve ser ZERADA');
-  assert.strictEqual(joaoFinalState.balances.conta.amount, 2649.97, 'Saldo da conta corrente do João recebeu os 814.82 da reserva');
-  assert(joaoFinalState.credit.tx.some(t => t.type === 'reserve-out' && t.value === 814.82), 'Transação reserve-out registrada no cartão');
-  assert(joaoFinalState.tx.some(t => t.account === 'conta' && t.type === 'in' && t.value === 814.82), 'Transação de entrada registrada na conta');
-  console.log('  [OK] Botão remodelado funcionou: Transferiu R$ 814,82 para a conta corrente e zerou a reserva com histórico!');
+  assert.strictEqual(joaoFinalState.balances.conta.amount, 2735.15, 'Saldo da conta corrente do João recebeu os 900.00 da reserva');
+  assert(joaoFinalState.credit.tx.some(t => t.type === 'reserve-out' && t.value === 900), 'Transação reserve-out registrada no cartão');
+  assert(joaoFinalState.tx.some(t => t.account === 'conta' && t.type === 'in' && t.value === 900), 'Transação de entrada registrada na conta');
+  console.log('  [OK] Botão remodelado funcionou: Transferiu R$ 900,00 para a conta corrente e zerou a reserva com histórico!');
 
   // -------------------------------------------------------------
   // TESTE 6: GARANTIA ABSOLUTA DE NÃO ALTERAÇÃO NO ANDRÉ E NA JÚLIA
