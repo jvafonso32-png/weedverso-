@@ -1111,12 +1111,12 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
   background: radial-gradient(circle at 100% 0%, rgba(0, 229, 255, 0.08), transparent 50%), linear-gradient(180deg, rgba(10, 26, 34, 0.92), rgba(6, 16, 22, 0.96)) !important;
 }
 .fcard[data-acc="vale1"] {
-  border-color: rgba(255, 159, 67, 0.25) !important;
-  background: radial-gradient(circle at 100% 0%, rgba(255, 159, 67, 0.07), transparent 50%), linear-gradient(180deg, rgba(32, 24, 18, 0.9), rgba(18, 14, 10, 0.95)) !important;
+  border-color: rgba(0, 210, 255, 0.22) !important;
+  background: radial-gradient(circle at 100% 0%, rgba(0, 210, 255, 0.07), transparent 50%), linear-gradient(180deg, rgba(8, 24, 34, 0.92), rgba(5, 16, 24, 0.96)) !important;
 }
 .fcard[data-acc="vale2"] {
-  border-color: rgba(255, 82, 82, 0.25) !important;
-  background: radial-gradient(circle at 100% 0%, rgba(255, 82, 82, 0.07), transparent 50%), linear-gradient(180deg, rgba(32, 18, 20, 0.9), rgba(18, 10, 12, 0.95)) !important;
+  border-color: rgba(0, 190, 240, 0.22) !important;
+  background: radial-gradient(circle at 100% 0%, rgba(0, 190, 240, 0.07), transparent 50%), linear-gradient(180deg, rgba(8, 24, 34, 0.92), rgba(5, 16, 24, 0.96)) !important;
 }
 .fcard .bal {
   font-size: 1.45rem !important;
@@ -1516,8 +1516,8 @@ body[data-privacy="on"] #investTotalDisplay {
 }
 .walletBadge.conta { background: rgba(255,42,85,0.15) !important; color: #ff2a55 !important; border: 1px solid rgba(255,42,85,0.3) !important; }
 .walletBadge.credit { background: rgba(179,136,255,0.15) !important; color: #b388ff !important; border: 1px solid rgba(179,136,255,0.3) !important; }
-.walletBadge.vale1 { background: rgba(255,159,67,0.15) !important; color: #ff9f43 !important; border: 1px solid rgba(255,159,67,0.3) !important; }
-.walletBadge.vale2 { background: rgba(255,82,82,0.15) !important; color: #ff5252 !important; border: 1px solid rgba(255,82,82,0.3) !important; }
+.walletBadge.vale1 { background: rgba(0,210,255,0.15) !important; color: #5ce1e6 !important; border: 1px solid rgba(0,210,255,0.3) !important; }
+.walletBadge.vale2 { background: rgba(0,190,240,0.15) !important; color: #38bdf8 !important; border: 1px solid rgba(0,190,240,0.3) !important; }
 .walletBadge.invest { background: rgba(0,229,255,0.15) !important; color: #00e5ff !important; border: 1px solid rgba(0,229,255,0.3) !important; }
 .walletBadge.goal { background: rgba(255,214,0,0.15) !important; color: #ffd600 !important; border: 1px solid rgba(255,214,0,0.3) !important; }
 
