@@ -1,47 +1,47 @@
 /* ==================== THEMES ==================== */
-:root, [data-theme="emerald"] {
-  --bg: #060a08;
-  --card: #0f1613;
-  --card2: #121d18;
-  --txt: #e8f4ed;
-  --mut: #99aca0;
-  --p: #39ff8f;
-  --ps: rgba(57,255,143,.15);
+:root, [data-theme="aqua"], [data-theme="emerald"] {
+  --bg: #030a0e;
+  --card: #08151c;
+  --card2: #0c1d26;
+  --txt: #e8f8fc;
+  --mut: #8ca5b0;
+  --p: #00e5ff;
+  --ps: rgba(0,229,255,.16);
   --d: #ff5f70;
   --ds: rgba(255,95,112,.14);
-  --ln: rgba(151,170,159,.24);
+  --ln: rgba(75,185,215,.2);
   --font-ui: -apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Bahnschrift','Segoe UI',sans-serif;
   --font-display: -apple-system,BlinkMacSystemFont,'SF Pro Display','Agency FB','Bahnschrift','Segoe UI',sans-serif;
-  --body-bg: radial-gradient(circle at 100% 0,rgba(57,255,143,.12),transparent 35%),radial-gradient(circle at 0 100%,rgba(30,75,55,.22),transparent 40%),var(--bg);
-  --top-border: rgba(57,255,143,.2);
-  --top-glow: rgba(57,255,143,.12);
-  --top-glow-sub: rgba(57,255,143,.04);
-  --top-accent-shadow: inset 0 0 0 1px rgba(57,255,143,.04);
-  --btn-bg: linear-gradient(135deg,#39ff8f,#189a55);
-  --btn-border: rgba(57,255,143,.6);
-  --btn-color: #041a0e;
-  --btn-shadow: 0 0 0 1px rgba(57,255,143,.35),0 10px 22px rgba(57,255,143,.25);
-  --hero-border: rgba(57,255,143,.35);
-  --hero-glow: rgba(57,255,143,.06);
-  --logo-gradient: radial-gradient(circle at 20% 20%,#63ffab,rgba(18,78,48,.98) 72%);
-  --logo-color: #082212;
-  --code-ok-color: #c6f6d8;
-  --code-ok-border: rgba(57,255,143,.35);
-  --code-ok-bg: rgba(57,255,143,.08);
-  --debt-border: rgba(57,255,143,.26);
-  --debt-bg: linear-gradient(180deg,rgba(11,24,18,.96),rgba(9,16,13,.98));
-  --notice-bg: linear-gradient(165deg, #0b1f14 0%, #06140c 100%);
-  --notice-border: rgba(57,255,143,0.5);
-  --notice-shadow: 0 20px 50px rgba(0,0,0,0.75), 0 0 35px rgba(57,255,143,0.28);
-  --notice-badge-bg: rgba(57,255,143,0.14);
-  --notice-badge-color: #7dffbf;
-  --notice-badge-border: rgba(57,255,143,0.35);
-  --notice-quote-border: rgba(151,170,159,0.25);
-  --notice-quote-bg: rgba(57,255,143,0.06);
-  --notice-btn-bg: linear-gradient(135deg, #39ff8f, #189a55);
-  --notice-btn-border: rgba(57,255,143,0.6);
-  --notice-btn-color: #041a0e;
-  --notice-btn-shadow: 0 10px 24px rgba(57,255,143,0.32);
+  --body-bg: radial-gradient(circle at 100% 0,rgba(0,229,255,.14),transparent 35%),radial-gradient(circle at 0 100%,rgba(0,105,140,.24),transparent 40%),var(--bg);
+  --top-border: rgba(0,229,255,.25);
+  --top-glow: rgba(0,229,255,.14);
+  --top-glow-sub: rgba(0,229,255,.04);
+  --top-accent-shadow: inset 0 0 0 1px rgba(0,229,255,.04);
+  --btn-bg: linear-gradient(135deg,#00f0ff,#0099b8);
+  --btn-border: rgba(0,229,255,.6);
+  --btn-color: #021a22;
+  --btn-shadow: 0 0 0 1px rgba(0,229,255,.35),0 10px 22px rgba(0,229,255,.25);
+  --hero-border: rgba(0,229,255,.35);
+  --hero-glow: rgba(0,229,255,.08);
+  --logo-gradient: radial-gradient(circle at 20% 20%,#68f4ff,rgba(0,105,135,.98) 72%);
+  --logo-color: #021a22;
+  --code-ok-color: #ccf7fe;
+  --code-ok-border: rgba(0,229,255,.35);
+  --code-ok-bg: rgba(0,229,255,.08);
+  --debt-border: rgba(0,229,255,.26);
+  --debt-bg: linear-gradient(180deg,rgba(8,24,32,.96),rgba(5,16,24,.98));
+  --notice-bg: linear-gradient(165deg, #09202a 0%, #04121a 100%);
+  --notice-border: rgba(0,229,255,0.5);
+  --notice-shadow: 0 20px 50px rgba(0,0,0,0.75), 0 0 35px rgba(0,229,255,0.28);
+  --notice-badge-bg: rgba(0,229,255,0.14);
+  --notice-badge-color: #72f5ff;
+  --notice-badge-border: rgba(0,229,255,0.35);
+  --notice-quote-border: rgba(75,185,215,0.25);
+  --notice-quote-bg: rgba(0,229,255,0.08);
+  --notice-btn-bg: linear-gradient(135deg, #00f0ff, #0099b8);
+  --notice-btn-border: rgba(0,229,255,0.6);
+  --notice-btn-color: #021a22;
+  --notice-btn-shadow: 0 10px 24px rgba(0,229,255,0.32);
 }
 
 [data-theme="crimson"] {
@@ -722,7 +722,7 @@ linear-gradient(180deg,rgba(12,18,30,.98),rgba(8,11,20,.98));box-shadow:inset 0 
   gap: 5px;
   white-space: nowrap;
 }
-.ft-badge.emerald {
+.ft-badge.aqua, .ft-badge.emerald {
   background: rgba(0,230,118,0.12);
   color: #00e676;
   border: 1px solid rgba(0,230,118,0.25);

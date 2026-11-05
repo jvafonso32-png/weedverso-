@@ -139,7 +139,7 @@ const usersConfig = [
     config: {
       userId: 'default',
       userName: 'João',
-      theme: 'emerald',
+      theme: 'aqua',
       storageKey: 'rotina_prime_v2'
     }
   },
@@ -462,7 +462,7 @@ testGistPullEmptyProtection().then(() => {
   const joaoEnv = createMockEnvironment({
     userId: 'default',
     userName: 'João',
-    theme: 'emerald',
+    theme: 'aqua',
     storageKey: 'rotina_prime_v2'
   }, {
     'rotina_prime_v2': JSON.stringify(joaoInitialState)

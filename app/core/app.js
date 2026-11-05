@@ -792,7 +792,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=39';
+const SW_PATH = CFG.swPath || 'sw.js?v=40';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -8171,9 +8171,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v39'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v40'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v39');
+      sessionStorage.setItem('sw_ctrl_reload','v40');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
