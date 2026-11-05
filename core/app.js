@@ -107,7 +107,7 @@
     </div>
     <div id="quickActions" class="quickRow">
       <button class="quick" type="button" data-quick="expense" style="border-color:rgba(255,95,112,.35);color:#ff9daa;">- Saída rápida</button>
-      <button class="quick" type="button" data-quick="income" style="border-color:var(--ps);color:#7effb9;">+ Entrada</button>
+      <button class="quick" type="button" data-quick="income" style="border-color:var(--ps);color:#00e5ff;">+ Entrada</button>
       <button class="quick" type="button" data-quick="card">+ Gasto cartão</button>
       <button class="quick" type="button" data-quick="debtor">+ Devedor</button>
     </div>
@@ -374,7 +374,7 @@
         <!-- Ações Rápidas -->
         <div class="line" style="gap:8px;margin-bottom:12px;">
           <button type="button" class="btn" id="investOpenSetBtn" style="flex:1;background:rgba(0,229,255,.15);border-color:rgba(0,229,255,.3);color:#00e5ff;">✎ Definir Saldo</button>
-          <button type="button" class="btn" id="investOpenAddBtn" style="flex:1;background:rgba(0,230,118,.15);border-color:rgba(0,230,118,.3);color:#00e676;">+ Aporte</button>
+          <button type="button" class="btn" id="investOpenAddBtn" style="flex:1;background:rgba(0,229,255,.15);border-color:rgba(0,229,255,.3);color:#00e5ff;">+ Aporte</button>
           <button type="button" class="btn" id="investOpenSubBtn" style="flex:1;background:rgba(255,95,112,.15);border-color:rgba(255,95,112,.3);color:#ff7d8d;">- Resgate</button>
         </div>
 
@@ -792,7 +792,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=40';
+const SW_PATH = CFG.swPath || 'sw.js?v=41';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -4055,7 +4055,7 @@ function renderInvestments(){
   el.investHistoryList.innerHTML = list.slice().reverse().map((item, idx) => {
     const isAdd = item.type === 'add';
     const isSet = item.type === 'set';
-    const color = isAdd ? '#00e676' : (isSet ? '#00e5ff' : '#ff7d8d');
+    const color = isAdd ? '#00e5ff' : (isSet ? '#00e5ff' : '#ff7d8d');
     const badge = isAdd ? '+ Aporte' : (isSet ? 'Saldo Definido' : '- Resgate');
     const d = item.at ? new Date(item.at).toLocaleDateString('pt-BR') : '';
     const originalIdx = (list.length - 1) - idx;
@@ -4121,10 +4121,10 @@ function updateInvestFormPreview(){
     }
   } else if(currentInvestFormMode === 'add'){
     sign.textContent = '+';
-    sign.style.color = '#00e676';
+    sign.style.color = '#00e5ff';
     if(val > 0){
       const next = cur + val;
-      preview.innerHTML = `Soma: ${money(cur)} + ${money(val)} = <strong style="color:#00e676;">${money(next)}</strong>`;
+      preview.innerHTML = `Soma: ${money(cur)} + ${money(val)} = <strong style="color:#00e5ff;">${money(next)}</strong>`;
     } else {
       preview.textContent = 'Digite o valor a ser somado ao saldo investido';
     }
@@ -4448,7 +4448,7 @@ function creditExpenseBreakdown(monthKey){
     (st.credit.tx||[])
       .filter(t=>t.type==='expense'&&(!monthKey||monthKeyFromValue(t.at)===monthKey))
       .map(t=>({value:Number(t.value)||0,label:t.category||t.desc,key:t.categoryKey})),
-    ['#ff2a55','#2df5b4','#26c8ff','#2f89ff','#ffd447','#ff9a3c','#ff6f4e','#ff5f70','#d96cff','#8f7cff','#5cf2ff','#9dff5c'],
+    ['#ff2a55','#00e5ff','#26c8ff','#2f89ff','#ffd447','#ff9a3c','#ff6f4e','#ff5f70','#d96cff','#8f7cff','#5cf2ff','#38bdf8'],
     'Sem categoria'
   );
 }
@@ -4646,7 +4646,7 @@ function accountOutflowBreakdown(period){
   });
   return buildCategoryBreakdown(
     rows,
-    ['#26c8ff','#4de7ff','#ff2a55','#2f89ff','#7bc0ff','#ffd447','#ff9a3c','#ff6f4e','#d96cff','#8f7cff','#5cf2ff','#9dff5c'],
+    ['#26c8ff','#4de7ff','#ff2a55','#2f89ff','#7bc0ff','#ffd447','#ff9a3c','#ff6f4e','#d96cff','#8f7cff','#5cf2ff','#38bdf8'],
     'Sem categoria'
   );
 }
@@ -4858,7 +4858,7 @@ function renderAccountFlowChart(){
   });
   
   const total = inRange.reduce((s, r) => s + r.value, 0);
-  let trendHtml = '<span class="ft-badge emerald">Em dia</span>';
+  let trendHtml = '<span class="ft-badge aqua">Em dia</span>';
   
   if (prevStart && prevEnd) {
     const prev = all.filter(r => r.date >= prevStart && r.date < prevEnd).reduce((s, r) => s + r.value, 0);
@@ -4868,7 +4868,7 @@ function renderAccountFlowChart(){
     }
   }
   
-  const catColors = ['#00e676','#18ffff','#b388ff','#ff4081','#ffd600','#ff9100','#00e5ff','#76ff03'];
+  const catColors = ['#00e5ff','#18ffff','#00b4d8','#0077b6','#7bc0ff','#38bdf8','#0284c7','#5cf2ff'];
   const cats = compressBreakdown(buildCategoryBreakdown(
     inRange.map(r => ({ value: r.value, label: r.label, key: r.key })),
     catColors, 'Sem categoria'
@@ -4877,7 +4877,7 @@ function renderAccountFlowChart(){
   const wrap = document.getElementById('accountFlowLegend');
   if (!wrap) return;
   
-  const color = '#00e676';
+  const color = '#00e5ff';
   const { svg, coords } = generateCurveSVG(buckets.map(b => b.value), 100, 100, color, 'grad-acc-flow');
   
   // Format display amount
@@ -4959,7 +4959,7 @@ function renderCreditDescChart(){
   const activeMonthLabel = monthLabelFromKey(activeMonthKey);
   const breakdown = creditExpenseBreakdown(activeMonthKey);
   
-  const catColors = ['#b388ff','#d500f9','#f50057','#ff3d00','#ffd600','#00e5ff','#00e676'];
+  const catColors = ['#b388ff','#d500f9','#f50057','#ff3d00','#ffd600','#00e5ff','#00b4d8'];
   const cats = compressBreakdown(buildCategoryBreakdown(
     breakdown.map(r => ({ value: r.value, label: r.label, key: r.label })),
     catColors, 'Sem categoria'
@@ -6720,7 +6720,7 @@ function renderUnifiedStatement(){
       summaryEl.innerHTML = `
         <div class="statementSummaryCol">
           <span>Entradas (Mês)</span>
-          <strong style="color:#00e676;">+${money(inMonth)}</strong>
+          <strong style="color:#00e5ff;">+${money(inMonth)}</strong>
         </div>
         <div style="width:1px;height:24px;background:rgba(255,255,255,0.08);"></div>
         <div class="statementSummaryCol">
@@ -6759,7 +6759,7 @@ function renderUnifiedStatement(){
         <div style="width:1px;height:24px;background:rgba(255,255,255,0.08);"></div>
         <div class="statementSummaryCol">
           <span>Falta Cobrir</span>
-          <strong style="color:${falta > 0 ? '#ff7d8d' : '#00e676'};">${money(falta)}</strong>
+          <strong style="color:${falta > 0 ? '#ff7d8d' : '#00e5ff'};">${money(falta)}</strong>
         </div>
       `;
     } else if(activeWallet === 'vale1' || activeWallet === 'vale2'){
@@ -6789,7 +6789,7 @@ function renderUnifiedStatement(){
         <div style="width:1px;height:24px;background:rgba(255,255,255,0.08);"></div>
         <div class="statementSummaryCol">
           <span>Aportes no Mês</span>
-          <strong style="color:#00e676;">+${money(adds)}</strong>
+          <strong style="color:#00e5ff;">+${money(adds)}</strong>
         </div>
       `;
     }
@@ -8171,9 +8171,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v40'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v41'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v40');
+      sessionStorage.setItem('sw_ctrl_reload','v41');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
