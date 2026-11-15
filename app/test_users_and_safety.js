@@ -524,6 +524,32 @@ testGistPullEmptyProtection().then(() => {
   assert(joaoFinalState.tx.some(t => t.account === 'conta' && t.type === 'in' && t.value === 900), 'Transação de entrada registrada na conta');
   console.log('  [OK] Botão remodelado funcionou: Transferiu R$ 900,00 para a conta corrente e zerou a reserva com histórico!');
 
+  // 5.6 Teste do sistema de Dois Cartões Anatômicos exclusivo do João
+  assert.strictEqual(joaoElements['ccDualCardDock'].style.display, 'grid', 'Dock de dois cartões deve estar visível no João');
+  const slot1Btn = joaoElements['ccSlot1Btn'];
+  const slot2Btn = joaoElements['ccSlot2Btn'];
+  assert(slot1Btn && slot2Btn, 'Botões seletores dos Cartões 1 e 2 devem existir');
+
+  // Alterna para o Cartão 2
+  slot2Btn.click();
+  const activeCard2 = joaoEnv.sandbox.window.getActiveCreditObj();
+  assert.strictEqual(activeCard2.name, 'Cartão 2', 'Cartão ativo deve ser o Cartão 2 após o clique');
+
+  // Personaliza o nome do Cartão 2, lança gasto e adiciona reserva no Cartão 2
+  joaoElements['ccValue'].value = '250.50';
+  joaoElements['ccDesc'].value = 'Jantar Cartão 2';
+  joaoElements['ccExpense'].click();
+
+  defaultReserveVal.value = '80.00';
+  defaultReserveIn.click();
+
+  const stateWithCard2 = JSON.parse(joaoEnv.store['rotina_prime_v2']);
+  assert.strictEqual(stateWithCard2.credit.used, 4758.75, 'Fatura do Cartão 1 (AMEX) permanece independente e intacta');
+  assert.strictEqual(stateWithCard2.credit2.used, 250.5, 'Fatura do Cartão 2 recebeu o gasto de 250.50');
+  assert.strictEqual(stateWithCard2.credit2.reserved, 80, 'Reserva do Cartão 2 recebeu os 80.00');
+  assert.strictEqual(stateWithCard2.credit2.tx.length, 2, 'Histórico do Cartão 2 tem os 2 lançamentos');
+  console.log('  [OK] Dois Cartões Anatômicos: Alternância fluida e saldos/faturas/reservas 100% independentes no João!');
+
   // -------------------------------------------------------------
   // TESTE 6: GARANTIA ABSOLUTA DE NÃO ALTERAÇÃO NO ANDRÉ E NA JÚLIA
   // -------------------------------------------------------------
@@ -541,7 +567,8 @@ testGistPullEmptyProtection().then(() => {
   vm.createContext(andreEnv.sandbox);
   vm.runInContext(coreJsCode, andreEnv.sandbox);
 
-  // 6.1 André mantém ações rápidas visíveis
+  // 6.1 André mantém ações rápidas visíveis e apenas 1 cartão (ccDualCardDock oculto)
+  assert.strictEqual(andreElements['ccDualCardDock'].style.display, 'none', 'Dock de dois cartões deve permanecer oculto no André');
   assert.strictEqual(andreElements['ccQuickActionsSection'].style.display, 'block', 'Ações rápidas devem permanecer visíveis no André');
   assert.strictEqual(andreElements['ccReserveStandardLayout'].style.display, 'block', 'Ajuste padrão deve permanecer visível no André');
   assert.strictEqual(andreElements['ccReserveDefaultLayout'].style.display, 'none', 'Layout remodelado deve permanecer oculto no André');
@@ -550,7 +577,7 @@ testGistPullEmptyProtection().then(() => {
   const andreState = JSON.parse(andreEnv.store['weedverso_andre_v1']);
   assert(andreState.balances.reserva, 'André DEVE manter o saldo reserva em balances');
   assert.strictEqual(andreState.balances.reserva.label, 'Reserva', 'Label de reserva do André mantido');
-  console.log('  [OK] André: 100% INTACTO (Ações Rápidas, Ajuste Padrão e Box de Reserva na tela inicial mantidos).');
+  console.log('  [OK] André: 100% INTACTO (Ações Rápidas, Ajuste Padrão, 1 Cartão e Box de Reserva na tela inicial mantidos).');
 
   const juliaElements = {};
   const juliaEnv = createMockEnvironment({
@@ -564,6 +591,7 @@ testGistPullEmptyProtection().then(() => {
   vm.createContext(juliaEnv.sandbox);
   vm.runInContext(coreJsCode, juliaEnv.sandbox);
 
+  assert.strictEqual(juliaElements['ccDualCardDock'].style.display, 'none', 'Dock de dois cartões deve permanecer oculto na Júlia');
   assert.strictEqual(juliaElements['ccQuickActionsSection'].style.display, 'block', 'Ações rápidas devem permanecer visíveis na Júlia');
   assert.strictEqual(juliaElements['ccReserveStandardLayout'].style.display, 'block', 'Ajuste padrão deve permanecer visível na Júlia');
   assert.strictEqual(juliaElements['ccReserveDefaultLayout'].style.display, 'none', 'Layout remodelado deve permanecer oculto na Júlia');

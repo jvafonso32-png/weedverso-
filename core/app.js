@@ -225,6 +225,48 @@
             </div>
             <button id="ccEditBtn" type="button" class="iconBtn" title="Personalizar nome do cartão">✎</button>
           </div>
+
+          <!-- Dock Anatômico de Dois Cartões (Exclusivo para o João) -->
+          <div id="ccDualCardDock" class="ccDualCardDock" style="display:none;">
+            <div class="ccDualSummaryBar">
+              <div class="ccDualSumCol">
+                <span>Fatura Total</span>
+                <strong id="ccTotalUsedBoth">R$ 0,00</strong>
+              </div>
+              <div class="ccDualSumDivider"></div>
+              <div class="ccDualSumCol">
+                <span>Reserva Total</span>
+                <strong id="ccTotalReservedBoth" style="color:var(--p);">R$ 0,00</strong>
+              </div>
+              <div class="ccDualSumDivider"></div>
+              <div class="ccDualSumCol">
+                <span>Falta Cobrir</span>
+                <strong id="ccTotalUncoveredBoth">R$ 0,00</strong>
+              </div>
+            </div>
+            <div class="ccDualSlotsGrid">
+              <button type="button" id="ccSlot1Btn" class="ccSlotCard active" data-card-slot="1">
+                <div class="ccSlotTop">
+                  <span class="ccSlotBadge">💳 CARTÃO 01</span>
+                  <span id="ccSlot1Dot" class="ccSlotDot"></span>
+                </div>
+                <strong id="ccSlot1Name" class="ccSlotName">AMEX</strong>
+                <div id="ccSlot1Used" class="ccSlotUsed">R$ 0,00</div>
+                <div class="ccSlotRes">🛡️ <span id="ccSlot1Reserved">R$ 0,00</span></div>
+              </button>
+              <button type="button" id="ccSlot2Btn" class="ccSlotCard" data-card-slot="2">
+                <div class="ccSlotTop">
+                  <span class="ccSlotBadge">💳 CARTÃO 02</span>
+                  <span id="ccSlot2Dot" class="ccSlotDot"></span>
+                </div>
+                <strong id="ccSlot2Name" class="ccSlotName">Cartão 2</strong>
+                <div id="ccSlot2Used" class="ccSlotUsed">R$ 0,00</div>
+                <div class="ccSlotRes">🛡️ <span id="ccSlot2Reserved">R$ 0,00</span></div>
+              </button>
+            </div>
+            <div class="ccDualSwipeHint">⇆ Toque em um cartão acima ou deslize o cartão virtual para alternar</div>
+          </div>
+
           <div id="ccMeta" class="two" hidden style="margin-bottom:10px">
             <input id="ccName" type="text" maxlength="30" placeholder="Nome do cartão (ex: Nubank Black)" />
           </div>
@@ -568,6 +610,14 @@
         </div>
       </div>
 
+      <div id="quickAddCardField" class="sheetField" style="display:none;">
+        <label class="mini">Em qual cartão lançar?</label>
+        <div class="sheetPills" id="quickAddCardPills">
+          <button type="button" class="sheetPill active" data-card-slot="1" id="quickCardSlot1Pill">💳 AMEX</button>
+          <button type="button" class="sheetPill" data-card-slot="2" id="quickCardSlot2Pill">💳 Cartão 2</button>
+        </div>
+      </div>
+
       <div class="sheetField">
         <label class="mini">Descrição / Categoria</label>
         <input id="quickAddNote" type="text" placeholder="Ex: Almoço, Mercado, Uber..." maxlength="42" class="sheetInput" autocomplete="off" />
@@ -792,7 +842,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=42';
+const SW_PATH = CFG.swPath || 'sw.js?v=43';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -859,6 +909,12 @@ const DEF={
     reserved: (CFG.defaultCreditReserved !== undefined ? CFG.defaultCreditReserved : (IS_DEFAULT_USER ? 814.82 : 0)),
     tx: []
   },
+  credit2: {
+    name: CFG.defaultCredit2Name || 'Cartão 2',
+    used: (CFG.defaultCredit2Used !== undefined ? CFG.defaultCredit2Used : 0),
+    reserved: (CFG.defaultCredit2Reserved !== undefined ? CFG.defaultCredit2Reserved : 0),
+    tx: []
+  },
   debtors: [],
   myDebts: [],
   routineLog: [],
@@ -870,7 +926,26 @@ const DEF={
 };
 var focusTick=null;
 var st=load();
-const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'month',debtsView:(function(){try{return localStorage.getItem(DEBTS_VIEW_KEY)||'debtors';}catch(e){return 'debtors';}})(),statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
+const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'month',debtsView:(function(){try{return localStorage.getItem(DEBTS_VIEW_KEY)||'debtors';}catch(e){return 'debtors';}})(),statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,activeCardSlot:1,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
+
+function getActiveCreditObj(){
+  if(!IS_DEFAULT_USER) return st.credit;
+  if(!st.credit2 || typeof st.credit2 !== 'object'){
+    st.credit2 = { name: 'Cartão 2', used: 0, reserved: 0, tx: [] };
+  }
+  return ui.activeCardSlot === 2 ? st.credit2 : st.credit;
+}
+
+function getAllCreditCards(){
+  const list = [st.credit || { name: 'Cartão', used: 0, reserved: 0, tx: [] }];
+  if(IS_DEFAULT_USER){
+    if(!st.credit2 || typeof st.credit2 !== 'object'){
+      st.credit2 = { name: 'Cartão 2', used: 0, reserved: 0, tx: [] };
+    }
+    list.push(st.credit2);
+  }
+  return list;
+}
 const serverSync={initialized:false,available:false,timer:null,poller:null,pushing:false,lastSnapshot:''};
 const SERVER_POLL_ACTIVE_MS=1000;
 const SERVER_POLL_BACKGROUND_MS=3000;
@@ -1034,7 +1109,7 @@ function renderAchievements(){
   const list=[
     {id:'first_habit', label:'Primeiro Passo', icon:'🎯', unlocked:(st.habits||[]).some(h=>h.done)},
     {id:'streak_3', label:'Streak 3d', icon:'🔥', unlocked:(Number(st.streak)||0)>=3},
-    {id:'reserve_ready', label:'Reserva Ativa', icon:'🛡️', unlocked:(st.credit && Number(st.credit.reserved)>0)},
+    {id:'reserve_ready', label:'Reserva Ativa', icon:'🛡️', unlocked:getAllCreditCards().some(c=>Number(c && c.reserved)>0)},
     {id:'perfect_day', label:'Dia 100%', icon:'👑', unlocked:(st.habits||[]).length>0 && (st.habits||[]).every(h=>h.done)}
   ];
   achRow.innerHTML=list.map(a=>`
@@ -1158,8 +1233,8 @@ function mergeStates(local, remote){
   if (!remote || typeof remote !== 'object') return local || normalizeLoadedState(DEF);
   if (!local || typeof local !== 'object') return remote;
 
-  const localHasData = hasMeaningfulData(local) || (Array.isArray(local.tx) && local.tx.length > 0) || (local.credit && Array.isArray(local.credit.tx) && local.credit.tx.length > 0) || (Array.isArray(local.debtors) && local.debtors.length > 0) || (Array.isArray(local.myDebts) && local.myDebts.length > 0) || (Array.isArray(local.goals) && local.goals.length > 0);
-  const remoteHasData = hasMeaningfulData(remote) || (Array.isArray(remote.tx) && remote.tx.length > 0) || (remote.credit && Array.isArray(remote.credit.tx) && remote.credit.tx.length > 0) || (Array.isArray(remote.debtors) && remote.debtors.length > 0) || (Array.isArray(remote.myDebts) && remote.myDebts.length > 0) || (Array.isArray(remote.goals) && remote.goals.length > 0);
+  const localHasData = hasMeaningfulData(local) || (Array.isArray(local.tx) && local.tx.length > 0) || (local.credit && Array.isArray(local.credit.tx) && local.credit.tx.length > 0) || (local.credit2 && Array.isArray(local.credit2.tx) && local.credit2.tx.length > 0) || (Array.isArray(local.debtors) && local.debtors.length > 0) || (Array.isArray(local.myDebts) && local.myDebts.length > 0) || (Array.isArray(local.goals) && local.goals.length > 0);
+  const remoteHasData = hasMeaningfulData(remote) || (Array.isArray(remote.tx) && remote.tx.length > 0) || (remote.credit && Array.isArray(remote.credit.tx) && remote.credit.tx.length > 0) || (remote.credit2 && Array.isArray(remote.credit2.tx) && remote.credit2.tx.length > 0) || (Array.isArray(remote.debtors) && remote.debtors.length > 0) || (Array.isArray(remote.myDebts) && remote.myDebts.length > 0) || (Array.isArray(remote.goals) && remote.goals.length > 0);
 
   // Protecao contra sobrescrita por Gist remoto vazio:
   // Se o dispositivo local ja possui dados inseridos e o remoto esta vazio, nunca apaga os dados locais
@@ -1186,6 +1261,15 @@ function mergeStates(local, remote){
   if (local.credit && Array.isArray(local.credit.tx) && local.credit.tx.length > 0 && mergedCreditTx.length < local.credit.tx.length) {
     local.credit.tx.forEach(t => { if (t && t.id && !cTxMap.has(t.id)) cTxMap.set(t.id, t); });
     mergedCreditTx = Array.from(cTxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  }
+
+  const c2TxMap = new Map();
+  ((remote.credit2 && remote.credit2.tx) || []).forEach(t => { if (t && t.id) c2TxMap.set(t.id, t); });
+  ((local.credit2 && local.credit2.tx) || []).forEach(t => { if (t && t.id) c2TxMap.set(t.id, t); });
+  let mergedCredit2Tx = Array.from(c2TxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
+  if (local.credit2 && Array.isArray(local.credit2.tx) && local.credit2.tx.length > 0 && mergedCredit2Tx.length < local.credit2.tx.length) {
+    local.credit2.tx.forEach(t => { if (t && t.id && !c2TxMap.has(t.id)) c2TxMap.set(t.id, t); });
+    mergedCredit2Tx = Array.from(c2TxMap.values()).sort((a,b) => new Date(b.at || 0) - new Date(a.at || 0));
   }
 
   const debtorMap = new Map();
@@ -1215,6 +1299,12 @@ function mergeStates(local, remote){
       used: (primary.credit && primary.credit.used !== undefined) ? primary.credit.used : (local.credit ? local.credit.used : 0),
       reserved: (primary.credit && primary.credit.reserved !== undefined) ? primary.credit.reserved : (local.credit ? local.credit.reserved : 0),
       tx: mergedCreditTx
+    }),
+    credit2: Object.assign({}, DEF.credit2, remote.credit2, local.credit2, {
+      name: (primary.credit2 && primary.credit2.name) || (local.credit2 && local.credit2.name) || (remote.credit2 && remote.credit2.name) || 'Cartão 2',
+      used: (primary.credit2 && primary.credit2.used !== undefined) ? primary.credit2.used : (local.credit2 && local.credit2.used !== undefined ? local.credit2.used : (remote.credit2 && remote.credit2.used !== undefined ? remote.credit2.used : 0)),
+      reserved: (primary.credit2 && primary.credit2.reserved !== undefined) ? primary.credit2.reserved : (local.credit2 && local.credit2.reserved !== undefined ? local.credit2.reserved : (remote.credit2 && remote.credit2.reserved !== undefined ? remote.credit2.reserved : 0)),
+      tx: mergedCredit2Tx
     }),
     tx: mergedTx,
     debtors: Array.from(debtorMap.values()),
@@ -1428,6 +1518,7 @@ const el={
   hForm:$('#habitForm'),hName:$('#hName'),hGoal:$('#hGoal'),hDate:$('#hDate'),focusHabitSelect:$('#focusHabitSelect'),focusMinutesInput:$('#focusMinutesInput'),focusStartBtn:$('#focusStartBtn'),focusPauseBtn:$('#focusPauseBtn'),focusResetBtn:$('#focusResetBtn'),focusClock:$('#focusClock'),focusStatus:$('#focusStatus'),hList:$('#habitList'),mot:$('#motivation'),routineDateInfo:$('#routineDateInfo'),routineLog:$('#routineLog'),routineChart:$('#routineChart'),
   fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
   ccEditBtn:$('#ccEditBtn'),ccMeta:$('#ccMeta'),ccMetaSummary:$('#ccMetaSummary'),ccMetaHint:$('#ccMetaHint'),ccName:$('#ccName'),ccValue:$('#ccValue'),ccDesc:$('#ccDesc'),
+  ccDualCardDock:$('#ccDualCardDock'),ccTotalUsedBoth:$('#ccTotalUsedBoth'),ccTotalReservedBoth:$('#ccTotalReservedBoth'),ccTotalUncoveredBoth:$('#ccTotalUncoveredBoth'),ccSlot1Btn:$('#ccSlot1Btn'),ccSlot2Btn:$('#ccSlot2Btn'),ccSlot1Name:$('#ccSlot1Name'),ccSlot2Name:$('#ccSlot2Name'),ccSlot1Used:$('#ccSlot1Used'),ccSlot2Used:$('#ccSlot2Used'),ccSlot1Reserved:$('#ccSlot1Reserved'),ccSlot2Reserved:$('#ccSlot2Reserved'),ccSlot1Dot:$('#ccSlot1Dot'),ccSlot2Dot:$('#ccSlot2Dot'),
   ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccDefaultReserveValue:$('#ccDefaultReserveValue'),ccDefaultReserveIn:$('#ccDefaultReserveIn'),ccDefaultReserveOut:$('#ccDefaultReserveOut'),ccQuickActionsSection:$('#ccQuickActionsSection'),ccReserveStandardLayout:$('#ccReserveStandardLayout'),ccReserveDefaultLayout:$('#ccReserveDefaultLayout'),ccReserveCurrentAmount:$('#ccReserveCurrentAmount'),ccTransferToContaBtn:$('#ccTransferToContaBtn'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
   debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debInstallments:$('#debInstallments'),debInstallmentPreview:$('#debInstallmentPreview'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
   mdForm:$('#mdForm'),mdName:$('#mdName'),mdAmount:$('#mdAmount'),mdInstallments:$('#mdInstallments'),mdInstallmentPreview:$('#mdInstallmentPreview'),mdNote:$('#mdNote'),mdPayDate:$('#mdPayDate'),myDebtList:$('#myDebtList'),mdSummaryLine:$('#mdSummaryLine'),mdProgress:$('#mdProgress'),mdWeek:$('#mdWeek'),mdOpenFormBtn:$('#mdOpenFormBtn'),
@@ -1440,8 +1531,8 @@ const el={
 };
 
 const quickAddSheet={
-  overlay:null,form:null,valInput:null,noteInput:null,tabBtns:null,accBtns:null,accField:null,
-  currentTab:'out',currentAcc:'conta',
+  overlay:null,form:null,valInput:null,noteInput:null,tabBtns:null,accBtns:null,accField:null,cardBtns:null,cardField:null,
+  currentTab:'out',currentAcc:'conta',currentCardSlot:1,
   init:function(){
     this.overlay=$('#quickAddOverlay');
     this.form=$('#quickAddForm');
@@ -1450,6 +1541,8 @@ const quickAddSheet={
     this.tabBtns=document.querySelectorAll('#quickAddTabs .sheetTab');
     this.accBtns=document.querySelectorAll('#quickAddAccountPills .sheetPill');
     this.accField=$('#quickAddAccountField');
+    this.cardBtns=document.querySelectorAll('#quickAddCardPills .sheetPill');
+    this.cardField=$('#quickAddCardField');
 
     const closeBtn=$('#closeQuickAddBtn');
     if(closeBtn) closeBtn.addEventListener('click',()=>this.close());
@@ -1472,6 +1565,15 @@ const quickAddSheet={
         btn.addEventListener('click',()=>{
           this.currentAcc=btn.dataset.acc;
           this.accBtns.forEach(b=>b.classList.toggle('active',b===btn));
+          haptic('light');
+        });
+      });
+    }
+    if(this.cardBtns){
+      this.cardBtns.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          this.currentCardSlot=Number(btn.dataset.cardSlot)||1;
+          this.cardBtns.forEach(b=>b.classList.toggle('active',b===btn));
           haptic('light');
         });
       });
@@ -1530,9 +1632,11 @@ const quickAddSheet={
           move(acc,'in',val,note||'Entrada');
           showToast('✓ Entrada de '+money(val)+' salva!','ok');
         }else if(tab==='card'){
-          st.credit.used += val;
+          const targetCard=(IS_DEFAULT_USER && this.currentCardSlot===2)?(st.credit2||(st.credit2={name:'Cartão 2',used:0,reserved:0,tx:[]})):st.credit;
+          targetCard.used=(Number(targetCard.used)||0)+val;
           const meta=categoryMeta(note,'Sem categoria');
-          st.credit.tx.unshift({
+          targetCard.tx=targetCard.tx||[];
+          targetCard.tx.unshift({
             id:id(),
             type:'expense',
             value:val,
@@ -1545,7 +1649,7 @@ const quickAddSheet={
           save(true);
           renderCredit();
           renderSummary();
-          showToast('✓ Gasto de '+money(val)+' salvo no cartão!','ok');
+          showToast('✓ Gasto de '+money(val)+' salvo em '+(targetCard.name||'cartão')+'!','ok');
         }
         this.close();
       });
@@ -1553,6 +1657,16 @@ const quickAddSheet={
   },
   open:function(tab='out'){
     this.currentTab=tab;
+    if(IS_DEFAULT_USER){
+      this.currentCardSlot=ui.activeCardSlot===2?2:1;
+      const p1=$('#quickCardSlot1Pill');
+      const p2=$('#quickCardSlot2Pill');
+      if(p1) p1.textContent='💳 '+((st.credit && st.credit.name)||'AMEX');
+      if(p2) p2.textContent='💳 '+((st.credit2 && st.credit2.name)||'Cartão 2');
+      if(this.cardBtns){
+        this.cardBtns.forEach(b=>b.classList.toggle('active',Number(b.dataset.cardSlot)===this.currentCardSlot));
+      }
+    }
     this.updateTabUI();
     const preview=$('#quickCalcPreview');
     if(preview) preview.style.display='none';
@@ -1590,6 +1704,9 @@ const quickAddSheet={
     }
     if(this.accField){
       this.accField.style.display=this.currentTab==='card'?'none':'grid';
+    }
+    if(this.cardField){
+      this.cardField.style.display=(IS_DEFAULT_USER && this.currentTab==='card')?'grid':'none';
     }
   }
 };
@@ -2057,18 +2174,50 @@ function bind(){
     renderCredit();
   });
   el.ccName.addEventListener('input',e=>{
-    st.credit.name=txt(e.target.value,30)||'Cartão weedverso';
+    const activeCard = getActiveCreditObj();
+    const fallbackName = (IS_DEFAULT_USER && ui.activeCardSlot === 2) ? 'Cartão 2' : 'Cartão weedverso';
+    activeCard.name=txt(e.target.value,30)||fallbackName;
     save(true); renderCredit(); renderSummary();
   });
+  function switchActiveCardSlot(slot){
+    if(!IS_DEFAULT_USER) return;
+    const nextSlot = Number(slot) === 2 ? 2 : 1;
+    if(ui.activeCardSlot === nextSlot) return;
+    ui.activeCardSlot = nextSlot;
+    haptic('light');
+    renderCredit();
+  }
+  if(el.ccSlot1Btn) el.ccSlot1Btn.addEventListener('click',()=>switchActiveCardSlot(1));
+  if(el.ccSlot2Btn) el.ccSlot2Btn.addEventListener('click',()=>switchActiveCardSlot(2));
+  if(el.virtualCreditCard && IS_DEFAULT_USER){
+    let touchStartX=0, touchStartY=0;
+    el.virtualCreditCard.addEventListener('touchstart',e=>{
+      if(e.touches && e.touches.length===1){
+        touchStartX=e.touches[0].clientX;
+        touchStartY=e.touches[0].clientY;
+      }
+    },{passive:true});
+    el.virtualCreditCard.addEventListener('touchend',e=>{
+      if(!e.changedTouches || !e.changedTouches.length) return;
+      const dx=e.changedTouches[0].clientX - touchStartX;
+      const dy=e.changedTouches[0].clientY - touchStartY;
+      if(Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.3){
+        if(dx < 0) switchActiveCardSlot(2);
+        else switchActiveCardSlot(1);
+      }
+    },{passive:true});
+  }
   el.ccExpense.addEventListener('click',()=>creditMove('expense'));
   el.ccPay.addEventListener('click',()=>creditMove('payment'));
   if(IS_DEFAULT_USER){
+    if(el.ccDualCardDock) el.ccDualCardDock.style.display = 'grid';
     if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'none';
     if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'none';
     if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'block';
     const resTitle = document.getElementById('ccReserveTitle');
     if(resTitle) resTitle.textContent = '🛡️ Reserva do Cartão';
   } else {
+    if(el.ccDualCardDock) el.ccDualCardDock.style.display = 'none';
     if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'block';
     if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'block';
     if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'none';
@@ -2079,17 +2228,18 @@ function bind(){
   if(el.ccDefaultReserveOut) el.ccDefaultReserveOut.addEventListener('click',()=>creditReserveMove('out', el.ccDefaultReserveValue));
   if(el.ccTransferToContaBtn){
     el.ccTransferToContaBtn.addEventListener('click', () => {
-      const reserved = Math.max(0, Number(st.credit && st.credit.reserved) || 0);
+      const activeCard = getActiveCreditObj();
+      const reserved = Math.max(0, Number(activeCard && activeCard.reserved) || 0);
       if(reserved <= 0){
-        showToast('O saldo reservado já está zerado!', 'warn');
+        showToast('O saldo reservado deste cartão já está zerado!', 'warn');
         return;
       }
       if(!st.balances.conta) st.balances.conta = { label: 'Saldo em Conta', amount: 0 };
       st.balances.conta.amount = roundMoneyValue((Number(st.balances.conta.amount) || 0) + reserved);
-      st.credit.reserved = 0;
+      activeCard.reserved = 0;
       const nowIso = new Date().toISOString();
-      st.credit.tx = st.credit.tx || [];
-      st.credit.tx.unshift({
+      activeCard.tx = activeCard.tx || [];
+      activeCard.tx.unshift({
         id: id(),
         type: 'reserve-out',
         value: reserved,
@@ -2104,7 +2254,7 @@ function bind(){
         account: 'conta',
         type: 'in',
         value: reserved,
-        note: 'Resgate da reserva do cartão',
+        note: `Resgate da reserva (${activeCard.name || 'Cartão'})`,
         category: 'Ajuste manual',
         categoryKey: 'ajuste',
         at: nowIso
@@ -2131,7 +2281,8 @@ function bind(){
     el.ccChartReset.addEventListener('click',()=>resetCreditChartMonth());
   }
   el.ccClear.addEventListener('click',()=>{
-    st.credit.used=0; st.credit.tx=[]; save(true); renderCredit(); renderSummary();
+    const activeCard = getActiveCreditObj();
+    activeCard.used=0; activeCard.tx=[]; save(true); renderCredit(); renderSummary();
   });
 
   if(el.ccQuickChips){
@@ -2458,7 +2609,8 @@ function bind(){
           <label class="mini">Em qual conta o dinheiro caiu?</label>
           <div class="sheetPills" id="dvReceiveAccPills">
             <button type="button" class="sheetPill ${defaultAcc==='conta'?'active':''}" data-acc="conta">🏦 Conta (${money(st.balances.conta.amount)})</button>
-            <button type="button" class="sheetPill ${defaultAcc==='amex'?'active':''}" data-acc="amex">💳 Abater AMEX (Usado: ${money(st.credit.used)})</button>
+            <button type="button" class="sheetPill ${defaultAcc==='amex'?'active':''}" data-acc="amex">💳 Abater ${(st.credit && st.credit.name)||'AMEX'} (Usado: ${money(st.credit.used)})</button>
+            ${IS_DEFAULT_USER ? `<button type="button" class="sheetPill ${defaultAcc==='card2'?'active':''}" data-acc="card2">💳 Abater ${(st.credit2 && st.credit2.name)||'Cartão 2'} (Usado: ${money((st.credit2 && st.credit2.used)||0)})</button>` : ''}
             <button type="button" class="sheetPill ${defaultAcc==='vale1'?'active':''}" data-acc="vale1">🥗 Alelo Alimentação</button>
             <button type="button" class="sheetPill ${defaultAcc==='vale2'?'active':''}" data-acc="vale2">🍽️ Alelo Refeição</button>
           </div>
@@ -2517,14 +2669,15 @@ function bind(){
     };
 
     let txId=id();
-    if(account==='amex'){
-      st.credit.used=Math.max(0,(Number(st.credit.used)||0)-val);
-      st.credit.tx=st.credit.tx||[];
-      st.credit.tx.unshift({
+    if(account==='amex' || account==='card2'){
+      const targetCard = account==='card2' ? (st.credit2||(st.credit2={name:'Cartão 2',used:0,reserved:0,tx:[]})) : st.credit;
+      targetCard.used=Math.max(0,(Number(targetCard.used)||0)-val);
+      targetCard.tx=targetCard.tx||[];
+      targetCard.tx.unshift({
         id:txId,
         type:'payment',
         value:val,
-        desc:`Recebido de ${d.name} (abater AMEX)`,
+        desc:`Recebido de ${d.name} (abater ${targetCard.name||'Cartão'})`,
         category:'Pagamento cartao',
         categoryKey:'pagamento',
         at:nowIso
@@ -2677,9 +2830,10 @@ function bind(){
       d.installmentsPaid=prevStatus.installmentsPaid;
       d.payments=prevStatus.payments;
     }
-    if(account==='amex'){
-      st.credit.used=roundMoneyValue((Number(st.credit.used)||0)+val);
-      st.credit.tx=(st.credit.tx||[]).filter(t=>t.id!==txId);
+    if(account==='amex' || account==='card2'){
+      const targetCard = account==='card2' ? (st.credit2||(st.credit2={name:'Cartão 2',used:0,reserved:0,tx:[]})) : st.credit;
+      targetCard.used=roundMoneyValue((Number(targetCard.used)||0)+val);
+      targetCard.tx=(targetCard.tx||[]).filter(t=>t.id!==txId);
     } else {
       st.balances[account].amount=roundMoneyValue((Number(st.balances[account].amount)||0)-val);
       st.tx=(st.tx||[]).filter(t=>t.id!==txId);
@@ -4444,8 +4598,9 @@ function drawDualLineChart(ctx,labels,aVals,bVals){
 
 
 function creditExpenseBreakdown(monthKey){
+  const activeCard = getActiveCreditObj();
   return buildCategoryBreakdown(
-    (st.credit.tx||[])
+    (activeCard.tx||[])
       .filter(t=>t.type==='expense'&&(!monthKey||monthKeyFromValue(t.at)===monthKey))
       .map(t=>({value:Number(t.value)||0,label:t.category||t.desc,key:t.categoryKey})),
     ['#ff2a55','#00e5ff','#26c8ff','#2f89ff','#ffd447','#ff9a3c','#ff6f4e','#ff5f70','#d96cff','#8f7cff','#5cf2ff','#38bdf8'],
@@ -4453,8 +4608,9 @@ function creditExpenseBreakdown(monthKey){
   );
 }
 function creditExpenseMonths(){
+  const activeCard = getActiveCreditObj();
   const unique=new Set(
-    (st.credit.tx||[])
+    (activeCard.tx||[])
       .filter(t=>t.type==='expense'&&(Number(t.value)||0)>0)
       .map(t=>monthKeyFromValue(t.at))
       .filter(Boolean)
@@ -4464,7 +4620,8 @@ function creditExpenseMonths(){
   return months.length?months:[currentMonthKey()];
 }
 function creditChartMonths(){
-  const creditMonths=(st.credit.tx||[]).map(t=>monthKeyFromValue(t.at)).filter(Boolean);
+  const activeCard = getActiveCreditObj();
+  const creditMonths=(activeCard.tx||[]).map(t=>monthKeyFromValue(t.at)).filter(Boolean);
   const chosen=String(ui.creditChartMonth||'').trim();
   const current=currentMonthKey();
   const rawKeys=creditMonths.concat([chosen,current]).filter(Boolean);
@@ -4480,7 +4637,8 @@ function creditChartMonths(){
   return months;
 }
 function creditChartMonthHasData(monthKey){
-  return (st.credit.tx||[]).some(t=>t.type==='expense'&&monthKeyFromValue(t.at)===monthKey&&(Number(t.value)||0)>0);
+  const activeCard = getActiveCreditObj();
+  return (activeCard.tx||[]).some(t=>t.type==='expense'&&monthKeyFromValue(t.at)===monthKey&&(Number(t.value)||0)>0);
 }
 function setCreditChartMonth(key){
   const normalized=/^\d{4}-\d{2}$/.test(String(key||''))?String(key):currentMonthKey();
@@ -4504,7 +4662,8 @@ function resetCreditChartMonth(){
   const monthLabelText=monthLabelFromKey(targetMonth);
   const ok=window.confirm(`Zerar ${monthLabelText}? Isso remove os gastos do cartão desse mês do gráfico e recalcula a fatura.`);
   if(!ok) return;
-  st.credit.tx=(st.credit.tx||[]).filter(t=>!(t.type==='expense'&&monthKeyFromValue(t.at)===targetMonth));
+  const activeCard = getActiveCreditObj();
+  activeCard.tx=(activeCard.tx||[]).filter(t=>!(t.type==='expense'&&monthKeyFromValue(t.at)===targetMonth));
   recomputeCreditState();
   save(true);
   renderCredit();
@@ -4979,12 +5138,13 @@ function renderCreditDescChart(){
   
   let buckets = [];
   const color = '#b388ff';
+  const activeCard = getActiveCreditObj();
   
   if (activeMonthKey !== 'all' && activeMonthKey.includes('-')) {
     const parts = activeMonthKey.split('-');
     const y = Number(parts[0]), m = Number(parts[1]);
     const daysInMonth = new Date(y, m, 0).getDate();
-    const inRange = (st.credit.tx || []).filter(x => x.type === 'expense' && monthKeyFromValue(x.at) === activeMonthKey);
+    const inRange = (activeCard.tx || []).filter(x => x.type === 'expense' && monthKeyFromValue(x.at) === activeMonthKey);
     
     for (let i = 1; i <= daysInMonth; i++) {
       const dayTotal = inRange.filter(x => {
@@ -5001,7 +5161,7 @@ function renderCreditDescChart(){
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const mk = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const mTotal = (st.credit.tx || []).filter(x => x.type === 'expense' && monthKeyFromValue(x.at) === mk)
+      const mTotal = (activeCard.tx || []).filter(x => x.type === 'expense' && monthKeyFromValue(x.at) === mk)
         .reduce((s, x) => s + Number(x.value || 0), 0);
       buckets.push({ val: mTotal, label: mn[d.getMonth()], tip: `${mn[d.getMonth()]}/${d.getFullYear()}` });
     }
@@ -5212,9 +5372,11 @@ function dailyNetConta(dayKey){
 }
 
 function dailyCardSpend(dayKey){
-  return (st.credit.tx||[])
-    .filter(t=>t.type==='expense'&&dateKey(t.at)===dayKey)
-    .reduce((sum,t)=>sum+(Number(t.value)||0),0);
+  return getAllCreditCards().reduce((total, c) => {
+    return total + ((c && c.tx) || [])
+      .filter(t=>t.type==='expense'&&dateKey(t.at)===dayKey)
+      .reduce((sum,t)=>sum+(Number(t.value)||0),0);
+  }, 0);
 }
 
 function pruneDailyStats(maxDays){
@@ -5521,55 +5683,101 @@ function last5DaysTransactions(){
       return {at:t.at,value:Math.abs(Number(t.value)||0),sign:isIn?'+':'-',cls:isIn?'pos':'neg',label:`${isIn?'Entrada':'Saída'} ${labelName}`,note:t.note||'',category:t.category||'Sem categoria',source:'wallet',txId:t.id};
     });
 
-  const card=(st.credit.tx||[])
-    .filter(t=>new Date(t.at)>=start)
-    .map(t=>{
-      const isExpense=t.type==='expense';
-      const isPayment=t.type==='payment';
-      const isReserveIn=t.type==='reserve-in';
-      return {
-        at:t.at,
-        value:Math.abs(Number(t.value)||0),
-        sign:(isExpense||t.type==='reserve-out')?'-':'+',
-        cls:(isExpense||t.type==='reserve-out')?'neg':'pos',
-        label:isExpense?'Gasto cartão crédito':(isPayment?'Pagamento cartão crédito':(isReserveIn?'Entrada reserva cartão':'Saída reserva cartão')),
-        note:t.desc||'',
-        category:t.category||'Sem categoria',
-        source:'credit',
-        txId:t.id
-      };
-    });
+  const card=[];
+  getAllCreditCards().forEach((cObj, cIdx) => {
+    const cName = (cObj && cObj.name) ? cObj.name : (cIdx === 1 ? 'Cartão 2' : 'Cartão');
+    const suffix = IS_DEFAULT_USER ? ` (${cName})` : ' cartão crédito';
+    ((cObj && cObj.tx) || [])
+      .filter(t=>new Date(t.at)>=start)
+      .forEach(t=>{
+        const isExpense=t.type==='expense';
+        const isPayment=t.type==='payment';
+        const isReserveIn=t.type==='reserve-in';
+        card.push({
+          at:t.at,
+          value:Math.abs(Number(t.value)||0),
+          sign:(isExpense||t.type==='reserve-out')?'-':'+',
+          cls:(isExpense||t.type==='reserve-out')?'neg':'pos',
+          label:isExpense?`Gasto${suffix}`:(isPayment?`Pagamento${suffix}`:(isReserveIn?`Entrada reserva${suffix}`:`Saída reserva${suffix}`)),
+          note:t.desc||'',
+          category:t.category||'Sem categoria',
+          source:'credit',
+          txId:t.id
+        });
+      });
+  });
 
   return account.concat(card).sort((a,b)=>new Date(b.at)-new Date(a.at)).slice(0,40);
 }
 
 function renderCredit(){
   const editing=Boolean(ui.statement.credit);
-  el.ccName.value=st.credit.name||'Cartão weedverso';
-  const used=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), uncovered=Math.max(0,used-reserved), pct=used>0?Math.min(100,Math.round((reserved/used)*100)):(reserved>0?100:0);
+  const activeCard = getActiveCreditObj();
+  const fallbackCardName = (IS_DEFAULT_USER && ui.activeCardSlot === 2) ? 'Cartão 2' : 'Cartão weedverso';
+  el.ccName.value=activeCard.name||fallbackCardName;
+  const used=Math.max(0,Number(activeCard.used)||0), reserved=Math.max(0,Number(activeCard.reserved)||0), uncovered=Math.max(0,used-reserved), pct=used>0?Math.min(100,Math.round((reserved/used)*100)):(reserved>0?100:0);
   el.ccMeta.hidden=!ui.credit;
   setActive(el.ccEditBtn, ui.credit);
 
   // Exclusividade do usuário João (IS_DEFAULT_USER):
-  // Remove ações rápidas e ativa a remodelagem da reserva com botão de transferência direta
+  // Ativa o Dock Anatômico de Dois Cartões, remove ações rápidas e ativa a remodelagem da reserva
   // André e Júlia permanecem 100% inalterados com o layout original
   if(IS_DEFAULT_USER){
+    if(!st.credit2 || typeof st.credit2 !== 'object'){
+      st.credit2 = { name: 'Cartão 2', used: 0, reserved: 0, tx: [] };
+    }
+    if(el.ccDualCardDock) el.ccDualCardDock.style.display = 'grid';
+    const c1Used = Math.max(0, Number(st.credit && st.credit.used) || 0);
+    const c1Res = Math.max(0, Number(st.credit && st.credit.reserved) || 0);
+    const c1Unc = Math.max(0, c1Used - c1Res);
+    const c2Used = Math.max(0, Number(st.credit2 && st.credit2.used) || 0);
+    const c2Res = Math.max(0, Number(st.credit2 && st.credit2.reserved) || 0);
+    const c2Unc = Math.max(0, c2Used - c2Res);
+    const totUsed = c1Used + c2Used;
+    const totRes = c1Res + c2Res;
+    const totUnc = c1Unc + c2Unc;
+
+    if(el.ccTotalUsedBoth) el.ccTotalUsedBoth.textContent = money(totUsed);
+    if(el.ccTotalReservedBoth) el.ccTotalReservedBoth.textContent = money(totRes);
+    if(el.ccTotalUncoveredBoth){
+      el.ccTotalUncoveredBoth.textContent = money(totUnc);
+      el.ccTotalUncoveredBoth.style.color = totUnc > 0 ? '#ffcf5f' : 'var(--p)';
+    }
+
+    if(el.ccSlot1Name) el.ccSlot1Name.textContent = (st.credit && st.credit.name) || 'AMEX';
+    if(el.ccSlot1Used) el.ccSlot1Used.textContent = money(c1Used);
+    if(el.ccSlot1Reserved) el.ccSlot1Reserved.textContent = money(c1Res);
+    if(el.ccSlot1Dot) el.ccSlot1Dot.className = 'ccSlotDot ' + (c1Unc > 0 ? 'warn' : 'ok');
+    if(el.ccSlot1Btn) el.ccSlot1Btn.classList.toggle('active', ui.activeCardSlot !== 2);
+
+    if(el.ccSlot2Name) el.ccSlot2Name.textContent = (st.credit2 && st.credit2.name) || 'Cartão 2';
+    if(el.ccSlot2Used) el.ccSlot2Used.textContent = money(c2Used);
+    if(el.ccSlot2Reserved) el.ccSlot2Reserved.textContent = money(c2Res);
+    if(el.ccSlot2Dot) el.ccSlot2Dot.className = 'ccSlotDot ' + (c2Unc > 0 ? 'warn' : 'ok');
+    if(el.ccSlot2Btn) el.ccSlot2Btn.classList.toggle('active', ui.activeCardSlot === 2);
+
+    if(el.virtualCreditCard){
+      el.virtualCreditCard.setAttribute('data-card-slot', ui.activeCardSlot === 2 ? '2' : '1');
+    }
+
     if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'none';
     if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'none';
     if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'block';
     const resTitle = document.getElementById('ccReserveTitle');
-    if(resTitle) resTitle.textContent = '🛡️ Reserva do Cartão';
+    if(resTitle) resTitle.textContent = `🛡️ Reserva do Cartão (${activeCard.name || fallbackCardName})`;
     if(el.ccReserveCurrentAmount) el.ccReserveCurrentAmount.textContent = money(reserved);
     if(el.ccTransferToContaBtn){
       el.ccTransferToContaBtn.style.opacity = reserved > 0 ? '1' : '0.55';
       el.ccTransferToContaBtn.style.cursor = reserved > 0 ? 'pointer' : 'default';
     }
   } else {
+    if(el.ccDualCardDock) el.ccDualCardDock.style.display = 'none';
+    if(el.virtualCreditCard) el.virtualCreditCard.removeAttribute('data-card-slot');
     if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'block';
     if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'block';
     if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'none';
   }
-  if(el.ccMetaSummary) el.ccMetaSummary.textContent=`${st.credit.name||'Cartão weedverso'}`;
+  if(el.ccMetaSummary) el.ccMetaSummary.textContent=`${activeCard.name||fallbackCardName}`;
   if(el.ccMetaHint) el.ccMetaHint.textContent=ui.credit?'Edição do cartão ativa.':creditReserveStatus(used,reserved);
   if(el.ccUsed){
     el.ccUsed.textContent=money(used);
@@ -5583,7 +5791,7 @@ function renderCredit(){
   // Atualiza dados no Cartão Virtual
   if(el.ccCardUsed && el.ccCardUsed !== el.ccUsed) el.ccCardUsed.textContent=money(used);
   if(el.ccCardReserved && el.ccCardReserved !== el.ccReserved) el.ccCardReserved.textContent=money(reserved);
-  if(el.ccCardName) el.ccCardName.textContent=st.credit.name||'weedverso Black';
+  if(el.ccCardName) el.ccCardName.textContent=activeCard.name||(IS_DEFAULT_USER && ui.activeCardSlot === 2 ? 'Cartão 2' : 'weedverso Black');
   if(el.ccCardCoverageStatus){
     if(used>0 && uncovered<=0){
       el.ccCardCoverageStatus.className='virtualCardStatus ok';
@@ -5601,8 +5809,8 @@ function renderCredit(){
   if(!el.ccHistory) return;
 
   const banner=editing?renderStatementModeBanner('Modo edição ativo no cartão. Ajuste o lançamento com o lápis ou remova com o X.'):'';
-  const items=sortTransactionsDesc(st.credit.tx).slice(0,8);
-  if(!items.length){el.ccHistory.innerHTML=`${banner}<p class="empty">Sem lançamentos no cartão.</p>`;return;}
+  const items=sortTransactionsDesc(activeCard.tx).slice(0,8);
+  if(!items.length){el.ccHistory.innerHTML=`${banner}<p class="empty">Sem lançamentos neste cartão.</p>`;return;}
   el.ccHistory.innerHTML=banner+items.map(t=>{
     const map={
       expense:{sign:'-',cls:'neg',kind:'Gasto'},
@@ -5630,10 +5838,12 @@ function creditMove(type){
   const raw=parseFloat((el.ccValue.value||'').replace(',','.')), v=Number.isFinite(raw)?Math.abs(raw):0;
   const desc=txt(el.ccDesc.value,42);
   if(v<=0) return;
-  if(type==='expense') st.credit.used += v;
-  else st.credit.used=Math.max(0,st.credit.used-v);
+  const activeCard = getActiveCreditObj();
+  if(type==='expense') activeCard.used = (Number(activeCard.used)||0) + v;
+  else activeCard.used=Math.max(0,(Number(activeCard.used)||0)-v);
   const meta=categoryMeta(desc,type==='expense'?'Sem categoria':'Pagamento cartao');
-  st.credit.tx.unshift({id:id(),type,value:v,desc,category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
+  activeCard.tx = activeCard.tx || [];
+  activeCard.tx.unshift({id:id(),type,value:v,desc,category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
   haptic('medium');
   save(true); renderCredit(); renderSummary();
   el.ccValue.value=''; el.ccDesc.value='';
@@ -5644,9 +5854,11 @@ function creditReserveMove(type, inputEl){
   const targetInput = inputEl || (IS_DEFAULT_USER && el.ccDefaultReserveValue ? el.ccDefaultReserveValue : el.ccReserveValue);
   const raw=parseFloat(((targetInput && targetInput.value)||'').replace(',','.')), v=Number.isFinite(raw)?Math.abs(raw):0;
   if(v<=0) return;
-  st.credit.reserved=Math.max(0,(Number(st.credit.reserved)||0)+(type==='in'?v:-v));
+  const activeCard = getActiveCreditObj();
+  activeCard.reserved=Math.max(0,(Number(activeCard.reserved)||0)+(type==='in'?v:-v));
   const meta=categoryMeta('Reserva cartao','Reserva cartao');
-  st.credit.tx.unshift({id:id(),type:type==='in'?'reserve-in':'reserve-out',value:v,desc:'Reserva cartão',category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
+  activeCard.tx = activeCard.tx || [];
+  activeCard.tx.unshift({id:id(),type:type==='in'?'reserve-in':'reserve-out',value:v,desc:'Reserva cartão',category:meta.label,categoryKey:meta.key,at:new Date().toISOString()});
   haptic('medium');
   save(true); renderCredit(); renderSummary();
   if(targetInput) targetInput.value='';
@@ -6553,7 +6765,11 @@ function goalMove(goal,type,value){
 }
 
 function renderHero(){
-  const debtOpen=debtOpenTotal(), used=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), uncovered=Math.max(0,used-reserved), coverageRate=used>0?(reserved/used):1;
+  const cards = getAllCreditCards();
+  const used = cards.reduce((s, c) => s + Math.max(0, Number(c && c.used) || 0), 0);
+  const reserved = cards.reduce((s, c) => s + Math.max(0, Number(c && c.reserved) || 0), 0);
+  const uncovered = cards.reduce((s, c) => s + Math.max(0, (Number(c && c.used) || 0) - (Number(c && c.reserved) || 0)), 0);
+  const debtOpen=debtOpenTotal(), coverageRate=used>0?((used-uncovered)/used):1;
   const balance=Number((st.balances&&st.balances.conta&&st.balances.conta.amount)||0);
   const spent=spentToday();
 
@@ -6639,27 +6855,30 @@ function allTransactions(){
   });
   
   // 2. Cartão de Crédito
-  (st.credit && st.credit.tx || []).forEach(t => {
-    const isExpense = t.type === 'expense';
-    const isPayment = t.type === 'payment';
-    const isReserveIn = t.type === 'reserve-in';
-    const isReserveOut = t.type === 'reserve-out';
-    const sign = (isExpense || isReserveOut) ? '-' : '+';
-    let icon = isExpense ? '💳' : (isPayment ? '💵' : '🛡️');
-    
-    list.push({
-      id: t.id,
-      at: t.at,
-      value: Math.abs(Number(t.value) || 0),
-      sign,
-      cls: sign === '+' ? 'pos' : 'neg',
-      title: t.desc || (isExpense ? 'Gasto no Cartão' : (isPayment ? 'Fatura Paga' : 'Reserva Cartão')),
-      note: t.desc || '',
-      category: t.category || (isExpense ? 'Crédito' : 'Pagamento'),
-      walletKey: 'credit',
-      walletLabel: 'Cartão',
-      source: 'credit',
-      icon
+  getAllCreditCards().forEach((cObj, cIdx) => {
+    const cLabel = IS_DEFAULT_USER ? ((cObj && cObj.name) || (cIdx === 1 ? 'Cartão 2' : 'AMEX')) : 'Cartão';
+    ((cObj && cObj.tx) || []).forEach(t => {
+      const isExpense = t.type === 'expense';
+      const isPayment = t.type === 'payment';
+      const isReserveIn = t.type === 'reserve-in';
+      const isReserveOut = t.type === 'reserve-out';
+      const sign = (isExpense || isReserveOut) ? '-' : '+';
+      let icon = isExpense ? '💳' : (isPayment ? '💵' : '🛡️');
+      
+      list.push({
+        id: t.id,
+        at: t.at,
+        value: Math.abs(Number(t.value) || 0),
+        sign,
+        cls: sign === '+' ? 'pos' : 'neg',
+        title: t.desc || (isExpense ? 'Gasto no Cartão' : (isPayment ? 'Fatura Paga' : 'Reserva Cartão')),
+        note: t.desc || '',
+        category: t.category || (isExpense ? 'Crédito' : 'Pagamento'),
+        walletKey: 'credit',
+        walletLabel: cLabel,
+        source: 'credit',
+        icon
+      });
     });
   });
   
@@ -6748,9 +6967,9 @@ function renderUnifiedStatement(){
         </div>
       `;
     } else if(activeWallet === 'credit'){
-      const used = Number((st.credit && st.credit.used) || 0);
-      const res = Number((st.credit && st.credit.reserved) || 0);
-      const falta = Math.max(0, used - res);
+      const cards = getAllCreditCards();
+      const used = cards.reduce((s, c) => s + Math.max(0, Number(c && c.used) || 0), 0);
+      const falta = cards.reduce((s, c) => s + Math.max(0, (Number(c && c.used) || 0) - (Number(c && c.reserved) || 0)), 0);
       summaryEl.innerHTML = `
         <div class="statementSummaryCol">
           <span>Fatura Atual</span>
@@ -6971,7 +7190,11 @@ function initStatementWalletBindings(){
 
 function renderSummary(){
   const total=st.habits.length, done=st.habits.filter(h=>h.done).length, p=total?Math.round(done/total*100):0, spent=spentToday();
-  const cardOpen=Math.max(0,Number(st.credit.used)||0), reserved=Math.max(0,Number(st.credit.reserved)||0), debtOpen=debtOpenTotal(), uncovered=Math.max(0,cardOpen-reserved), coverageRate=cardOpen>0?(reserved/cardOpen):1;
+  const cards = getAllCreditCards();
+  const cardOpen = cards.reduce((s, c) => s + Math.max(0, Number(c && c.used) || 0), 0);
+  const reserved = cards.reduce((s, c) => s + Math.max(0, Number(c && c.reserved) || 0), 0);
+  const uncovered = cards.reduce((s, c) => s + Math.max(0, (Number(c && c.used) || 0) - (Number(c && c.reserved) || 0)), 0);
+  const debtOpen=debtOpenTotal(), coverageRate=cardOpen>0?((cardOpen-uncovered)/cardOpen):1;
   const savedGoals=goalsTotalSaved();
   el.sPercent.textContent=`${p}%`; el.sHabits.textContent=`${done} / ${total}`; el.sSpent.textContent=money(spent);
   el.sCard.textContent=money(cardOpen); el.sDebt.textContent=money(debtOpen); el.sGoals.textContent=money(savedGoals);
@@ -6999,7 +7222,7 @@ function rotateDay(){
 function spentToday(){
   const t=today();
   const walletOut=st.tx.filter(x=>x.type==='out'&&dateKey(x.at)===t).reduce((a,x)=>a+x.value,0);
-  const cardOut=(st.credit.tx||[]).filter(x=>x.type==='expense'&&dateKey(x.at)===t).reduce((a,x)=>a+x.value,0);
+  const cardOut=getAllCreditCards().reduce((sum,c)=>sum+((c&&c.tx)||[]).filter(x=>x.type==='expense'&&dateKey(x.at)===t).reduce((a,x)=>a+x.value,0),0);
   return walletOut+cardOut;
 }
 function debtOpenTotal(){return st.debtors.filter(x=>!x.paid&&shouldShowDebtorNow(x)).reduce((a,x)=>a+debtorRemainingAmount(x),0);}
@@ -7040,14 +7263,22 @@ function fromDateTimeLocal(value,fallback){
   const date=new Date(value);
   return Number.isNaN(date.getTime())?(fallback||new Date().toISOString()):date.toISOString();
 }
+function findCreditTransactionAndCard(txId){
+  const cards = getAllCreditCards();
+  for(let i=0;i<cards.length;i++){
+    const c = cards[i];
+    const tx = (c && c.tx || []).find(t=>String(t.id)===String(txId));
+    if(tx) return {tx, card: c};
+  }
+  return null;
+}
 function statementTarget(source,txId,goalId){
   if(source==='wallet'){
     const tx=st.tx.find(t=>t.id===txId);
     return tx?{tx}:null;
   }
   if(source==='credit'){
-    const tx=(st.credit.tx||[]).find(t=>t.id===txId);
-    return tx?{tx}:null;
+    return findCreditTransactionAndCard(txId);
   }
   if(source==='goal'){
     const goal=(st.goals||[]).find(g=>g.id===goalId);
@@ -7173,8 +7404,9 @@ function saveStatementEdit(section,source,txId,goalId,trigger){
     tx.categoryKey=meta.key;
     recomputeWalletBalances(baselines);
   }else if(source==='credit'){
-    const tx=(st.credit.tx||[]).find(item=>item.id===txId);
-    if(!tx) return;
+    const found = findCreditTransactionAndCard(txId);
+    if(!found || !found.tx) return;
+    const tx = found.tx;
     const type=parseEditorValue(row,'type');
     tx.type=['expense','payment','reserve-in','reserve-out'].includes(type)?type:tx.type;
     tx.value=value;
@@ -7184,7 +7416,7 @@ function saveStatementEdit(section,source,txId,goalId,trigger){
     const meta=categoryMeta(tx.desc,fallback);
     tx.category=meta.label;
     tx.categoryKey=meta.key;
-    recomputeCreditState();
+    recomputeCreditState(found.card);
   }else if(source==='goal'){
     const goal=(st.goals||[]).find(item=>item.id===goalId);
     if(!goal||!Array.isArray(goal.tx)) return;
@@ -7227,9 +7459,10 @@ function removeStatementTransaction(source,txId,goalId){
     st.tx=st.tx.filter(t=>t.id!==txId);
     recomputeWalletBalances(baselines);
   }else if(source==='credit'){
-    if(!(st.credit.tx||[]).some(t=>t.id===txId)) return;
-    st.credit.tx=(st.credit.tx||[]).filter(t=>t.id!==txId);
-    recomputeCreditState();
+    const found = findCreditTransactionAndCard(txId);
+    if(!found || !found.card) return;
+    found.card.tx=(found.card.tx||[]).filter(t=>String(t.id)!==String(txId));
+    recomputeCreditState(found.card);
   }else if(source==='goal'){
     const goal=st.goals.find(g=>g.id===goalId);
     if(!goal||!Array.isArray(goal.tx)||!goal.tx.some(t=>t.id===txId)) return;
@@ -7278,15 +7511,19 @@ function recomputeWalletBalances(baselines){
     else if(t.type==='out') st.balances[t.account].amount -= Number(t.value)||0;
   });
 }
-function recomputeCreditState(){
-  st.credit.used=0;
-  st.credit.reserved=0;
-  sortTransactionsAsc(st.credit.tx).forEach(t=>{
-    const value=Math.abs(Number(t.value)||0);
-    if(t.type==='expense') st.credit.used += value;
-    else if(t.type==='payment') st.credit.used=Math.max(0,st.credit.used-value);
-    else if(t.type==='reserve-in') st.credit.reserved += value;
-    else if(t.type==='reserve-out') st.credit.reserved=Math.max(0,st.credit.reserved-value);
+function recomputeCreditState(targetCard){
+  const cardsToRecompute = targetCard ? [targetCard] : getAllCreditCards();
+  cardsToRecompute.forEach(c => {
+    if(!c) return;
+    c.used=0;
+    c.reserved=0;
+    sortTransactionsAsc(c.tx).forEach(t=>{
+      const value=Math.abs(Number(t.value)||0);
+      if(t.type==='expense') c.used += value;
+      else if(t.type==='payment') c.used=Math.max(0,c.used-value);
+      else if(t.type==='reserve-in') c.reserved += value;
+      else if(t.type==='reserve-out') c.reserved=Math.max(0,c.reserved-value);
+    });
   });
 }
 function recomputeGoalSaved(goal){
@@ -7486,12 +7723,16 @@ function normalizeLoadedState(p){
   const parsedCredit = p.credit || {};
   const parsedCreditName = txt(parsedCredit.name || '',30);
   const creditName=parsedCreditName==='Cartão Prime'||!parsedCreditName?DEF.credit.name:parsedCredit.name;
+  const parsedCredit2 = p.credit2 || {};
+  const parsedCredit2Name = txt(parsedCredit2.name || '',30);
+  const credit2Name=!parsedCredit2Name?(DEF.credit2 && DEF.credit2.name ? DEF.credit2.name : 'Cartão 2'):parsedCredit2Name;
   const base=Object.assign({},DEF,p,{appName:DEF.appName});
   return Object.assign(base,{
     habits:Array.isArray(p.habits)?p.habits.map(h=>Object.assign({},h,{date:h.date||today()})):DEF.habits,
     balances:Object.assign({},DEF.balances,p.balances||{}),
     tx:Array.isArray(p.tx)?p.tx.map(normalizeWalletTxEntry):[],
     credit:Object.assign({},DEF.credit,parsedCredit,{name:creditName,reserved:Math.max(0,Number(parsedCredit.reserved)||0),tx:Array.isArray(parsedCredit.tx)?parsedCredit.tx.map(normalizeCreditTxEntry):[]}),
+    credit2:Object.assign({},DEF.credit2||{name:'Cartão 2',used:0,reserved:0,tx:[]},parsedCredit2,{name:credit2Name,used:Math.max(0,Number(parsedCredit2.used)||0),reserved:Math.max(0,Number(parsedCredit2.reserved)||0),tx:Array.isArray(parsedCredit2.tx)?parsedCredit2.tx.map(normalizeCreditTxEntry):[]}),
     debtors:Array.isArray(p.debtors)?p.debtors.map(normalizeDebtorEntry):[],
     myDebts:Array.isArray(p.myDebts)?p.myDebts.map(normalizeDebtEntry):[],
     routineLog:Array.isArray(p.routineLog)?p.routineLog:[],
@@ -7780,6 +8021,7 @@ function hasMeaningfulData(state){
   state=state||{};
   const balances=state.balances||{};
   const credit=state.credit||{};
+  const credit2=state.credit2||{};
   return Boolean(
     txt(state.userName||'',24)||
     (Array.isArray(state.habits)&&state.habits.length)||
@@ -7791,7 +8033,9 @@ function hasMeaningfulData(state){
     Math.abs(Number((balances.vale1||{}).amount)||0)>0||
     Math.abs(Number((balances.vale2||{}).amount)||0)>0||
     Math.abs(Number(credit.used)||0)>0||
-    Math.abs(Number(credit.reserved)||0)>0
+    Math.abs(Number(credit.reserved)||0)>0||
+    Math.abs(Number(credit2.used)||0)>0||
+    Math.abs(Number(credit2.reserved)||0)>0
   );
 }
 async function hydrateFromServer(){
@@ -8136,7 +8380,9 @@ window.restoreSecuritySnapshot=restoreSecuritySnapshot;
 window.mergeStates=mergeStates;
 window.GIST_SYNC=GIST_SYNC;
 window.renderCredit=renderCredit;
+window.creditMove=creditMove;
 window.creditReserveMove=creditReserveMove;
+window.getActiveCreditObj=getActiveCreditObj;
 window.renderAll=renderAll;
 window.renderFinance=renderFinance;
 window.addEventListener('hashchange',function(){
@@ -8171,9 +8417,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v42'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v43'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v42');
+      sessionStorage.setItem('sw_ctrl_reload','v43');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
