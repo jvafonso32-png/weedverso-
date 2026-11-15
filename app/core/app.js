@@ -259,7 +259,7 @@
                   <span class="ccSlotBadge">💳 CARTÃO 02</span>
                   <span id="ccSlot2Dot" class="ccSlotDot"></span>
                 </div>
-                <strong id="ccSlot2Name" class="ccSlotName">Cartão 2</strong>
+                <strong id="ccSlot2Name" class="ccSlotName">INFINIT</strong>
                 <div id="ccSlot2Used" class="ccSlotUsed">R$ 0,00</div>
                 <div class="ccSlotRes">🛡️ <span id="ccSlot2Reserved">R$ 0,00</span></div>
               </button>
@@ -614,7 +614,7 @@
         <label class="mini">Em qual cartão lançar?</label>
         <div class="sheetPills" id="quickAddCardPills">
           <button type="button" class="sheetPill active" data-card-slot="1" id="quickCardSlot1Pill">💳 AMEX</button>
-          <button type="button" class="sheetPill" data-card-slot="2" id="quickCardSlot2Pill">💳 Cartão 2</button>
+          <button type="button" class="sheetPill" data-card-slot="2" id="quickCardSlot2Pill">💳 INFINIT</button>
         </div>
       </div>
 
@@ -842,7 +842,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=43';
+const SW_PATH = CFG.swPath || 'sw.js?v=44';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -910,7 +910,7 @@ const DEF={
     tx: []
   },
   credit2: {
-    name: CFG.defaultCredit2Name || 'Cartão 2',
+    name: CFG.defaultCredit2Name || 'INFINIT',
     used: (CFG.defaultCredit2Used !== undefined ? CFG.defaultCredit2Used : 0),
     reserved: (CFG.defaultCredit2Reserved !== undefined ? CFG.defaultCredit2Reserved : 0),
     tx: []
@@ -931,7 +931,7 @@ const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPe
 function getActiveCreditObj(){
   if(!IS_DEFAULT_USER) return st.credit;
   if(!st.credit2 || typeof st.credit2 !== 'object'){
-    st.credit2 = { name: 'Cartão 2', used: 0, reserved: 0, tx: [] };
+    st.credit2 = { name: 'INFINIT', used: 0, reserved: 0, tx: [] };
   }
   return ui.activeCardSlot === 2 ? st.credit2 : st.credit;
 }
@@ -940,7 +940,7 @@ function getAllCreditCards(){
   const list = [st.credit || { name: 'Cartão', used: 0, reserved: 0, tx: [] }];
   if(IS_DEFAULT_USER){
     if(!st.credit2 || typeof st.credit2 !== 'object'){
-      st.credit2 = { name: 'Cartão 2', used: 0, reserved: 0, tx: [] };
+      st.credit2 = { name: 'INFINIT', used: 0, reserved: 0, tx: [] };
     }
     list.push(st.credit2);
   }
@@ -1301,7 +1301,10 @@ function mergeStates(local, remote){
       tx: mergedCreditTx
     }),
     credit2: Object.assign({}, DEF.credit2, remote.credit2, local.credit2, {
-      name: (primary.credit2 && primary.credit2.name) || (local.credit2 && local.credit2.name) || (remote.credit2 && remote.credit2.name) || 'Cartão 2',
+      name: (function(){
+        const raw = (primary.credit2 && primary.credit2.name) || (local.credit2 && local.credit2.name) || (remote.credit2 && remote.credit2.name) || 'INFINIT';
+        return raw === 'Cartão 2' ? 'INFINIT' : raw;
+      })(),
       used: (primary.credit2 && primary.credit2.used !== undefined) ? primary.credit2.used : (local.credit2 && local.credit2.used !== undefined ? local.credit2.used : (remote.credit2 && remote.credit2.used !== undefined ? remote.credit2.used : 0)),
       reserved: (primary.credit2 && primary.credit2.reserved !== undefined) ? primary.credit2.reserved : (local.credit2 && local.credit2.reserved !== undefined ? local.credit2.reserved : (remote.credit2 && remote.credit2.reserved !== undefined ? remote.credit2.reserved : 0)),
       tx: mergedCredit2Tx
@@ -1632,7 +1635,7 @@ const quickAddSheet={
           move(acc,'in',val,note||'Entrada');
           showToast('✓ Entrada de '+money(val)+' salva!','ok');
         }else if(tab==='card'){
-          const targetCard=(IS_DEFAULT_USER && this.currentCardSlot===2)?(st.credit2||(st.credit2={name:'Cartão 2',used:0,reserved:0,tx:[]})):st.credit;
+          const targetCard=(IS_DEFAULT_USER && this.currentCardSlot===2)?(st.credit2||(st.credit2={name:'INFINIT',used:0,reserved:0,tx:[]})):st.credit;
           targetCard.used=(Number(targetCard.used)||0)+val;
           const meta=categoryMeta(note,'Sem categoria');
           targetCard.tx=targetCard.tx||[];
@@ -1662,7 +1665,7 @@ const quickAddSheet={
       const p1=$('#quickCardSlot1Pill');
       const p2=$('#quickCardSlot2Pill');
       if(p1) p1.textContent='💳 '+((st.credit && st.credit.name)||'AMEX');
-      if(p2) p2.textContent='💳 '+((st.credit2 && st.credit2.name)||'Cartão 2');
+      if(p2) p2.textContent='💳 '+((st.credit2 && st.credit2.name)||'INFINIT');
       if(this.cardBtns){
         this.cardBtns.forEach(b=>b.classList.toggle('active',Number(b.dataset.cardSlot)===this.currentCardSlot));
       }
@@ -2175,7 +2178,7 @@ function bind(){
   });
   el.ccName.addEventListener('input',e=>{
     const activeCard = getActiveCreditObj();
-    const fallbackName = (IS_DEFAULT_USER && ui.activeCardSlot === 2) ? 'Cartão 2' : 'Cartão weedverso';
+    const fallbackName = (IS_DEFAULT_USER && ui.activeCardSlot === 2) ? 'INFINIT' : 'Cartão weedverso';
     activeCard.name=txt(e.target.value,30)||fallbackName;
     save(true); renderCredit(); renderSummary();
   });
@@ -2610,7 +2613,7 @@ function bind(){
           <div class="sheetPills" id="dvReceiveAccPills">
             <button type="button" class="sheetPill ${defaultAcc==='conta'?'active':''}" data-acc="conta">🏦 Conta (${money(st.balances.conta.amount)})</button>
             <button type="button" class="sheetPill ${defaultAcc==='amex'?'active':''}" data-acc="amex">💳 Abater ${(st.credit && st.credit.name)||'AMEX'} (Usado: ${money(st.credit.used)})</button>
-            ${IS_DEFAULT_USER ? `<button type="button" class="sheetPill ${defaultAcc==='card2'?'active':''}" data-acc="card2">💳 Abater ${(st.credit2 && st.credit2.name)||'Cartão 2'} (Usado: ${money((st.credit2 && st.credit2.used)||0)})</button>` : ''}
+            ${IS_DEFAULT_USER ? `<button type="button" class="sheetPill ${defaultAcc==='card2'?'active':''}" data-acc="card2">💳 Abater ${(st.credit2 && st.credit2.name)||'INFINIT'} (Usado: ${money((st.credit2 && st.credit2.used)||0)})</button>` : ''}
             <button type="button" class="sheetPill ${defaultAcc==='vale1'?'active':''}" data-acc="vale1">🥗 Alelo Alimentação</button>
             <button type="button" class="sheetPill ${defaultAcc==='vale2'?'active':''}" data-acc="vale2">🍽️ Alelo Refeição</button>
           </div>
@@ -2670,7 +2673,7 @@ function bind(){
 
     let txId=id();
     if(account==='amex' || account==='card2'){
-      const targetCard = account==='card2' ? (st.credit2||(st.credit2={name:'Cartão 2',used:0,reserved:0,tx:[]})) : st.credit;
+      const targetCard = account==='card2' ? (st.credit2||(st.credit2={name:'INFINIT',used:0,reserved:0,tx:[]})) : st.credit;
       targetCard.used=Math.max(0,(Number(targetCard.used)||0)-val);
       targetCard.tx=targetCard.tx||[];
       targetCard.tx.unshift({
@@ -2831,7 +2834,7 @@ function bind(){
       d.payments=prevStatus.payments;
     }
     if(account==='amex' || account==='card2'){
-      const targetCard = account==='card2' ? (st.credit2||(st.credit2={name:'Cartão 2',used:0,reserved:0,tx:[]})) : st.credit;
+      const targetCard = account==='card2' ? (st.credit2||(st.credit2={name:'INFINIT',used:0,reserved:0,tx:[]})) : st.credit;
       targetCard.used=roundMoneyValue((Number(targetCard.used)||0)+val);
       targetCard.tx=(targetCard.tx||[]).filter(t=>t.id!==txId);
     } else {
@@ -5685,7 +5688,7 @@ function last5DaysTransactions(){
 
   const card=[];
   getAllCreditCards().forEach((cObj, cIdx) => {
-    const cName = (cObj && cObj.name) ? cObj.name : (cIdx === 1 ? 'Cartão 2' : 'Cartão');
+    const cName = (cObj && cObj.name) ? cObj.name : (cIdx === 1 ? 'INFINIT' : 'Cartão');
     const suffix = IS_DEFAULT_USER ? ` (${cName})` : ' cartão crédito';
     ((cObj && cObj.tx) || [])
       .filter(t=>new Date(t.at)>=start)
@@ -5713,7 +5716,7 @@ function last5DaysTransactions(){
 function renderCredit(){
   const editing=Boolean(ui.statement.credit);
   const activeCard = getActiveCreditObj();
-  const fallbackCardName = (IS_DEFAULT_USER && ui.activeCardSlot === 2) ? 'Cartão 2' : 'Cartão weedverso';
+  const fallbackCardName = (IS_DEFAULT_USER && ui.activeCardSlot === 2) ? 'INFINIT' : 'Cartão weedverso';
   el.ccName.value=activeCard.name||fallbackCardName;
   const used=Math.max(0,Number(activeCard.used)||0), reserved=Math.max(0,Number(activeCard.reserved)||0), uncovered=Math.max(0,used-reserved), pct=used>0?Math.min(100,Math.round((reserved/used)*100)):(reserved>0?100:0);
   el.ccMeta.hidden=!ui.credit;
@@ -5724,7 +5727,7 @@ function renderCredit(){
   // André e Júlia permanecem 100% inalterados com o layout original
   if(IS_DEFAULT_USER){
     if(!st.credit2 || typeof st.credit2 !== 'object'){
-      st.credit2 = { name: 'Cartão 2', used: 0, reserved: 0, tx: [] };
+      st.credit2 = { name: 'INFINIT', used: 0, reserved: 0, tx: [] };
     }
     if(el.ccDualCardDock) el.ccDualCardDock.style.display = 'grid';
     const c1Used = Math.max(0, Number(st.credit && st.credit.used) || 0);
@@ -5750,7 +5753,7 @@ function renderCredit(){
     if(el.ccSlot1Dot) el.ccSlot1Dot.className = 'ccSlotDot ' + (c1Unc > 0 ? 'warn' : 'ok');
     if(el.ccSlot1Btn) el.ccSlot1Btn.classList.toggle('active', ui.activeCardSlot !== 2);
 
-    if(el.ccSlot2Name) el.ccSlot2Name.textContent = (st.credit2 && st.credit2.name) || 'Cartão 2';
+    if(el.ccSlot2Name) el.ccSlot2Name.textContent = (st.credit2 && st.credit2.name) || 'INFINIT';
     if(el.ccSlot2Used) el.ccSlot2Used.textContent = money(c2Used);
     if(el.ccSlot2Reserved) el.ccSlot2Reserved.textContent = money(c2Res);
     if(el.ccSlot2Dot) el.ccSlot2Dot.className = 'ccSlotDot ' + (c2Unc > 0 ? 'warn' : 'ok');
@@ -5791,7 +5794,7 @@ function renderCredit(){
   // Atualiza dados no Cartão Virtual
   if(el.ccCardUsed && el.ccCardUsed !== el.ccUsed) el.ccCardUsed.textContent=money(used);
   if(el.ccCardReserved && el.ccCardReserved !== el.ccReserved) el.ccCardReserved.textContent=money(reserved);
-  if(el.ccCardName) el.ccCardName.textContent=activeCard.name||(IS_DEFAULT_USER && ui.activeCardSlot === 2 ? 'Cartão 2' : 'weedverso Black');
+  if(el.ccCardName) el.ccCardName.textContent=activeCard.name||(IS_DEFAULT_USER && ui.activeCardSlot === 2 ? 'INFINIT' : 'weedverso Black');
   if(el.ccCardCoverageStatus){
     if(used>0 && uncovered<=0){
       el.ccCardCoverageStatus.className='virtualCardStatus ok';
@@ -6856,7 +6859,7 @@ function allTransactions(){
   
   // 2. Cartão de Crédito
   getAllCreditCards().forEach((cObj, cIdx) => {
-    const cLabel = IS_DEFAULT_USER ? ((cObj && cObj.name) || (cIdx === 1 ? 'Cartão 2' : 'AMEX')) : 'Cartão';
+    const cLabel = IS_DEFAULT_USER ? ((cObj && cObj.name) || (cIdx === 1 ? 'INFINIT' : 'AMEX')) : 'Cartão';
     ((cObj && cObj.tx) || []).forEach(t => {
       const isExpense = t.type === 'expense';
       const isPayment = t.type === 'payment';
@@ -7725,14 +7728,14 @@ function normalizeLoadedState(p){
   const creditName=parsedCreditName==='Cartão Prime'||!parsedCreditName?DEF.credit.name:parsedCredit.name;
   const parsedCredit2 = p.credit2 || {};
   const parsedCredit2Name = txt(parsedCredit2.name || '',30);
-  const credit2Name=!parsedCredit2Name?(DEF.credit2 && DEF.credit2.name ? DEF.credit2.name : 'Cartão 2'):parsedCredit2Name;
+  const credit2Name=(!parsedCredit2Name || parsedCredit2Name==='Cartão 2')?(DEF.credit2 && DEF.credit2.name ? DEF.credit2.name : 'INFINIT'):parsedCredit2Name;
   const base=Object.assign({},DEF,p,{appName:DEF.appName});
   return Object.assign(base,{
     habits:Array.isArray(p.habits)?p.habits.map(h=>Object.assign({},h,{date:h.date||today()})):DEF.habits,
     balances:Object.assign({},DEF.balances,p.balances||{}),
     tx:Array.isArray(p.tx)?p.tx.map(normalizeWalletTxEntry):[],
     credit:Object.assign({},DEF.credit,parsedCredit,{name:creditName,reserved:Math.max(0,Number(parsedCredit.reserved)||0),tx:Array.isArray(parsedCredit.tx)?parsedCredit.tx.map(normalizeCreditTxEntry):[]}),
-    credit2:Object.assign({},DEF.credit2||{name:'Cartão 2',used:0,reserved:0,tx:[]},parsedCredit2,{name:credit2Name,used:Math.max(0,Number(parsedCredit2.used)||0),reserved:Math.max(0,Number(parsedCredit2.reserved)||0),tx:Array.isArray(parsedCredit2.tx)?parsedCredit2.tx.map(normalizeCreditTxEntry):[]}),
+    credit2:Object.assign({},DEF.credit2||{name:'INFINIT',used:0,reserved:0,tx:[]},parsedCredit2,{name:credit2Name,used:Math.max(0,Number(parsedCredit2.used)||0),reserved:Math.max(0,Number(parsedCredit2.reserved)||0),tx:Array.isArray(parsedCredit2.tx)?parsedCredit2.tx.map(normalizeCreditTxEntry):[]}),
     debtors:Array.isArray(p.debtors)?p.debtors.map(normalizeDebtorEntry):[],
     myDebts:Array.isArray(p.myDebts)?p.myDebts.map(normalizeDebtEntry):[],
     routineLog:Array.isArray(p.routineLog)?p.routineLog:[],
@@ -8417,9 +8420,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v43'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v44'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v43');
+      sessionStorage.setItem('sw_ctrl_reload','v44');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });

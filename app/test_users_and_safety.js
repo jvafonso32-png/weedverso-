@@ -533,7 +533,7 @@ testGistPullEmptyProtection().then(() => {
   // Alterna para o Cartão 2
   slot2Btn.click();
   const activeCard2 = joaoEnv.sandbox.window.getActiveCreditObj();
-  assert.strictEqual(activeCard2.name, 'Cartão 2', 'Cartão ativo deve ser o Cartão 2 após o clique');
+  assert.strictEqual(activeCard2.name, 'INFINIT', 'Cartão 2 ativo deve se chamar INFINIT após o clique');
 
   // Personaliza o nome do Cartão 2, lança gasto e adiciona reserva no Cartão 2
   joaoElements['ccValue'].value = '250.50';
