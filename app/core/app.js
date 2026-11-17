@@ -866,7 +866,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=46';
+const SW_PATH = CFG.swPath || 'sw.js?v=47';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -2702,6 +2702,7 @@ function bind(){
     const prevStatus={
       paid:d.paid,
       paidAt:d.paidAt,
+      payDate:d.payDate||'',
       installmentsPaid:d.installmentsPaid,
       payments:JSON.parse(JSON.stringify(d.payments||[]))
     };
@@ -2757,6 +2758,10 @@ function bind(){
       d.paid=false;
       d.paidAt='';
       d.installmentsPaid=Math.min(d.installments-1, instVal>0?Math.floor((totalPaid+0.01)/instVal):0);
+      if(IS_DEFAULT_USER && d.payDate && d.installments > 1){
+        const newlyPaid = Math.max(1, d.installmentsPaid - (Number(prevStatus.installmentsPaid) || 0));
+        d.payDate = advancePayDateByMonths(d.payDate, newlyPaid);
+      }
     }
 
     save(true);
@@ -2865,6 +2870,7 @@ function bind(){
     if(d){
       d.paid=prevStatus.paid;
       d.paidAt=prevStatus.paidAt;
+      if(prevStatus.payDate !== undefined) d.payDate=prevStatus.payDate;
       d.installmentsPaid=prevStatus.installmentsPaid;
       d.payments=prevStatus.payments;
     }
@@ -2893,6 +2899,7 @@ function bind(){
     if(d){
       d.paid=prevStatus.paid;
       d.paidAt=prevStatus.paidAt;
+      if(prevStatus.payDate !== undefined) d.payDate=prevStatus.payDate;
       d.installmentsPaid=prevStatus.installmentsPaid;
       d.payments=prevStatus.payments;
     }
@@ -3581,6 +3588,7 @@ function bind(){
         const prevStatus = {
           paid: d.paid,
           paidAt: d.paidAt || '',
+          payDate: d.payDate || '',
           installmentsPaid: debtPaidInstallments(d),
           payments: [...(d.payments || [])]
         };
@@ -3605,6 +3613,10 @@ function bind(){
         } else {
           d.paid = false;
           d.installmentsPaid = instVal > 0 ? Math.min(inst - 1, Math.floor((totalPaid + 0.01) / instVal)) : 0;
+          if(IS_DEFAULT_USER && d.payDate && inst > 1){
+            const newlyPaid = Math.max(1, d.installmentsPaid - (Number(prevStatus.installmentsPaid) || 0));
+            d.payDate = advancePayDateByMonths(d.payDate, newlyPaid);
+          }
         }
 
         let txId = null;
@@ -3882,6 +3894,7 @@ function bind(){
         e.preventDefault();
         const newTotal = Math.min(999, Math.max(1, parseInt(((document.getElementById('mdQuickTotalInst')||{}).value || '1'), 10) || 1));
         const newPaid = Math.min(newTotal, Math.max(0, parseInt(((document.getElementById('mdQuickPaidInst')||{}).value || '0'), 10) || 0));
+        const oldPaid = debtPaidInstallments(d);
 
         d.installments = newTotal;
         d.installmentsPaid = newPaid;
@@ -3890,6 +3903,9 @@ function bind(){
           if(!d.paidAt) d.paidAt = new Date().toISOString();
         } else {
           d.paidAt = '';
+          if(IS_DEFAULT_USER && d.payDate && newTotal > 1 && newPaid !== oldPaid){
+            d.payDate = advancePayDateByMonths(d.payDate, newPaid - oldPaid);
+          }
         }
 
         save(true);
@@ -7735,11 +7751,15 @@ function removeStatementTransaction(source,txId,goalId){
     if(existing.myDebtId){
       const myDebt=(st.myDebts||[]).find(d=>d.id===existing.myDebtId);
       if(myDebt){
-        const installments=debtInstallments(myDebt);
+        const inst=debtInstallments(myDebt);
         const removedInstallment=Math.max(0,parseInt(existing.myDebtInstallment||'0',10)||0);
         const fallbackPaid=debtPaidInstallments(myDebt);
-        myDebt.installmentsPaid=Math.max(0,Math.min(installments,removedInstallment ? removedInstallment-1 : fallbackPaid-1));
-        myDebt.paid=myDebt.installmentsPaid>=installments;
+        const oldPaid=fallbackPaid;
+        myDebt.installmentsPaid=Math.max(0,Math.min(inst,removedInstallment ? removedInstallment-1 : fallbackPaid-1));
+        if(IS_DEFAULT_USER && myDebt.payDate && inst>1 && myDebt.installmentsPaid<oldPaid){
+          myDebt.payDate=advancePayDateByMonths(myDebt.payDate, myDebt.installmentsPaid-oldPaid);
+        }
+        myDebt.paid=myDebt.installmentsPaid>=inst;
         if(!myDebt.paid) myDebt.paidAt='';
       }
     }
@@ -8655,6 +8675,19 @@ function startOfWeek(date){const d=new Date(date);const day=(d.getDay()+6)%7;d.s
 function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function dateKey(i){const d=new Date(i);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function days(a,b){const A=parse(a),B=parse(b);return Math.round((B-A)/86400000);} function parse(k){const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);} 
+function advancePayDateByMonths(dateStr, monthsToAdd, anchorDayOverride){
+  if(!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr || '';
+  const delta = parseInt(monthsToAdd, 10) || 0;
+  if(delta === 0) return dateStr;
+  const parts = dateStr.split('-').map(Number);
+  const y = parts[0], m = parts[1], d = anchorDayOverride || parts[2];
+  const targetMonthIndex = (m - 1) + delta;
+  const newYear = y + Math.floor(targetMonthIndex / 12);
+  const newMonth = ((targetMonthIndex % 12) + 12) % 12 + 1;
+  const maxDaysInTargetMonth = new Date(newYear, newMonth, 0).getDate();
+  const newDay = Math.min(d, maxDaysInTargetMonth);
+  return `${newYear}-${String(newMonth).padStart(2,'0')}-${String(newDay).padStart(2,'0')}`;
+}
 function id(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-5);} 
 function defLabel(k){return k==='vale1'?'VA Mercado':k==='vale2'?'VA Refeição':'Saldo em Conta';}
 function txt(v,m){return String(v||'').replace(/\s+/g,' ').trim().slice(0,m);} 
@@ -8670,6 +8703,7 @@ window.renderCredit=renderCredit;
 window.creditMove=creditMove;
 window.creditReserveMove=creditReserveMove;
 window.getActiveCreditObj=getActiveCreditObj;
+window.advancePayDateByMonths=advancePayDateByMonths;
 window.renderAll=renderAll;
 window.renderFinance=renderFinance;
 window.addEventListener('hashchange',function(){
@@ -8704,9 +8738,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v46'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v47'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v46');
+      sessionStorage.setItem('sw_ctrl_reload','v47');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });

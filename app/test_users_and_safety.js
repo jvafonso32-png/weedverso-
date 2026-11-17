@@ -565,10 +565,11 @@ testGistPullEmptyProtection().then(() => {
   assert(joaoElements['ccDebtsCompactList'].innerHTML.includes('Nenhuma parcela ou dívida pendente'), 'Lista vazia inicial renderizada com sucesso');
   console.log('  [OK] Painel Anatômico de Dívidas/Cobranças na aba Cartões ativo e sincronizado no João!');
 
-  // 5.8 Teste de cadastro de Dívida e Cobrança por VALOR DA PARCELA x VEZES (Exclusivo João)
+  // 5.8 Teste de cadastro de Dívida e Cobrança por VALOR DA PARCELA x VEZES e Avanço Automático de Vencimento (Exclusivo João)
   joaoElements['mdName'].value = 'iPhone Parcelado';
   joaoElements['mdAmount'].value = '350.00';
   joaoElements['mdInstallments'].value = '10';
+  joaoElements['mdPayDate'].value = '2026-11-01';
   joaoElements['mdInstallments'].dispatchEvent({ type: 'input' });
   assert(joaoElements['mdInstallmentPreview'].textContent.includes('10x de R$ 350,00') || joaoElements['mdInstallmentPreview'].textContent.includes('350,00'), 'Preview deve exibir 10x de 350,00 e o total de 3.500,00');
   joaoElements['mdForm'].dispatchEvent({ type: 'submit', preventDefault: () => {} });
@@ -576,15 +577,23 @@ testGistPullEmptyProtection().then(() => {
   joaoElements['debName'].value = 'Lucas Cartão';
   joaoElements['debAmount'].value = '120.00';
   joaoElements['debInstallments'].value = '5';
+  joaoElements['debPayDate'].value = '2026-11-01';
   joaoElements['debInstallments'].dispatchEvent({ type: 'input' });
   joaoElements['debForm'].dispatchEvent({ type: 'submit', preventDefault: () => {} });
 
   const stateAfterInstDebts = JSON.parse(joaoEnv.store['rotina_prime_v2']);
   assert.strictEqual(stateAfterInstDebts.myDebts[0].installmentValue, 350, 'Valor da parcela em Minhas Dívidas deve ser 350.00 (sem dividir por 10)');
   assert.strictEqual(stateAfterInstDebts.myDebts[0].installments, 10, '10 parcelas salvas');
+  assert.strictEqual(stateAfterInstDebts.myDebts[0].payDate, '2026-11-01', 'Data inicial 2026-11-01 salva');
   assert.strictEqual(stateAfterInstDebts.debtors[0].installmentValue, 120, 'Valor da parcela em Cobranças deve ser 120.00');
   assert.strictEqual(stateAfterInstDebts.debtors[0].amount, 600, 'Valor total da cobrança calculado automaticamente (120 * 5 = 600)');
-  console.log('  [OK] Cadastro por Valor da Parcela x Vezes funcionou perfeitamente em Minhas Dívidas e Cobranças no João!');
+  assert.strictEqual(stateAfterInstDebts.debtors[0].payDate, '2026-11-01', 'Data inicial da cobrança 2026-11-01 salva');
+
+  // Testa avanço automático de data de 01-11 para 01-12 e meses seguintes
+  const advanceFn = joaoEnv.sandbox.window.advancePayDateByMonths;
+  assert.strictEqual(advanceFn('2026-11-01', 1), '2026-12-01', 'Pagamento de 1 parcela em 01-11 deve avançar automaticamente para 01-12');
+  assert.strictEqual(advanceFn('2026-12-01', 1), '2027-01-01', 'Pagamento em 01-12 deve avançar para 01-01 do ano seguinte');
+  console.log('  [OK] Cadastro por Valor da Parcela x Vezes e Avanço Automático de Vencimento (01-11 -> 01-12) validados no João!');
 
   // -------------------------------------------------------------
   // TESTE 6: GARANTIA ABSOLUTA DE NÃO ALTERAÇÃO NO ANDRÉ E NA JÚLIA

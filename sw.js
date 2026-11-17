@@ -1,4 +1,4 @@
-const CACHE_NAME = 'weedverso-v46';
+const CACHE_NAME = 'weedverso-v47';
 const PRECACHE_ASSETS = [
   './',
   'manifest.json',
@@ -6,8 +6,8 @@ const PRECACHE_ASSETS = [
   'apple-touch-icon.png',
   'core/app.css',
   'core/app.js',
-  'core/app.css?v=46',
-  'core/app.js?v=46'
+  'core/app.css?v=47',
+  'core/app.js?v=47'
 ];
 
 self.addEventListener('install', (event) => {
