@@ -137,6 +137,7 @@ body[data-privacy="on"] canvas{filter:blur(8px)}
   .top{position:relative;overflow:hidden;display:grid;gap:6px;border-color:rgba(0,194,255,.25);background:linear-gradient(160deg,rgba(11,20,32,.98),rgba(8,14,24,.95));box-shadow:0 8px 24px rgba(0,0,0,.3),inset 0 0 0 1px rgba(0,194,255,.05);padding:8px 12px;border-radius:14px}.top:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0,rgba(0,194,255,.12),transparent 28%),linear-gradient(135deg,rgba(255,255,255,.025),transparent 28%,transparent 70%,rgba(0,194,255,.04));pointer-events:none}.top>*{position:relative;z-index:1}.topMain{display:grid;gap:6px;min-width:0}.brandRow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:8px;min-width:0}.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--logo-gradient);box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 8px 14px rgba(12,44,28,.28);font-weight:800;color:var(--logo-color);font-size:.9rem}.brandText{display:grid;gap:1px;min-width:0}.brand h1{font-family:var(--font-display);font-size:1.2rem;letter-spacing:.3px;line-height:1}.brandSub{font-size:.6rem;color:#9fb3a8;letter-spacing:.1em;text-transform:uppercase}.topActions{display:flex;align-items:center;gap:5px;flex-wrap:nowrap}.topActions .btn,.topActions .ghost{min-height:30px;padding:5px 9px;font-size:.72rem;white-space:nowrap;border-radius:9px}.topActions .iconBtn{width:30px;height:30px;border-radius:9px;min-width:30px;font-size:.85rem}.saveMeta{display:grid;gap:4px;justify-items:start;min-width:0;text-align:left}.saveMeta strong{font-family:var(--font-display);font-size:.9rem;line-height:1;letter-spacing:.02em;color:var(--txt)}.saveStamp{display:none}.statusRow{display:flex;gap:4px;flex-wrap:wrap}.statusPill{display:inline-flex;align-items:center;max-width:100%;padding:4px 7px;border-radius:999px;border:1px solid rgba(120,150,136,.2);background:rgba(255,255,255,.025);font-size:.64rem;color:#fce4eb;line-height:1.1}.saveMeta .codeMeta[data-tone="ok"]{color:#d4f0ff;border-color:rgba(0,194,255,.35);background:rgba(0,194,255,.08)}.saveMeta .codeMeta[data-tone="running"]{color:#8fe3ff;border-color:rgba(111,219,255,.35);background:rgba(111,219,255,.08)}.saveMeta .codeMeta[data-tone="error"]{color:#ff9daa;border-color:rgba(255,95,112,.35);background:rgba(255,95,112,.08)}
 .btn,.ghost,.danger,.quick,.navBtn,.iconBtn{position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .22s ease,border-color .22s ease,background .22s ease,color .22s ease}
 .btn,.ghost,.danger{appearance:none;-webkit-appearance:none;border:1px solid var(--ln);border-radius:10px;padding:7px 10px;font:700 .78rem var(--font-ui);letter-spacing:.15px;cursor:pointer;color:var(--txt);min-height:34px}
+.ghost{background:linear-gradient(180deg,rgba(18,32,42,.95),rgba(10,20,28,.98));color:var(--txt);border-color:rgba(120,185,215,.28);box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 6px 14px rgba(0,0,0,.22)}
 .btn:before,.ghost:before,.danger:before,.quick:before,.navBtn:before,.iconBtn:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.13),transparent 28%,transparent 68%,rgba(0,194,255,.08));pointer-events:none}
 .btn{background:var(--btn-bg);color:var(--btn-color);border-color:var(--btn-border);box-shadow:var(--btn-shadow);border-color:rgba(120,150,136,.26);box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 8px 14px rgba(0,0,0,.16)}
 .danger{background:linear-gradient(180deg,rgba(73,24,31,.9),rgba(52,16,22,.94));color:#ff7c8c;border-color:rgba(255,95,112,.35);box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 8px 14px rgba(0,0,0,.16)}
@@ -1287,36 +1288,39 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
 
 /* Painel Anatômico Compacto de Dívidas e Cobranças na Aba Cartões (Exclusivo João) */
 .ccDebtsAnatomyBox {
-  padding: 12px 13px !important;
+  padding: 10px 11px !important;
   border: 1px solid rgba(0, 229, 255, 0.2) !important;
   background: radial-gradient(circle at 100% 0%, rgba(0, 229, 255, 0.06), transparent 60%), rgba(8, 20, 28, 0.65) !important;
-  border-radius: 16px !important;
+  border-radius: 15px !important;
 }
 .ccDebtsHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 .ccDebtsTitleWrap {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
+.ccDebtsTitleWrap .cardSectionTitle {
+  font-size: 0.72rem !important;
+}
 .ccDebtsSub {
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   color: var(--mut);
   font-weight: 600;
 }
 .ccDebtsAddBtn {
-  padding: 6px 12px !important;
+  padding: 5px 10px !important;
   border-radius: 999px !important;
   border: 1px solid rgba(0, 229, 255, 0.4) !important;
   background: rgba(0, 229, 255, 0.14) !important;
   color: #00e5ff !important;
-  font-size: 0.75rem !important;
+  font-size: 0.68rem !important;
   font-weight: 800 !important;
   cursor: pointer;
   white-space: nowrap;
@@ -1325,32 +1329,40 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
 .ccDebtsSegmentBar {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 5px;
   background: rgba(0, 0, 0, 0.35);
-  padding: 4px;
-  border-radius: 12px;
+  padding: 3px;
+  border-radius: 11px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .ccDebtsSegBtn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 7px 10px !important;
-  border-radius: 9px !important;
+  gap: 4px;
+  padding: 6px 8px !important;
+  border-radius: 8px !important;
   border: 1px solid transparent !important;
   background: transparent !important;
   color: var(--mut) !important;
-  font-size: 0.74rem !important;
+  font-size: 0.65rem !important;
   font-weight: 700 !important;
   cursor: pointer;
+  min-width: 0;
+}
+.ccDebtsSegBtn span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .ccDebtsSegBtn strong {
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .ccDebtsSegBtn.active {
   background: rgba(0, 229, 255, 0.15) !important;
@@ -1364,15 +1376,15 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
 .ccDebtsCompactList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 .ccDebtCompactRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 12px;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition: background 0.15s ease;
@@ -1380,19 +1392,19 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
 .ccDebtRowMain {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
   flex: 1;
 }
 .ccDebtRowIcon {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
   background: rgba(0, 229, 255, 0.08);
   border: 1px solid rgba(0, 229, 255, 0.18);
   display: grid;
   place-items: center;
-  font-size: 0.92rem;
+  font-size: 0.8rem;
   flex-shrink: 0;
 }
 .ccDebtRowInfo {
@@ -1404,12 +1416,12 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
 .ccDebtRowTitleLine {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   min-width: 0;
 }
 .ccDebtRowName {
-  font-size: 0.84rem;
-  font-weight: 800;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -1417,9 +1429,9 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
   cursor: pointer;
 }
 .ccDebtInstPill {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   font-weight: 800;
-  padding: 1px 6px;
+  padding: 1px 5px;
   border-radius: 999px;
   background: rgba(0, 229, 255, 0.14);
   color: #00e5ff;
@@ -1432,40 +1444,44 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   color: var(--mut);
 }
-.ccDebtRowMeta .tag {
-  padding: 1px 6px !important;
-  font-size: 0.62rem !important;
+.ccDebtRowMeta .tag,
+.ccDebtRowMeta .dvTagDelayYellow,
+.ccDebtRowMeta .dvTagDelayOrange,
+.ccDebtRowMeta .dvTagDelayRed {
+  padding: 1px 5px !important;
+  font-size: 0.58rem !important;
 }
 .ccDebtRowRight {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 3px;
   flex-shrink: 0;
 }
 .ccDebtRowVal {
   font-family: var(--font-display);
-  font-size: 0.92rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: #fff;
 }
 .ccDebtRowBtns {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 .ccDebtMiniBtn {
-  padding: 3px 8px !important;
-  border-radius: 7px !important;
-  font-size: 0.68rem !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  font-size: 0.62rem !important;
   font-weight: 700 !important;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
   color: var(--txt) !important;
+  min-height: 22px !important;
 }
 .ccDebtMiniBtn.pay {
   background: rgba(0, 229, 255, 0.14) !important;
@@ -1478,29 +1494,29 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
 }
 .ccDebtsEmpty {
   text-align: center;
-  padding: 10px 8px;
-  font-size: 0.76rem;
+  padding: 8px 6px;
+  font-size: 0.7rem;
   color: var(--mut);
   background: rgba(255, 255, 255, 0.015);
   border: 1px dashed rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  border-radius: 9px;
 }
 .ccDebtsFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
-  padding-top: 4px;
+  gap: 6px;
+  margin-top: 3px;
+  padding-top: 3px;
 }
 .ccDebtsExpandBtn, .ccDebtsGotoBtn {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  font-size: 0.72rem !important;
+  font-size: 0.66rem !important;
   font-weight: 700 !important;
   color: #00e5ff !important;
-  padding: 4px 6px !important;
+  padding: 3px 5px !important;
   cursor: pointer;
 }
 .ccDebtsGotoBtn {
