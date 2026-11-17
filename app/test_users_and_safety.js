@@ -39,8 +39,18 @@ function createMockEnvironment(config, initialStorage = {}, elementsMap = null) 
       click: function() {
         if (this.onclick) this.onclick();
         if (this.listeners && this.listeners.click) {
-          this.listeners.click.forEach(cb => cb());
+          this.listeners.click.forEach(cb => cb({ target: this, preventDefault: () => {} }));
         }
+      },
+      dispatchEvent: function(ev) {
+        const evt = typeof ev === 'string' ? ev : (ev && ev.type);
+        const payload = Object.assign({ target: this, preventDefault: () => {} }, typeof ev === 'object' ? ev : {});
+        if (this.listeners && this.listeners[evt]) {
+          this.listeners[evt].forEach(cb => cb(payload));
+        }
+      },
+      reset: function() {
+        this.value = '';
       },
       classList: { add: ()=>{}, remove: ()=>{}, toggle: ()=>{}, contains: ()=>false },
       setAttribute: () => {},
@@ -554,6 +564,27 @@ testGistPullEmptyProtection().then(() => {
   assert.strictEqual(joaoElements['ccDebtsAnatomyBox'].style.display, 'block', 'Painel anatômico de dívidas deve estar visível no João');
   assert(joaoElements['ccDebtsCompactList'].innerHTML.includes('Nenhuma parcela ou dívida pendente'), 'Lista vazia inicial renderizada com sucesso');
   console.log('  [OK] Painel Anatômico de Dívidas/Cobranças na aba Cartões ativo e sincronizado no João!');
+
+  // 5.8 Teste de cadastro de Dívida e Cobrança por VALOR DA PARCELA x VEZES (Exclusivo João)
+  joaoElements['mdName'].value = 'iPhone Parcelado';
+  joaoElements['mdAmount'].value = '350.00';
+  joaoElements['mdInstallments'].value = '10';
+  joaoElements['mdInstallments'].dispatchEvent({ type: 'input' });
+  assert(joaoElements['mdInstallmentPreview'].textContent.includes('10x de R$ 350,00') || joaoElements['mdInstallmentPreview'].textContent.includes('350,00'), 'Preview deve exibir 10x de 350,00 e o total de 3.500,00');
+  joaoElements['mdForm'].dispatchEvent({ type: 'submit', preventDefault: () => {} });
+
+  joaoElements['debName'].value = 'Lucas Cartão';
+  joaoElements['debAmount'].value = '120.00';
+  joaoElements['debInstallments'].value = '5';
+  joaoElements['debInstallments'].dispatchEvent({ type: 'input' });
+  joaoElements['debForm'].dispatchEvent({ type: 'submit', preventDefault: () => {} });
+
+  const stateAfterInstDebts = JSON.parse(joaoEnv.store['rotina_prime_v2']);
+  assert.strictEqual(stateAfterInstDebts.myDebts[0].installmentValue, 350, 'Valor da parcela em Minhas Dívidas deve ser 350.00 (sem dividir por 10)');
+  assert.strictEqual(stateAfterInstDebts.myDebts[0].installments, 10, '10 parcelas salvas');
+  assert.strictEqual(stateAfterInstDebts.debtors[0].installmentValue, 120, 'Valor da parcela em Cobranças deve ser 120.00');
+  assert.strictEqual(stateAfterInstDebts.debtors[0].amount, 600, 'Valor total da cobrança calculado automaticamente (120 * 5 = 600)');
+  console.log('  [OK] Cadastro por Valor da Parcela x Vezes funcionou perfeitamente em Minhas Dívidas e Cobranças no João!');
 
   // -------------------------------------------------------------
   // TESTE 6: GARANTIA ABSOLUTA DE NÃO ALTERAÇÃO NO ANDRÉ E NA JÚLIA

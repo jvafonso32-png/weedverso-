@@ -866,7 +866,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=45';
+const SW_PATH = CFG.swPath || 'sw.js?v=46';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -2352,11 +2352,19 @@ function bind(){
     if(!el.debInstallmentPreview) return;
     const amount=parseFloat(((el.debAmount&&el.debAmount.value)||'').replace(',','.'));
     const inst=Math.min(999,Math.max(1,parseInt((el.debInstallments&&el.debInstallments.value)||'1',10)||1));
+    if(IS_DEFAULT_USER && el.debAmount){
+      el.debAmount.placeholder = inst > 1 ? 'Valor da parcela' : 'Valor à vista';
+    }
     if(Number.isFinite(amount) && amount>0){
-      const val=roundMoneyValue(amount/inst);
-      el.debInstallmentPreview.textContent=inst>1?`${inst}x de ${money(val)}`:`1x de ${money(amount)} (à vista)`;
+      if(IS_DEFAULT_USER){
+        const total=roundMoneyValue(amount*inst);
+        el.debInstallmentPreview.textContent=inst>1?`${inst}x de ${money(amount)} (Total: ${money(total)})`:`1x de ${money(amount)} (à vista)`;
+      } else {
+        const val=roundMoneyValue(amount/inst);
+        el.debInstallmentPreview.textContent=inst>1?`${inst}x de ${money(val)}`:`1x de ${money(amount)} (à vista)`;
+      }
     } else {
-      el.debInstallmentPreview.textContent=inst>1?`${inst}x parcelado`:'1x à vista';
+      el.debInstallmentPreview.textContent=IS_DEFAULT_USER?(inst>1?`Informe o valor da parcela (${inst}x)`:'1x à vista (informe o valor)'):(inst>1?`${inst}x parcelado`:'1x à vista');
     }
   }
   if(el.debAmount) el.debAmount.addEventListener('input',updateDebInstallmentPreview);
@@ -2390,6 +2398,7 @@ function bind(){
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden','false');
       populateDebtorNameSuggestions();
+      updateDebInstallmentPreview();
       const nInp=document.getElementById('debName');
       if(nInp) setTimeout(()=>nInp.focus(), 150);
     }
@@ -2482,14 +2491,15 @@ function bind(){
 
   function handleDebtorFormSubmit(nameVal, amountVal, installmentsVal, noteVal, payDateVal, reasonVal, phoneVal){
     const name=txt(nameVal,30);
-    const amount=parseFloat((amountVal||'').replace(',','.'));
+    const rawInputAmount=parseFloat((amountVal||'').replace(',','.'));
     const installments=Math.min(999,Math.max(1,parseInt(installmentsVal||'1',10)||1));
     const note=txt(noteVal,50);
     const payDate=payDateVal||'';
     const reason=['card','loan','split','other'].includes(reasonVal)?reasonVal:'other';
     const phone=String(phoneVal||'').replace(/\D/g,'').slice(0,15);
-    if(!name||!Number.isFinite(amount)||amount<=0) return;
-    const installmentValue=roundMoneyValue(amount/installments);
+    if(!name||!Number.isFinite(rawInputAmount)||rawInputAmount<=0) return;
+    const installmentValue=IS_DEFAULT_USER ? roundMoneyValue(rawInputAmount) : roundMoneyValue(rawInputAmount/installments);
+    const amount=IS_DEFAULT_USER ? roundMoneyValue(installmentValue*installments) : roundMoneyValue(rawInputAmount);
     st.debtors.unshift({
       id:id(),
       name,
@@ -3099,8 +3109,8 @@ function bind(){
         </div>
         <div class="two">
           <div class="sheetField">
-            <label class="mini">Valor Total (R$)</label>
-            <input id="dvEditAmount" type="number" step="0.01" class="sheetInput" value="${Number(d.amount)||0}" required />
+            <label class="mini">${IS_DEFAULT_USER ? 'Valor da Parcela (R$)' : 'Valor Total (R$)'}</label>
+            <input id="dvEditAmount" type="number" step="0.01" class="sheetInput" value="${IS_DEFAULT_USER ? (debtorInstallmentValue(d)||0) : (Number(d.amount)||0)}" required />
           </div>
           <div class="sheetField">
             <label class="mini">Parcelas (até 999)</label>
@@ -3167,9 +3177,14 @@ function bind(){
         if(!newName || !Number.isFinite(newAmt) || newAmt<=0) return;
 
         d.name=newName;
-        d.amount=roundMoneyValue(newAmt);
         d.installments=newInst;
-        d.installmentValue=roundMoneyValue(newAmt/newInst);
+        if(IS_DEFAULT_USER){
+          d.installmentValue=roundMoneyValue(newAmt);
+          d.amount=roundMoneyValue(newAmt*newInst);
+        } else {
+          d.amount=roundMoneyValue(newAmt);
+          d.installmentValue=roundMoneyValue(newAmt/newInst);
+        }
         d.payDate=document.getElementById('dvEditPayDate').value||'';
         d.phone=String(document.getElementById('dvEditPhone').value||'').replace(/\D/g,'').slice(0,15);
         d.note=txt(document.getElementById('dvEditNote').value, 50);
@@ -3255,6 +3270,7 @@ function bind(){
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
     populateMyDebtNameSuggestions();
+    updateMdInstallmentPreview();
     const nameInput = document.getElementById('mdName');
     if(nameInput) setTimeout(() => nameInput.focus(), 150);
   }
@@ -3371,11 +3387,19 @@ function bind(){
     if(!prev) return;
     const amount = parseFloat(((amtInp && amtInp.value) || '').replace(',', '.'));
     const inst = Math.min(999, Math.max(1, parseInt(((instInp && instInp.value) || '1'), 10) || 1));
+    if(IS_DEFAULT_USER && amtInp){
+      amtInp.placeholder = inst > 1 ? 'Valor da parcela' : 'Valor à vista';
+    }
     if(Number.isFinite(amount) && amount > 0){
-      const val = roundMoneyValue(amount / inst);
-      prev.textContent = inst > 1 ? `${inst}x de ${money(val)}` : `1x de ${money(amount)} (à vista)`;
+      if(IS_DEFAULT_USER){
+        const total = roundMoneyValue(amount * inst);
+        prev.textContent = inst > 1 ? `${inst}x de ${money(amount)} (Total: ${money(total)})` : `1x de ${money(amount)} (à vista)`;
+      } else {
+        const val = roundMoneyValue(amount / inst);
+        prev.textContent = inst > 1 ? `${inst}x de ${money(val)}` : `1x de ${money(amount)} (à vista)`;
+      }
     } else {
-      prev.textContent = inst > 1 ? `${inst}x parcelado` : '1x à vista';
+      prev.textContent = IS_DEFAULT_USER ? (inst > 1 ? `Informe o valor da parcela (${inst}x)` : '1x à vista (informe o valor)') : (inst > 1 ? `${inst}x parcelado` : '1x à vista');
     }
   }
 
@@ -3420,7 +3444,7 @@ function bind(){
       const note = txt((document.getElementById('mdNote')||{}).value, 50);
       if(!name || !Number.isFinite(amount) || amount <= 0) return;
 
-      const unitValue = roundMoneyValue(amount / installments);
+      const unitValue = IS_DEFAULT_USER ? roundMoneyValue(amount) : roundMoneyValue(amount / installments);
       const newEntry = {
         id: id(),
         name,
@@ -3447,7 +3471,9 @@ function bind(){
       renderSummary();
       closeMdForm();
       haptic('success');
-      showToast(`✓ Dívida "${name}" adicionada com sucesso!`, 'ok');
+      const totalDebtVal = roundMoneyValue(unitValue * installments);
+      const instMsg = installments > 1 ? ` (${installments}x de ${money(unitValue)} · Total ${money(totalDebtVal)})` : ` (${money(unitValue)})`;
+      showToast(`✓ Dívida "${name}"${instMsg} adicionada!`, 'ok');
 
       mdFormEl.reset();
       if(mdNameHint) { mdNameHint.hidden = true; mdNameHint.style.display = 'none'; }
@@ -8678,9 +8704,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v45'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v46'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v45');
+      sessionStorage.setItem('sw_ctrl_reload','v46');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });
