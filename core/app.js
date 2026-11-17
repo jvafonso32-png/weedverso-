@@ -371,6 +371,30 @@
             </div>
           </div>
 
+          <!-- Painel Anatômico de Dívidas e Cobranças no Cartão (Exclusivo para o João) -->
+          <div class="cardSectionBox ccDebtsAnatomyBox" id="ccDebtsAnatomyBox" style="display:none;">
+            <div class="ccDebtsHeader">
+              <div class="ccDebtsTitleWrap">
+                <span class="cardSectionTitle" style="margin:0;">🧾 Dívidas & Cobranças no Cartão</span>
+                <span class="ccDebtsSub" id="ccDebtsMiniSummary">Sincronizado com a aba Dívidas</span>
+              </div>
+              <button type="button" class="ccDebtsAddBtn" id="ccDebtsQuickAddBtn">+ Nova</button>
+            </div>
+
+            <div class="ccDebtsSegmentBar" id="ccDebtsSegmentBar">
+              <button type="button" class="ccDebtsSegBtn active" data-cc-debt-tab="myDebts" id="ccDebtsTabMy">
+                <span>🧾 Minhas Parcelas</span>
+                <strong id="ccDebtsMyBadge">R$ 0,00</strong>
+              </button>
+              <button type="button" class="ccDebtsSegBtn" data-cc-debt-tab="debtors" id="ccDebtsTabDebtors">
+                <span>👥 Quem me Deve</span>
+                <strong id="ccDebtsDebtorsBadge">R$ 0,00</strong>
+              </button>
+            </div>
+
+            <div id="ccDebtsCompactList" class="ccDebtsCompactList"></div>
+          </div>
+
           <!-- Análise de Gastos -->
           <div class="creditAnalytics">
             <div class="analyticsToolbar">
@@ -842,7 +866,7 @@ const DEBTS_VIEW_KEY = CFG.debtsViewKey || `${KEY}_debts_view`;
 const USER_NAME = CFG.userName || '';
 const BRAND_SUBTITLE = CFG.brandSubtitle || 'painel pessoal';
 const WELCOME_MODAL_CFG = CFG.welcomeModal || null;
-const SW_PATH = CFG.swPath || 'sw.js?v=44';
+const SW_PATH = CFG.swPath || 'sw.js?v=45';
 
 try{
   var rawParams = window.location.hash || window.location.search || '';
@@ -926,7 +950,7 @@ const DEF={
 };
 var focusTick=null;
 var st=load();
-const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'month',debtsView:(function(){try{return localStorage.getItem(DEBTS_VIEW_KEY)||'debtors';}catch(e){return 'debtors';}})(),statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,activeCardSlot:1,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
+const ui={page:'home',privacy:readPrivacyMode(),financePeriod:'7d',accountFlowPeriod:'month',debtsView:(function(){try{return localStorage.getItem(DEBTS_VIEW_KEY)||'debtors';}catch(e){return 'debtors';}})(),ccDebtsTab:'myDebts',ccDebtsExpanded:false,statementFilter:'all',statementSearch:'',balances:{conta:false,vale1:false,vale2:false},credit:false,activeCardSlot:1,creditChartMonth:'',debtors:{},myDebts:{},goals:{},statement:{wallet:false,food:false,credit:false,five:false,goal:false},statementEditor:null};
 
 function getActiveCreditObj(){
   if(!IS_DEFAULT_USER) return st.credit;
@@ -1522,6 +1546,7 @@ const el={
   fGrid:$('#finGrid'),hist:$('#history'),foodStmt:$('#foodStmt'),accountFlowChart:$('#accountFlowChart'),accountFlowLegend:$('#accountFlowLegend'),accountFlowTotal:$('#accountFlowTotal'),
   ccEditBtn:$('#ccEditBtn'),ccMeta:$('#ccMeta'),ccMetaSummary:$('#ccMetaSummary'),ccMetaHint:$('#ccMetaHint'),ccName:$('#ccName'),ccValue:$('#ccValue'),ccDesc:$('#ccDesc'),
   ccDualCardDock:$('#ccDualCardDock'),ccTotalUsedBoth:$('#ccTotalUsedBoth'),ccTotalReservedBoth:$('#ccTotalReservedBoth'),ccTotalUncoveredBoth:$('#ccTotalUncoveredBoth'),ccSlot1Btn:$('#ccSlot1Btn'),ccSlot2Btn:$('#ccSlot2Btn'),ccSlot1Name:$('#ccSlot1Name'),ccSlot2Name:$('#ccSlot2Name'),ccSlot1Used:$('#ccSlot1Used'),ccSlot2Used:$('#ccSlot2Used'),ccSlot1Reserved:$('#ccSlot1Reserved'),ccSlot2Reserved:$('#ccSlot2Reserved'),ccSlot1Dot:$('#ccSlot1Dot'),ccSlot2Dot:$('#ccSlot2Dot'),
+  ccDebtsAnatomyBox:$('#ccDebtsAnatomyBox'),ccDebtsMiniSummary:$('#ccDebtsMiniSummary'),ccDebtsQuickAddBtn:$('#ccDebtsQuickAddBtn'),ccDebtsSegmentBar:$('#ccDebtsSegmentBar'),ccDebtsTabMy:$('#ccDebtsTabMy'),ccDebtsTabDebtors:$('#ccDebtsTabDebtors'),ccDebtsMyBadge:$('#ccDebtsMyBadge'),ccDebtsDebtorsBadge:$('#ccDebtsDebtorsBadge'),ccDebtsCompactList:$('#ccDebtsCompactList'),
   ccExpense:$('#ccExpense'),ccPay:$('#ccPay'),ccClear:$('#ccClear'),ccUsed:$('#ccUsed'),ccUncovered:$('#ccUncovered'),ccReserved:$('#ccReserved'),ccReserveValue:$('#ccReserveValue'),ccReserveIn:$('#ccReserveIn'),ccReserveOut:$('#ccReserveOut'),ccDefaultReserveValue:$('#ccDefaultReserveValue'),ccDefaultReserveIn:$('#ccDefaultReserveIn'),ccDefaultReserveOut:$('#ccDefaultReserveOut'),ccQuickActionsSection:$('#ccQuickActionsSection'),ccReserveStandardLayout:$('#ccReserveStandardLayout'),ccReserveDefaultLayout:$('#ccReserveDefaultLayout'),ccReserveCurrentAmount:$('#ccReserveCurrentAmount'),ccTransferToContaBtn:$('#ccTransferToContaBtn'),ccBar:$('#ccBar'),ccHistory:$('#ccHistory'),ccDescChart:$('#ccDescChart'),ccDescLegend:$('#ccDescLegend'),ccDescTotal:$('#ccDescTotal'),ccChartMonth:$('#ccChartMonth'),ccChartMonthTag:$('#ccChartMonthTag'),ccChartPrev:$('#ccChartPrev'),ccChartNext:$('#ccChartNext'),ccChartReset:$('#ccChartReset'),financeChart:$('#financeChart'),
   debForm:$('#debForm'),debName:$('#debName'),debAmount:$('#debAmount'),debInstallments:$('#debInstallments'),debInstallmentPreview:$('#debInstallmentPreview'),debNote:$('#debNote'),debPayDate:$('#debPayDate'),debList:$('#debList'),last5Stmt:$('#last5Stmt'),
   mdForm:$('#mdForm'),mdName:$('#mdName'),mdAmount:$('#mdAmount'),mdInstallments:$('#mdInstallments'),mdInstallmentPreview:$('#mdInstallmentPreview'),mdNote:$('#mdNote'),mdPayDate:$('#mdPayDate'),myDebtList:$('#myDebtList'),mdSummaryLine:$('#mdSummaryLine'),mdProgress:$('#mdProgress'),mdWeek:$('#mdWeek'),mdOpenFormBtn:$('#mdOpenFormBtn'),
@@ -2484,7 +2509,7 @@ function bind(){
       at:new Date().toISOString()
     });
     st.debtors=st.debtors.slice(0,100);
-    save(true); renderDebtors(); renderSummary();
+    save(true); renderDebtors(); renderCredit(); renderSummary();
     haptic('medium');
     const instText=installments>1?` em ${installments}x de ${money(installmentValue)}`:'';
     showToast(`✓ Cobrança adicionada para ${name} (${money(amount)}${instText})!`, 'ok');
@@ -2869,6 +2894,7 @@ function bind(){
     save(true);
     renderMyDebts();
     renderFinance();
+    renderCredit();
     renderUnifiedStatement();
     renderSummary();
     haptic('medium');
@@ -3030,13 +3056,13 @@ function bind(){
           } else {
             d.paidAt='';
           }
-          save(true); renderDebtors(); renderSummary();
+          save(true); renderDebtors(); renderCredit(); renderSummary();
           showToast(d.paid?`✓ ${d.name} marcado como quitado!`:`Cobrança reaberta!`,'ok');
         }
         else if(act==='delete'){
           if(confirm(`Excluir a cobrança de ${d.name}?`)){
             st.debtors=st.debtors.filter(x=>x.id!==d.id);
-            save(true); renderDebtors(); renderSummary();
+            save(true); renderDebtors(); renderCredit(); renderSummary();
             showToast('Cobrança excluída.','ok');
           }
         }
@@ -3160,6 +3186,7 @@ function bind(){
 
         save(true);
         renderDebtors();
+        renderCredit();
         renderSummary();
         closeDvSheet();
         showToast('✓ Cobrança atualizada!','ok');
@@ -3416,6 +3443,7 @@ function bind(){
 
       save(true);
       renderMyDebts();
+      renderCredit();
       renderSummary();
       closeMdForm();
       haptic('success');
@@ -3578,6 +3606,7 @@ function bind(){
         save(true);
         renderMyDebts();
         renderFinance();
+        renderCredit();
         renderUnifiedStatement();
         renderSummary();
         haptic('success');
@@ -3651,6 +3680,7 @@ function bind(){
           }
           save(true);
           renderMyDebts();
+          renderCredit();
           renderSummary();
           showToast(d.paid ? `✓ ${d.name} marcada como quitada!` : 'Dívida reaberta!', 'ok');
         }
@@ -3660,6 +3690,7 @@ function bind(){
             st.tx = (st.tx || []).map(t => t.myDebtId === d.id ? Object.assign({}, t, { myDebtId: '', myDebtInstallment: 0 }) : t);
             save(true);
             renderMyDebts();
+            renderCredit();
             renderSummary();
             showToast('Dívida excluída.', 'ok');
           }
@@ -3837,6 +3868,7 @@ function bind(){
 
         save(true);
         renderMyDebts();
+        renderCredit();
         renderSummary();
         closeMdSheet();
         haptic('success');
@@ -3971,6 +4003,7 @@ function bind(){
 
         save(true);
         renderMyDebts();
+        renderCredit();
         renderSummary();
         closeMdSheet();
         haptic('success');
@@ -4006,6 +4039,60 @@ function bind(){
 
   const myDebtListEl = document.getElementById('myDebtList');
   if(myDebtListEl) myDebtListEl.addEventListener('click', handleMyDebtBoardClick);
+
+  // Bindings do Painel Anatômico de Dívidas e Cobranças na aba Cartões (Exclusivo João)
+  if(el.ccDebtsSegmentBar){
+    el.ccDebtsSegmentBar.addEventListener('click', e => {
+      const btn = e.target.closest('[data-cc-debt-tab]');
+      if(!btn) return;
+      ui.ccDebtsTab = btn.dataset.ccDebtTab || 'myDebts';
+      ui.ccDebtsExpanded = false;
+      haptic('light');
+      renderCreditDebtsCompact();
+    });
+  }
+  if(el.ccDebtsQuickAddBtn){
+    el.ccDebtsQuickAddBtn.addEventListener('click', () => {
+      haptic('light');
+      if(ui.ccDebtsTab === 'debtors'){
+        currentDebtorReason = 'card';
+        const reasonPills = document.getElementById('dvReasonPills');
+        if(reasonPills){
+          reasonPills.querySelectorAll('.sheetPill').forEach(p => p.classList.toggle('active', p.dataset.reason === 'card'));
+        }
+        openDvForm();
+      } else {
+        currentMyDebtReason = 'card';
+        const mdPills = document.getElementById('mdReasonPills');
+        if(mdPills){
+          mdPills.querySelectorAll('.sheetPill').forEach(p => p.classList.toggle('active', p.dataset.reason === 'card'));
+        }
+        openMdForm();
+      }
+    });
+  }
+  if(el.ccDebtsCompactList){
+    el.ccDebtsCompactList.addEventListener('click', e => {
+      const toggleExpand = e.target.closest('[data-act="cc-debts-toggle-expand"]');
+      if(toggleExpand){
+        ui.ccDebtsExpanded = !ui.ccDebtsExpanded;
+        haptic('light');
+        renderCreditDebtsCompact();
+        return;
+      }
+      const gotoDebtsBtn = e.target.closest('[data-act="cc-goto-debts"]');
+      if(gotoDebtsBtn){
+        const targetView = ui.ccDebtsTab === 'debtors' ? 'debtors' : 'myDebts';
+        switchDebtsView(targetView);
+        showPage('debts');
+        haptic('light');
+        return;
+      }
+      // Delega para os handlers originais de Minhas Dívidas e Devedores (100% compartilhado!)
+      handleMyDebtBoardClick(e);
+      handleDebtorBoardClick(e);
+    });
+  }
 
   let mdTouchTimer = null;
   let mdTouchMoved = false;
@@ -5766,6 +5853,7 @@ function renderCredit(){
     if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'none';
     if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'none';
     if(el.ccReserveDefaultLayout) el.ccReserveDefaultLayout.style.display = 'block';
+    if(el.ccDebtsAnatomyBox) el.ccDebtsAnatomyBox.style.display = 'block';
     const resTitle = document.getElementById('ccReserveTitle');
     if(resTitle) resTitle.textContent = `🛡️ Reserva do Cartão (${activeCard.name || fallbackCardName})`;
     if(el.ccReserveCurrentAmount) el.ccReserveCurrentAmount.textContent = money(reserved);
@@ -5773,8 +5861,10 @@ function renderCredit(){
       el.ccTransferToContaBtn.style.opacity = reserved > 0 ? '1' : '0.55';
       el.ccTransferToContaBtn.style.cursor = reserved > 0 ? 'pointer' : 'default';
     }
+    renderCreditDebtsCompact();
   } else {
     if(el.ccDualCardDock) el.ccDualCardDock.style.display = 'none';
+    if(el.ccDebtsAnatomyBox) el.ccDebtsAnatomyBox.style.display = 'none';
     if(el.virtualCreditCard) el.virtualCreditCard.removeAttribute('data-card-slot');
     if(el.ccQuickActionsSection) el.ccQuickActionsSection.style.display = 'block';
     if(el.ccReserveStandardLayout) el.ccReserveStandardLayout.style.display = 'block';
@@ -5876,6 +5966,174 @@ function creditReserveStatus(used,reserved){
   const uncovered=Math.max(0,used-reserved);
   const coverage=Math.min(100,Math.round((reserved/used)*100));
   return uncovered>0?`Reserva cobre ${coverage}% da fatura. Faltam ${money(uncovered)}.`:`Reserva cobre 100% da fatura atual.`;
+}
+
+function renderCreditDebtsCompact(){
+  if(!IS_DEFAULT_USER || !el.ccDebtsAnatomyBox || !el.ccDebtsCompactList) return;
+  const openMyDebts = (st.myDebts || []).filter(d => !d.paid);
+  const openDebtors = (st.debtors || []).filter(d => !d.paid);
+
+  const myDebtsTotal = roundMoneyValue(openMyDebts.reduce((s, d) => s + debtRemainingAmount(d), 0));
+  const debtorsTotal = roundMoneyValue(openDebtors.reduce((s, d) => s + debtorRemainingAmount(d), 0));
+
+  if(el.ccDebtsMyBadge) el.ccDebtsMyBadge.textContent = money(myDebtsTotal);
+  if(el.ccDebtsDebtorsBadge) el.ccDebtsDebtorsBadge.textContent = money(debtorsTotal);
+
+  const activeTab = ui.ccDebtsTab === 'debtors' ? 'debtors' : 'myDebts';
+  if(el.ccDebtsTabMy) el.ccDebtsTabMy.classList.toggle('active', activeTab === 'myDebts');
+  if(el.ccDebtsTabDebtors) el.ccDebtsTabDebtors.classList.toggle('active', activeTab === 'debtors');
+  if(el.ccDebtsQuickAddBtn){
+    el.ccDebtsQuickAddBtn.textContent = activeTab === 'debtors' ? '+ Cobrar' : '+ Dívida';
+  }
+  if(el.ccDebtsMiniSummary){
+    if(activeTab === 'myDebts'){
+      const monthlySum = roundMoneyValue(openMyDebts.reduce((s, d) => s + debtInstallmentValue(d), 0));
+      el.ccDebtsMiniSummary.textContent = openMyDebts.length
+        ? `${openMyDebts.length} em aberto · parcelas do mês: ${money(monthlySum)}`
+        : 'Nenhuma parcela/dívida pendente';
+    } else {
+      el.ccDebtsMiniSummary.textContent = openDebtors.length
+        ? `${openDebtors.length} cobrança(s) ativa(s) para receber`
+        : 'Ninguém te devendo no momento';
+    }
+  }
+
+  const maxVisible = ui.ccDebtsExpanded ? 50 : 3;
+
+  if(activeTab === 'myDebts'){
+    // Ordena priorizando dívidas de cartão ('card') e mais urgentes
+    const sorted = openMyDebts.slice().sort((a, b) => {
+      const aIsCard = myDebtReasonKey(a) === 'card' ? 0 : 1;
+      const bIsCard = myDebtReasonKey(b) === 'card' ? 0 : 1;
+      if(aIsCard !== bIsCard) return aIsCard - bIsCard;
+      return (a.payDate || '9999-99-99').localeCompare(b.payDate || '9999-99-99');
+    });
+
+    if(!sorted.length){
+      el.ccDebtsCompactList.innerHTML = `<div class="ccDebtsEmpty">Nenhuma parcela ou dívida pendente. Toque em <strong>+ Dívida</strong> para registrar.</div>`;
+      return;
+    }
+
+    const visibleItems = sorted.slice(0, maxVisible);
+    const hiddenCount = Math.max(0, sorted.length - visibleItems.length);
+
+    const rowsHtml = visibleItems.map(d => {
+      const inst = debtInstallments(d);
+      const paidInst = debtPaidInstallments(d);
+      const instVal = debtInstallmentValue(d);
+      const rem = debtRemainingAmount(d);
+      const icon = myDebtReasonIcon(d);
+      const urg = myDebtUrgencyInfo(d);
+      const instBadge = inst > 1 ? `<span class="ccDebtInstPill" data-act="md-change-inst" data-mydeb="${d.id}" title="Alterar parcelas">${paidInst}/${inst}x</span>` : '';
+      return `
+        <div class="ccDebtCompactRow" data-mydeb="${d.id}">
+          <div class="ccDebtRowMain">
+            <span class="ccDebtRowIcon">${icon}</span>
+            <div class="ccDebtRowInfo">
+              <div class="ccDebtRowTitleLine">
+                <strong class="ccDebtRowName" data-act="md-timeline" data-creditor="${esc(d.name)}">${safe(d.name)}</strong>
+                ${instBadge}
+              </div>
+              <div class="ccDebtRowMeta">
+                ${urg.tagHtml}
+                ${inst > 1 ? `<span>· Parc. ${money(instVal)}</span>` : ''}
+                ${d.note ? `<span>· ${safe(d.note)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <div class="ccDebtRowRight">
+            <strong class="ccDebtRowVal">${money(rem)}</strong>
+            <div class="ccDebtRowBtns">
+              <button type="button" class="ccDebtMiniBtn pay" data-act="md-open-pay" data-mydeb="${d.id}" title="Dar baixa / pagar parcela">✓ Paguei</button>
+              <button type="button" class="ccDebtMiniBtn menu" data-act="md-menu" data-mydeb="${d.id}" title="Opções">⋯</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const footerHtml = sorted.length > 3 ? `
+      <div class="ccDebtsFooter">
+        <button type="button" class="ccDebtsExpandBtn" data-act="cc-debts-toggle-expand">
+          ${ui.ccDebtsExpanded ? '▲ Recolher lista' : `▼ Ver mais ${hiddenCount} conta(s)`}
+        </button>
+        <button type="button" class="ccDebtsGotoBtn" data-act="cc-goto-debts">Abrir aba Dívidas →</button>
+      </div>
+    ` : `
+      <div class="ccDebtsFooter" style="justify-content:flex-end;">
+        <button type="button" class="ccDebtsGotoBtn" data-act="cc-goto-debts">Gerenciar na aba Dívidas →</button>
+      </div>
+    `;
+
+    el.ccDebtsCompactList.innerHTML = rowsHtml + footerHtml;
+  } else {
+    // Aba Quem me Deve (prioriza reason === 'card')
+    const sorted = openDebtors.slice().sort((a, b) => {
+      const aIsCard = a.reason === 'card' ? 0 : 1;
+      const bIsCard = b.reason === 'card' ? 0 : 1;
+      if(aIsCard !== bIsCard) return aIsCard - bIsCard;
+      return (a.payDate || '9999-99-99').localeCompare(b.payDate || '9999-99-99');
+    });
+
+    if(!sorted.length){
+      el.ccDebtsCompactList.innerHTML = `<div class="ccDebtsEmpty">Nenhuma cobrança em aberto. Toque em <strong>+ Cobrar</strong> para registrar quem passou no seu cartão.</div>`;
+      return;
+    }
+
+    const visibleItems = sorted.slice(0, maxVisible);
+    const hiddenCount = Math.max(0, sorted.length - visibleItems.length);
+
+    const rowsHtml = visibleItems.map(d => {
+      const inst = debtorInstallments(d);
+      const paidInst = debtorPaidInstallments(d);
+      const instVal = debtorInstallmentValue(d);
+      const rem = debtorRemainingAmount(d);
+      const icon = debtorReasonIcon(d.reason || 'card');
+      const urg = debtorUrgencyInfo(d);
+      const instBadge = inst > 1 ? `<span class="ccDebtInstPill">${paidInst}/${inst}x</span>` : '';
+      return `
+        <div class="ccDebtCompactRow" data-deb="${d.id}">
+          <div class="ccDebtRowMain">
+            <span class="ccDebtRowIcon">${icon}</span>
+            <div class="ccDebtRowInfo">
+              <div class="ccDebtRowTitleLine">
+                <strong class="ccDebtRowName" data-act="dv-person-history" data-person="${esc(d.name)}">${safe(d.name)}</strong>
+                ${instBadge}
+              </div>
+              <div class="ccDebtRowMeta">
+                ${urg.tagHtml}
+                ${inst > 1 ? `<span>· Parc. ${money(instVal)}</span>` : ''}
+                ${d.note ? `<span>· ${safe(d.note)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <div class="ccDebtRowRight">
+            <strong class="ccDebtRowVal">${money(rem)}</strong>
+            <div class="ccDebtRowBtns">
+              <button type="button" class="ccDebtMiniBtn wa" data-act="dv-charge-wa" data-deb="${d.id}" title="Cobrar no WhatsApp">💬</button>
+              <button type="button" class="ccDebtMiniBtn pay" data-act="dv-open-receive" data-deb="${d.id}" title="Registrar recebimento">✓ Recebi</button>
+              <button type="button" class="ccDebtMiniBtn menu" data-act="dv-open-menu" data-deb="${d.id}" title="Opções">⋯</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const footerHtml = sorted.length > 3 ? `
+      <div class="ccDebtsFooter">
+        <button type="button" class="ccDebtsExpandBtn" data-act="cc-debts-toggle-expand">
+          ${ui.ccDebtsExpanded ? '▲ Recolher lista' : `▼ Ver mais ${hiddenCount} cobrança(s)`}
+        </button>
+        <button type="button" class="ccDebtsGotoBtn" data-act="cc-goto-debts">Abrir aba Dívidas →</button>
+      </div>
+    ` : `
+      <div class="ccDebtsFooter" style="justify-content:flex-end;">
+        <button type="button" class="ccDebtsGotoBtn" data-act="cc-goto-debts">Gerenciar na aba Dívidas →</button>
+      </div>
+    `;
+
+    el.ccDebtsCompactList.innerHTML = rowsHtml + footerHtml;
+  }
 }
 
 function debtInstallments(item){
@@ -8420,9 +8678,9 @@ checkAuthAndStart();
 if('serviceWorker' in navigator){
   var swRefreshing=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v44'){
+    if(!swRefreshing && sessionStorage.getItem('sw_ctrl_reload')!=='v45'){
       swRefreshing=true;
-      sessionStorage.setItem('sw_ctrl_reload','v44');
+      sessionStorage.setItem('sw_ctrl_reload','v45');
       window.location.replace(window.location.origin + window.location.pathname + '?t=' + Date.now());
     }
   });

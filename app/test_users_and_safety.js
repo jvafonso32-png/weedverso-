@@ -550,6 +550,11 @@ testGistPullEmptyProtection().then(() => {
   assert.strictEqual(stateWithCard2.credit2.tx.length, 2, 'Histórico do Cartão 2 tem os 2 lançamentos');
   console.log('  [OK] Dois Cartões Anatômicos: Alternância fluida e saldos/faturas/reservas 100% independentes no João!');
 
+  // 5.7 Teste do Painel Anatômico de Dívidas e Cobranças na aba Cartões (Exclusivo João)
+  assert.strictEqual(joaoElements['ccDebtsAnatomyBox'].style.display, 'block', 'Painel anatômico de dívidas deve estar visível no João');
+  assert(joaoElements['ccDebtsCompactList'].innerHTML.includes('Nenhuma parcela ou dívida pendente'), 'Lista vazia inicial renderizada com sucesso');
+  console.log('  [OK] Painel Anatômico de Dívidas/Cobranças na aba Cartões ativo e sincronizado no João!');
+
   // -------------------------------------------------------------
   // TESTE 6: GARANTIA ABSOLUTA DE NÃO ALTERAÇÃO NO ANDRÉ E NA JÚLIA
   // -------------------------------------------------------------
@@ -567,8 +572,9 @@ testGistPullEmptyProtection().then(() => {
   vm.createContext(andreEnv.sandbox);
   vm.runInContext(coreJsCode, andreEnv.sandbox);
 
-  // 6.1 André mantém ações rápidas visíveis e apenas 1 cartão (ccDualCardDock oculto)
+  // 6.1 André mantém ações rápidas visíveis e apenas 1 cartão (ccDualCardDock e ccDebtsAnatomyBox ocultos)
   assert.strictEqual(andreElements['ccDualCardDock'].style.display, 'none', 'Dock de dois cartões deve permanecer oculto no André');
+  assert.strictEqual(andreElements['ccDebtsAnatomyBox'].style.display, 'none', 'Painel de dívidas no cartão deve permanecer oculto no André');
   assert.strictEqual(andreElements['ccQuickActionsSection'].style.display, 'block', 'Ações rápidas devem permanecer visíveis no André');
   assert.strictEqual(andreElements['ccReserveStandardLayout'].style.display, 'block', 'Ajuste padrão deve permanecer visível no André');
   assert.strictEqual(andreElements['ccReserveDefaultLayout'].style.display, 'none', 'Layout remodelado deve permanecer oculto no André');
@@ -592,6 +598,7 @@ testGistPullEmptyProtection().then(() => {
   vm.runInContext(coreJsCode, juliaEnv.sandbox);
 
   assert.strictEqual(juliaElements['ccDualCardDock'].style.display, 'none', 'Dock de dois cartões deve permanecer oculto na Júlia');
+  assert.strictEqual(juliaElements['ccDebtsAnatomyBox'].style.display, 'none', 'Painel de dívidas no cartão deve permanecer oculto na Júlia');
   assert.strictEqual(juliaElements['ccQuickActionsSection'].style.display, 'block', 'Ações rápidas devem permanecer visíveis na Júlia');
   assert.strictEqual(juliaElements['ccReserveStandardLayout'].style.display, 'block', 'Ajuste padrão deve permanecer visível na Júlia');
   assert.strictEqual(juliaElements['ccReserveDefaultLayout'].style.display, 'none', 'Layout remodelado deve permanecer oculto na Júlia');

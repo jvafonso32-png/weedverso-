@@ -1284,6 +1284,228 @@ button:active, .btn:active, .navBtn:active, .quick:active, .filterChip:active, .
   opacity: 0.8;
   margin-top: -2px;
 }
+
+/* Painel Anatômico Compacto de Dívidas e Cobranças na Aba Cartões (Exclusivo João) */
+.ccDebtsAnatomyBox {
+  padding: 12px 13px !important;
+  border: 1px solid rgba(0, 229, 255, 0.2) !important;
+  background: radial-gradient(circle at 100% 0%, rgba(0, 229, 255, 0.06), transparent 60%), rgba(8, 20, 28, 0.65) !important;
+  border-radius: 16px !important;
+}
+.ccDebtsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ccDebtsTitleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ccDebtsSub {
+  font-size: 0.7rem;
+  color: var(--mut);
+  font-weight: 600;
+}
+.ccDebtsAddBtn {
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(0, 229, 255, 0.4) !important;
+  background: rgba(0, 229, 255, 0.14) !important;
+  color: #00e5ff !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 229, 255, 0.15) !important;
+}
+.ccDebtsSegmentBar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 10px;
+}
+.ccDebtsSegBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 10px !important;
+  border-radius: 9px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: var(--mut) !important;
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+}
+.ccDebtsSegBtn strong {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+}
+.ccDebtsSegBtn.active {
+  background: rgba(0, 229, 255, 0.15) !important;
+  border-color: rgba(0, 229, 255, 0.38) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 12px rgba(0, 229, 255, 0.16) !important;
+}
+.ccDebtsSegBtn.active strong {
+  color: #00e5ff;
+}
+.ccDebtsCompactList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ccDebtCompactRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease;
+}
+.ccDebtRowMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.ccDebtRowIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  display: grid;
+  place-items: center;
+  font-size: 0.92rem;
+  flex-shrink: 0;
+}
+.ccDebtRowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ccDebtRowTitleLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.ccDebtRowName {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.ccDebtInstPill {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(0, 229, 255, 0.14);
+  color: #00e5ff;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ccDebtRowMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  font-size: 0.68rem;
+  color: var(--mut);
+}
+.ccDebtRowMeta .tag {
+  padding: 1px 6px !important;
+  font-size: 0.62rem !important;
+}
+.ccDebtRowRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.ccDebtRowVal {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #fff;
+}
+.ccDebtRowBtns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ccDebtMiniBtn {
+  padding: 3px 8px !important;
+  border-radius: 7px !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--txt) !important;
+}
+.ccDebtMiniBtn.pay {
+  background: rgba(0, 229, 255, 0.14) !important;
+  border-color: rgba(0, 229, 255, 0.35) !important;
+  color: #00e5ff !important;
+}
+.ccDebtMiniBtn.wa {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+}
+.ccDebtsEmpty {
+  text-align: center;
+  padding: 10px 8px;
+  font-size: 0.76rem;
+  color: var(--mut);
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+.ccDebtsFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 4px;
+}
+.ccDebtsExpandBtn, .ccDebtsGotoBtn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  color: #00e5ff !important;
+  padding: 4px 6px !important;
+  cursor: pointer;
+}
+.ccDebtsGotoBtn {
+  color: var(--mut) !important;
+}
 .virtualCard::before {
   content: "" !important;
   position: absolute !important;
@@ -1432,6 +1654,8 @@ body[data-privacy="on"] .virtualCardNumber,
 body[data-privacy="on"] .ccSlotUsed,
 body[data-privacy="on"] .ccSlotRes,
 body[data-privacy="on"] .ccDualSumCol strong,
+body[data-privacy="on"] .ccDebtsSegBtn strong,
+body[data-privacy="on"] .ccDebtRowVal,
 body[data-privacy="on"] .bal,
 body[data-privacy="on"] .feedAmount,
 body[data-privacy="on"] #heroBalance,
